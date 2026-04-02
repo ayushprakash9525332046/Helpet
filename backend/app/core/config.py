@@ -23,6 +23,10 @@ class Settings(BaseSettings):
         "http://localhost:3001",  # admin dashboard
     ]
 
+    # Razorpay
+    RAZORPAY_KEY_ID: str = ""
+    RAZORPAY_KEY_SECRET: str = ""
+
     class Config:
         env_file = ".env"
 

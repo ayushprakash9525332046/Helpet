@@ -6,6 +6,9 @@ from alembic import context
 from app.db.base import Base
 from app.core.config import settings
 
+# Import all models so Base.metadata knows about every table
+from app.models import user, service, booking, payment, review, notification  # noqa
+
 # Alembic Config object
 config = context.config
 

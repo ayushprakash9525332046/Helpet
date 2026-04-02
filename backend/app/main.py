@@ -8,7 +8,7 @@ from fastapi.openapi.utils import get_openapi
 from app.core.config import settings
 from app.api.v1.router import api_router
 from app.db.session import engine
-from app.models import user, service, booking  # noqa - imports all models
+from app.models import user, service, booking, payment, review, notification  # noqa - imports all models
 
 
 # ── Startup & Shutdown ──────────────────────────────────────────
