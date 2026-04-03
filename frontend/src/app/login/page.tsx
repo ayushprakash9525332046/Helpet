@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -13,8 +13,18 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, user, isLoading } = useAuth();
   const router = useRouter();
+
+  // Redirect already-authenticated users
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.replace("/home");
+    }
+  }, [isLoading, user, router]);
+
+  // Show nothing while auth state is being read from localStorage
+  if (isLoading) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,13 +32,12 @@ export default function Login() {
     setLoading(true);
     try {
       await login(phone, password);
-      router.replace("/home");
+      window.location.replace("/home");
     } catch (err: any) {
       const detail = err?.response?.data?.detail;
       const msg = typeof detail === "string" ? detail : err?.message || "Login failed";
       toast.error(msg);
-    } finally {
-      setLoading(false);
+      setLoading(false); // only reset on failure; on success page navigates away
     }
   };
 

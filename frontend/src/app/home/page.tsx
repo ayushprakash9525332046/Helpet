@@ -134,12 +134,6 @@ export default function Home() {
               >
                 {card.emoji}
               </motion.span>
-              {/* dots */}
-              <div className="absolute bottom-3 left-4 flex gap-1.5">
-                {PROMO_CARDS.map((_, j) => (
-                  <div key={j} className={`h-1 rounded-full transition-all ${j === promoIdx ? "w-4 bg-white" : "w-1.5 bg-white/40"}`} />
-                ))}
-              </div>
             </motion.div>
           ))}
         </div>
