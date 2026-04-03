@@ -189,14 +189,17 @@ function PaymentContent() {
   const [loadingIntent, setLoadingIntent] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     api
       .post("/payments/create-intent", { booking_id: bookingId })
       .then((r) => {
+        if (cancelled) return;
         setClientSecret(r.data.client_secret);
         setPaymentIntentId(r.data.payment_intent_id);
       })
-      .catch(() => toast.error("Could not initialise payment"))
-      .finally(() => setLoadingIntent(false));
+      .catch(() => { if (!cancelled) toast.error("Could not initialise payment"); })
+      .finally(() => { if (!cancelled) setLoadingIntent(false); });
+    return () => { cancelled = true; };
   }, [bookingId]);
 
   return (
