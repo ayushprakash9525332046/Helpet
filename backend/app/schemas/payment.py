@@ -5,14 +5,12 @@ from datetime import datetime
 from app.models.payment import PaymentStatus
 
 
-class PaymentOrderCreate(BaseModel):
+class PaymentIntentCreate(BaseModel):
     booking_id: UUID
 
 
-class PaymentVerify(BaseModel):
-    razorpay_order_id: str
-    razorpay_payment_id: str
-    razorpay_signature: str
+class PaymentConfirm(BaseModel):
+    payment_intent_id: str
 
 
 class PaymentResponse(BaseModel):
@@ -21,16 +19,15 @@ class PaymentResponse(BaseModel):
     user_id: UUID
     amount: float
     status: PaymentStatus
-    razorpay_order_id: Optional[str] = None
-    razorpay_payment_id: Optional[str] = None
+    stripe_payment_intent_id: Optional[str] = None
     created_at: datetime
 
     class Config:
         from_attributes = True
 
 
-class RazorpayOrderResponse(BaseModel):
-    razorpay_order_id: str
-    amount: int          # in paise
-    currency: str
-    payment_id: UUID     # our internal Payment record id
+class StripeIntentResponse(BaseModel):
+    client_secret: str
+    payment_intent_id: str
+    amount: int   # in paise
+    payment_id: UUID

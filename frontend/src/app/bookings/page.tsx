@@ -131,10 +131,10 @@ export default function MyBookings() {
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
-                            {getIcon("service")}
+                            {getIcon(booking.service.name)}
                           </div>
                           <div>
-                            <p className="font-bold text-slate-800 text-sm">Service Booking</p>
+                            <p className="font-bold text-slate-800 text-sm">{booking.service.name}</p>
                             <div className="flex items-center gap-1 mt-0.5">
                               <MapPin size={10} className="text-slate-400" />
                               <p className="text-slate-400 text-xs line-clamp-1 max-w-35">{booking.address}</p>

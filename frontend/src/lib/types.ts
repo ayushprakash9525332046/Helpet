@@ -33,6 +33,12 @@ export interface Booking {
   customer_id: string;
   provider_id?: string;
   service_id: string;
+  service: {
+    id: string;
+    name: string;
+    duration_minutes: number;
+    category: { id: string; name: string };
+  };
   status: "pending" | "confirmed" | "ongoing" | "completed" | "cancelled";
   scheduled_at: string;
   address: string;

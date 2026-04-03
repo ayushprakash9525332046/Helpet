@@ -1,19 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { CheckCircle2, Calendar, ArrowRight, Home } from "lucide-react";
+import { CheckCircle2, Calendar, Clock, ArrowRight, Home, IndianRupee } from "lucide-react";
 
-const REF = Math.random().toString(36).slice(2, 8).toUpperCase();
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-export default function BookingConfirmed() {
+function formatBookingDate(iso: string) {
+  const d = new Date(iso);
+  return `${d.getDate()} ${MONTH_NAMES[d.getMonth()]} · ${d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}`;
+}
+
+function ConfirmedContent() {
   const router = useRouter();
+  const params = useSearchParams();
   const [seconds, setSeconds] = useState(5);
+
+  const serviceName = params.get("service") ?? "Home Service";
+  const dateIso     = params.get("date");
+  const amount      = params.get("amount");
+  const bookingId   = params.get("id");
+  const paid        = params.get("paid") === "true";
 
   useEffect(() => {
     const countdown = setInterval(() => setSeconds((s) => s - 1), 1000);
-    const redirect = setTimeout(() => router.replace("/bookings"), 5000);
+    const redirect  = setTimeout(() => router.replace("/bookings"), 5000);
     return () => { clearInterval(countdown); clearTimeout(redirect); };
   }, [router]);
 
@@ -45,9 +57,13 @@ export default function BookingConfirmed() {
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
         className="relative z-10"
       >
-        <h1 className="text-3xl font-extrabold text-slate-800 mb-2">Booking Confirmed!</h1>
+        <h1 className="text-3xl font-extrabold text-slate-800 mb-2">
+          {paid ? "Payment Successful!" : "Booking Confirmed!"}
+        </h1>
         <p className="text-slate-500 text-sm leading-relaxed max-w-xs mx-auto">
-          Your booking is placed. A nearby professional has been notified and will confirm shortly.
+          {paid
+            ? "Payment received. Your booking is confirmed and a professional has been assigned."
+            : "Your booking is placed. A nearby professional has been notified."}
         </p>
       </motion.div>
 
@@ -56,23 +72,71 @@ export default function BookingConfirmed() {
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}
         className="relative z-10 w-full bg-slate-50 rounded-3xl p-5 mt-8 border border-slate-100 space-y-3"
       >
+        {/* Service */}
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2 text-slate-500 text-sm">
-            <Calendar size={14} className="text-blue-500" />
-            Status
-          </div>
-          <span className="text-xs font-bold bg-amber-100 text-amber-700 px-3 py-1 rounded-full">Pending Confirmation</span>
+          <span className="text-slate-500 text-sm">Service</span>
+          <span className="text-slate-800 font-bold text-sm text-right max-w-48 line-clamp-1">{serviceName}</span>
         </div>
         <div className="h-px bg-slate-100" />
+
+        {/* Date & time */}
+        {dateIso && (
+          <>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2 text-slate-500 text-sm">
+                <Calendar size={14} className="text-blue-500" />
+                Scheduled
+              </div>
+              <div className="flex items-center gap-1.5 text-slate-800 font-bold text-sm">
+                <Clock size={12} className="text-slate-400" />
+                {formatBookingDate(dateIso)}
+              </div>
+            </div>
+            <div className="h-px bg-slate-100" />
+          </>
+        )}
+
+        {/* Status */}
         <div className="flex justify-between items-center">
-          <span className="text-slate-500 text-sm">Booking Ref</span>
-          <span className="text-slate-800 font-bold text-sm tracking-wider">#{REF}</span>
+          <span className="text-slate-500 text-sm">Status</span>
+          <span className={`text-xs font-bold px-3 py-1 rounded-full ${paid ? "bg-blue-100 text-blue-700" : "bg-amber-100 text-amber-700"}`}>
+            {paid ? "Confirmed" : "Pending Confirmation"}
+          </span>
         </div>
         <div className="h-px bg-slate-100" />
+
+        {/* Amount */}
+        {amount && (
+          <>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-1.5 text-slate-500 text-sm">
+                <IndianRupee size={14} className="text-slate-400" />
+                Amount
+              </div>
+              <span className="text-blue-600 font-extrabold text-base">₹{amount}</span>
+            </div>
+            <div className="h-px bg-slate-100" />
+          </>
+        )}
+
+        {/* Payment */}
         <div className="flex justify-between items-center">
           <span className="text-slate-500 text-sm">Payment</span>
-          <span className="text-xs font-bold bg-green-100 text-green-700 px-3 py-1 rounded-full">Pay on Service</span>
+          <span className={`text-xs font-bold px-3 py-1 rounded-full ${paid ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+            {paid ? "✓ Paid" : "Pay on Service"}
+          </span>
         </div>
+
+        {/* Booking ref */}
+        {bookingId && (
+          <>
+            <div className="h-px bg-slate-100" />
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 text-sm">Booking ID</span>
+              <span className="text-slate-500 font-mono text-xs">{bookingId.slice(0, 8).toUpperCase()}</span>
+            </div>
+          </>
+        )}
       </motion.div>
 
       {/* Buttons */}
@@ -103,5 +167,13 @@ export default function BookingConfirmed() {
         Redirecting in {seconds}s...
       </motion.p>
     </div>
+  );
+}
+
+export default function BookingConfirmed() {
+  return (
+    <Suspense>
+      <ConfirmedContent />
+    </Suspense>
   );
 }

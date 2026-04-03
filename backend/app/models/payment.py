@@ -27,10 +27,8 @@ class Payment(Base):
     amount = Column(Numeric(10, 2), nullable=False)
     status = Column(Enum(PaymentStatus), default=PaymentStatus.PENDING, nullable=False)
 
-    # Razorpay fields
-    razorpay_order_id = Column(String(100), nullable=True, unique=True)
-    razorpay_payment_id = Column(String(100), nullable=True)
-    razorpay_signature = Column(String(255), nullable=True)
+    # Stripe fields
+    stripe_payment_intent_id = Column(String(255), nullable=True, unique=True)
 
     # Timestamps
     created_at = Column(
@@ -46,4 +44,4 @@ class Payment(Base):
     user = relationship("User")
 
     def __repr__(self):
-        return f"<Payment {self.razorpay_order_id} - {self.status}>"
+        return f"<Payment {self.stripe_payment_intent_id} - {self.status}>"

@@ -8,7 +8,7 @@ passlib[bcrypt]
 bcrypt==4.0.1
 python-dotenv
 pydantic[email]
-razorpay
+stripe
 cloudinary
 twilio
 python-multipart

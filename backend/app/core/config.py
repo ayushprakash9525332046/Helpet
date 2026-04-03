@@ -28,9 +28,8 @@ class Settings(BaseSettings):
         "https://ggbl1mx8-8000.inc1.devtunnels.ms",
     ]
 
-    # Razorpay
-    RAZORPAY_KEY_ID: str = ""
-    RAZORPAY_KEY_SECRET: str = ""
+    # Stripe
+    STRIPE_SECRET_KEY: str = ""
 
     class Config:
         env_file = ".env"

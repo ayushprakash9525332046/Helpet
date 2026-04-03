@@ -1,7 +1,7 @@
 # /bookings/, /bookings/{id}
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List
 from uuid import UUID
 
@@ -11,6 +11,13 @@ from app.models.service import Service
 from app.models.user import User, UserRole
 from app.schemas.booking import BookingCreate, BookingUpdate, BookingResponse
 from app.core.dependencies import get_current_user, get_current_admin
+
+
+def _booking_query(db: Session):
+    """Return a query with service + category eagerly loaded."""
+    return db.query(Booking).options(
+        joinedload(Booking.service).joinedload(Service.category)
+    )
 
 router = APIRouter()
 
@@ -35,15 +42,15 @@ def create_booking(
     )
     db.add(booking)
     db.commit()
-    db.refresh(booking)
-    return booking
+    # Re-fetch with relationships eagerly loaded
+    return _booking_query(db).filter(Booking.id == booking.id).first()
 
 
 @router.get("/my", response_model=List[BookingResponse])
 def get_my_bookings(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
-    return db.query(Booking).filter(Booking.customer_id == current_user.id).all()
+    return _booking_query(db).filter(Booking.customer_id == current_user.id).all()
 
 
 @router.get("/{booking_id}", response_model=BookingResponse)
@@ -52,7 +59,7 @@ def get_booking(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    booking = db.query(Booking).filter(Booking.id == booking_id).first()
+    booking = _booking_query(db).filter(Booking.id == booking_id).first()
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
     if booking.customer_id != current_user.id and current_user.role != UserRole.ADMIN:
@@ -75,8 +82,7 @@ def update_booking(
     for key, value in data.model_dump(exclude_unset=True).items():
         setattr(booking, key, value)
     db.commit()
-    db.refresh(booking)
-    return booking
+    return _booking_query(db).filter(Booking.id == booking_id).first()
 
 
 @router.delete("/{booking_id}", status_code=204)
@@ -98,4 +104,4 @@ def cancel_booking(
 def get_all_bookings(
     db: Session = Depends(get_db), admin: User = Depends(get_current_admin)
 ):
-    return db.query(Booking).all()
+    return _booking_query(db).all()

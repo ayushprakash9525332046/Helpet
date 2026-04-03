@@ -18,11 +18,30 @@ class BookingUpdate(BaseModel):
     scheduled_at: Optional[datetime] = None
 
 
+class ServiceCategoryInBooking(BaseModel):
+    id: UUID
+    name: str
+
+    class Config:
+        from_attributes = True
+
+
+class ServiceInBooking(BaseModel):
+    id: UUID
+    name: str
+    duration_minutes: int
+    category: ServiceCategoryInBooking
+
+    class Config:
+        from_attributes = True
+
+
 class BookingResponse(BaseModel):
     id: UUID
     customer_id: UUID
     provider_id: Optional[UUID] = None
     service_id: UUID
+    service: ServiceInBooking
     status: BookingStatus
     scheduled_at: datetime
     address: str

@@ -7,7 +7,16 @@ import api from "@/lib/api";
 import { Booking } from "@/lib/types";
 import BackHeader from "@/components/BackHeader";
 import toast from "react-hot-toast";
-import { MapPin, Calendar, Clock, XCircle, Star, CheckCircle2, AlertCircle, Zap, Receipt } from "lucide-react";
+import { MapPin, Calendar, Clock, XCircle, Star, CheckCircle2, AlertCircle, Zap, Receipt, FileText } from "lucide-react";
+
+const ICONS: Record<string, string> = {
+  clean:"🧹",plumb:"🔧",electr:"⚡",carp:"🪚",paint:"🎨",ac:"❄️",salon:"✂️",pest:"🐛",repair:"🔩",
+};
+function getIcon(name: string) {
+  const n = (name ?? "").toLowerCase();
+  for (const [k,v] of Object.entries(ICONS)) if (n.includes(k)) return v;
+  return "🏠";
+}
 
 const STATUS_CONFIG: Record<string, { label: string; sublabel: string; icon: React.ReactNode; gradient: string; text: string }> = {
   pending:   { label: "Pending Confirmation", sublabel: "Waiting for a professional to accept", icon: <AlertCircle size={20} />, gradient: "from-amber-400 to-orange-400", text: "text-amber-700" },
@@ -94,10 +103,12 @@ export default function BookingDetail() {
         >
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Service Details</p>
           <div className="flex items-center gap-3">
-            <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl shadow-sm">🔧</div>
+            <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl shadow-sm">
+              {getIcon(booking.service.name)}
+            </div>
             <div>
-              <p className="font-bold text-slate-800 text-base">Home Service</p>
-              <p className="text-slate-400 text-xs mt-0.5">Professional Service</p>
+              <p className="font-bold text-slate-800 text-base">{booking.service.name}</p>
+              <p className="text-slate-400 text-xs mt-0.5">{booking.service.category.name}</p>
               <span className="inline-block mt-1.5 text-[10px] font-bold bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full">Booked</span>
             </div>
           </div>
@@ -124,6 +135,19 @@ export default function BookingDetail() {
             ))}
           </div>
         </motion.div>
+
+        {/* Notes */}
+        {booking.notes && (
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+            className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <FileText size={14} className="text-slate-400" />
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Special Instructions</p>
+            </div>
+            <p className="text-sm text-slate-600 leading-relaxed">{booking.notes}</p>
+          </motion.div>
+        )}
 
         {/* Payment summary */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}

@@ -59,13 +59,18 @@ export default function BookService() {
     date.setHours(h, m, 0, 0);
     setLoading(true);
     try {
-      await api.post("/bookings/", {
+      const res = await api.post("/bookings/", {
         service_id: serviceId,
         scheduled_at: date.toISOString(),
         address,
         notes: notes || undefined,
       });
-      router.push("/bookings/confirmed");
+      const params = new URLSearchParams({
+        service: service!.name,
+        amount: String(res.data.total_amount),
+        date: date.toISOString(),
+      });
+      router.push(`/payment/${res.data.id}?${params.toString()}`);
     } catch (err: any) {
       toast.error(err?.response?.data?.detail || "Booking failed");
     } finally {
@@ -261,7 +266,7 @@ export default function BookService() {
               <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
               Confirming Booking...
             </span>
-          ) : "Proceed to Checkout →"}
+          ) : "Confirm & Pay →"}
         </motion.button>
       </div>
     </div>
