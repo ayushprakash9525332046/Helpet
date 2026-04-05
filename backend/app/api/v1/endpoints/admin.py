@@ -8,7 +8,7 @@ from uuid import UUID
 
 from app.db.session import get_db
 from app.models.user import User, UserStatus
-from app.models.booking import Booking
+from app.models.booking import Booking, BookingStatus
 from app.models.service import Service
 from app.models.payment import Payment, PaymentStatus
 from app.schemas.user import UserResponse
@@ -66,6 +66,21 @@ def update_user_status(
     return {"message": f"User status updated to {new_status.value}"}
 
 
+# ── User Delete ─────────────────────────────────────────────────
+
+@router.delete("/users/{user_id}", status_code=204)
+def delete_user(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.status = UserStatus.INACTIVE
+    db.commit()
+
+
 # ── Booking Management ──────────────────────────────────────────
 
 @router.get("/bookings", response_model=List[BookingResponse])
@@ -74,6 +89,21 @@ def list_bookings(
     admin: User = Depends(get_current_admin),
 ):
     return db.query(Booking).all()
+
+
+@router.put("/bookings/{booking_id}/status")
+def update_booking_status(
+    booking_id: UUID,
+    new_status: BookingStatus,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    booking = db.query(Booking).filter(Booking.id == booking_id).first()
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    booking.status = new_status
+    db.commit()
+    return {"message": f"Booking status updated to {new_status.value}"}
 
 
 # ── Payment Management ──────────────────────────────────────────

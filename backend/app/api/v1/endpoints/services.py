@@ -41,6 +41,36 @@ def create_category(
     return category
 
 
+@router.put("/categories/{category_id}", response_model=ServiceCategoryResponse)
+def update_category(
+    category_id: UUID,
+    data: ServiceCategoryCreate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    category = db.query(ServiceCategory).filter(ServiceCategory.id == category_id).first()
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    for key, value in data.model_dump(exclude_unset=True).items():
+        setattr(category, key, value)
+    db.commit()
+    db.refresh(category)
+    return category
+
+
+@router.delete("/categories/{category_id}", status_code=204)
+def delete_category(
+    category_id: UUID,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    category = db.query(ServiceCategory).filter(ServiceCategory.id == category_id).first()
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    category.is_active = False
+    db.commit()
+
+
 # ── Services ─────────────────────────────────────────────────────
 
 
