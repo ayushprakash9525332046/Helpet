@@ -47,6 +47,7 @@ export default function Profile() {
   ];
 
   const initial = user?.full_name?.[0]?.toUpperCase() ?? "U";
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ?? "http://localhost:8000";
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 pb-28">
@@ -66,9 +67,17 @@ export default function Profile() {
         className="mx-5 -mt-14 bg-white rounded-3xl p-5 shadow-xl border border-white/60 flex items-center gap-4 relative z-10"
       >
         <div className="relative">
-          <div className="w-18 h-18 bg-linear-to-br from-blue-400 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-2xl font-extrabold shadow-lg shadow-blue-200">
-            {initial}
-          </div>
+          {user?.profile_picture ? (
+            <img
+              src={`${API_BASE}${user.profile_picture}`}
+              alt="Profile"
+              className="w-18 h-18 rounded-2xl object-cover shadow-lg shadow-blue-200"
+            />
+          ) : (
+            <div className="w-18 h-18 bg-linear-to-br from-blue-400 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-2xl font-extrabold shadow-lg shadow-blue-200">
+              {initial}
+            </div>
+          )}
           <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-2 border-white" />
         </div>
         <div className="flex-1">

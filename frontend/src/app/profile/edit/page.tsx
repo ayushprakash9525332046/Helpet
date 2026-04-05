@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
@@ -9,9 +9,13 @@ import BackHeader from "@/components/BackHeader";
 import toast from "react-hot-toast";
 import { User, Mail, Phone, MapPin, Building2, Hash, Camera } from "lucide-react";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ?? "http://localhost:8000";
+
 export default function EditProfile() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const [form, setForm] = useState({
     full_name: user?.full_name ?? "",
     email:     user?.email ?? "",
@@ -22,6 +26,26 @@ export default function EditProfile() {
   const [loading, setLoading] = useState(false);
 
   const update = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }));
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    setAvatarUploading(true);
+    try {
+      const { data } = await api.post("/users/me/avatar", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      updateUser(data);
+      toast.success("Profile picture updated");
+    } catch {
+      toast.error("Failed to upload image");
+    } finally {
+      setAvatarUploading(false);
+      e.target.value = "";
+    }
+  };
 
   const handleSave = async () => {
     setLoading(true);
@@ -62,15 +86,35 @@ export default function EditProfile() {
         className="flex flex-col items-center pt-7 pb-5"
       >
         <div className="relative">
-          <div className="w-24 h-24 bg-linear-to-br from-blue-400 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-3xl font-extrabold shadow-xl shadow-blue-200">
-            {initial}
-          </div>
+          {user?.profile_picture ? (
+            <img
+              src={`${API_BASE}${user.profile_picture}`}
+              alt="Profile"
+              className="w-24 h-24 rounded-2xl object-cover shadow-xl shadow-blue-200"
+            />
+          ) : (
+            <div className="w-24 h-24 bg-linear-to-br from-blue-400 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-3xl font-extrabold shadow-xl shadow-blue-200">
+              {initial}
+            </div>
+          )}
           <motion.div
             whileTap={{ scale: 0.9 }}
+            onClick={() => fileInputRef.current?.click()}
             className="absolute -bottom-2 -right-2 w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center border-2 border-white shadow-md cursor-pointer"
           >
-            <Camera size={15} className="text-white" />
+            {avatarUploading ? (
+              <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+            ) : (
+              <Camera size={15} className="text-white" />
+            )}
           </motion.div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="hidden"
+            onChange={handleAvatarChange}
+          />
         </div>
         <p className="text-slate-800 font-bold text-base mt-4">{user?.full_name}</p>
         <p className="text-slate-400 text-sm">{user?.phone}</p>

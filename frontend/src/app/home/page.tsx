@@ -98,7 +98,7 @@ export default function Home() {
       {/* ── Stats bar ──────────────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-        className="mx-5 -mt-1 bg-white rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-100 grid grid-cols-3 divide-x divide-slate-100"
+        className="mx-5 mt-5 bg-white rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-100 grid grid-cols-3 divide-x divide-slate-100"
       >
         {STATS.map(({ icon, value, label }) => (
           <div key={label} className="flex flex-col items-center py-3.5 gap-0.5">

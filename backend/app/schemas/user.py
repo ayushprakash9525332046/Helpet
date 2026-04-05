@@ -46,6 +46,7 @@ class UserResponse(BaseModel):
     status: UserStatus
     is_verified: bool
     created_at: datetime
+    profile_picture: Optional[str] = None
 
     class Config:
         from_attributes = True

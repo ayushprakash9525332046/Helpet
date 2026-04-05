@@ -7,6 +7,7 @@ export interface User {
   status: "active" | "inactive" | "banned";
   is_verified: boolean;
   created_at: string;
+  profile_picture?: string;
 }
 
 export interface ServiceCategory {

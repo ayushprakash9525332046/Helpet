@@ -1,5 +1,7 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 
 from fastapi.security import OAuth2PasswordBearer
@@ -39,6 +41,11 @@ app.add_middleware(
 
 
 app.include_router(api_router, prefix="/api/v1")
+
+# Serve uploaded files (avatars, etc.)
+_uploads_dir = os.path.join(os.path.dirname(__file__), "..", "uploads")
+os.makedirs(_uploads_dir, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=_uploads_dir), name="uploads")
 
 
 @app.get("/", tags=["Health"])
