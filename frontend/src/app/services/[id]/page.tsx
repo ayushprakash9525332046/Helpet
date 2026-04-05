@@ -147,7 +147,7 @@ export default function ServiceDetail() {
                 ))}
               </div>
             </div>
-            <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 border border-blue-100">
+            <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 mb-8 border border-blue-100">
               <div className="flex items-center gap-2 mb-1">
                 <Zap size={15} className="text-blue-600" />
                 <span className="text-xs font-bold text-blue-700 uppercase tracking-wide">Pro Tip</span>

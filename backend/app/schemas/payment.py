@@ -13,6 +13,11 @@ class PaymentConfirm(BaseModel):
     payment_intent_id: str
 
 
+class OfflinePaymentCreate(BaseModel):
+    booking_id: UUID
+    method: str  # "cod" | "upi"
+
+
 class PaymentResponse(BaseModel):
     id: UUID
     booking_id: UUID

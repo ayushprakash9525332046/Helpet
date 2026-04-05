@@ -8,7 +8,7 @@ import api from "@/lib/api";
 import { Service, ServiceCategory } from "@/lib/types";
 import BottomNav from "@/components/BottomNav";
 import ServiceCard from "@/components/ServiceCard";
-import { Bell, Search, MapPin, ChevronRight, Sparkles, Shield, Clock } from "lucide-react";
+import { Bell, Search, ChevronRight, Sparkles, Shield, Clock, LocateFixed } from "lucide-react";
 
 const CATEGORY_META: Record<string, { icon: string; gradient: string }> = {
   Cleaning:     { icon: "🧹", gradient: "from-blue-400 to-cyan-400" },
@@ -33,11 +33,46 @@ const PROMO_CARDS = [
 ];
 
 export default function Home() {
-  const { user } = useAuth();
-  const [categories, setCategories] = useState<ServiceCategory[]>([]);
-  const [services, setServices]     = useState<Service[]>([]);
-  const [loading, setLoading]       = useState(true);
-  const [promoIdx, setPromoIdx]     = useState(0);
+  const { user, updateUser } = useAuth();
+  const [categories, setCategories]   = useState<ServiceCategory[]>([]);
+  const [services, setServices]       = useState<Service[]>([]);
+  const [loading, setLoading]         = useState(true);
+  const [promoIdx, setPromoIdx]       = useState(0);
+  const [location, setLocation]       = useState(user?.city || "Tap to detect location");
+  const [locLoading, setLocLoading]   = useState(false);
+
+  const fetchLocation = () => {
+    if (!navigator.geolocation) return;
+    setLocLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${coords.latitude}&lon=${coords.longitude}&format=json`,
+            { headers: { "Accept-Language": "en" } }
+          );
+          const data = await res.json();
+          const a     = data.address ?? {};
+          const city  = a.city || a.town || a.village || a.county || "";
+          const state = a.state || "";
+          const label = city && state ? `${city}, ${state}` : city || state || "Location found";
+          setLocation(label);
+          // save city to profile
+          const { data: updated } = await api.put("/users/me", { city: city || undefined });
+          updateUser(updated);
+        } catch {
+          setLocation("Location found");
+        } finally {
+          setLocLoading(false);
+        }
+      },
+      () => {
+        setLocation(user?.city || "Tap to detect location");
+        setLocLoading(false);
+      },
+      { timeout: 10000 }
+    );
+  };
 
   useEffect(() => {
     Promise.all([api.get("/services/categories"), api.get("/services/")])
@@ -69,10 +104,18 @@ export default function Home() {
             <h1 className="text-white text-xl font-extrabold leading-tight">
               {user?.full_name?.split(" ")[0] ?? "there"} 👋
             </h1>
-            <div className="flex items-center gap-1 mt-1.5 bg-white/15 rounded-full px-3 py-1 w-fit">
-              <MapPin size={11} className="text-blue-200" />
-              <span className="text-blue-100 text-xs font-medium">Mumbai, Maharashtra</span>
-            </div>
+            <button
+              onClick={fetchLocation}
+              disabled={locLoading}
+              className="flex items-center gap-1 mt-1.5 bg-white/15 rounded-full px-3 py-1 w-fit active:bg-white/25 transition-colors"
+            >
+              {locLoading ? (
+                <span className="w-3 h-3 border border-blue-200/50 border-t-blue-100 rounded-full animate-spin" />
+              ) : (
+                <LocateFixed size={11} className="text-blue-200" />
+              )}
+              <span className="text-blue-100 text-xs font-medium">{location}</span>
+            </button>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>

@@ -4,17 +4,18 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 import { Service } from "@/lib/types";
 import BackHeader from "@/components/BackHeader";
 import toast from "react-hot-toast";
-import { MapPin, Calendar, Clock, FileText, CheckCircle2, Sparkles } from "lucide-react";
+import { MapPin, Calendar, Clock, FileText, CheckCircle2, Sparkles, LocateFixed } from "lucide-react";
 
 const TIME_SLOTS = ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
 function getNext7Days() {
   return Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
-    d.setDate(d.getDate() + i + 1);
+    d.setDate(d.getDate() + i);
     return d;
   });
 }
@@ -38,14 +39,70 @@ const GRADIENTS = [
 
 export default function BookService() {
   const { serviceId } = useParams<{ serviceId: string }>();
+  const { user, updateUser } = useAuth();
   const [service, setService] = useState<Service | null>(null);
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(user?.address ?? "");
+  const [locLoading, setLocLoading] = useState(false);
   const [notes, setNotes] = useState("");
   const [selectedDate, setSelectedDate] = useState(0);
   const [selectedTime, setSelectedTime] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const days = getNext7Days();
+  const now = new Date();
+  const availableSlots = TIME_SLOTS.filter((t) => {
+    if (selectedDate !== 0) return true;
+    const [h, m] = t.split(":").map(Number);
+    return h * 60 + m > now.getHours() * 60 + now.getMinutes();
+  });
+
+  const fetchAddress = () => {
+    if (!navigator.geolocation) return toast.error("Geolocation not supported");
+    setLocLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${coords.latitude}&lon=${coords.longitude}&format=json`,
+            { headers: { "Accept-Language": "en" } }
+          );
+          const data = await res.json();
+          const a = data.address ?? {};
+          const city    = a.city || a.town || a.village || a.county || "";
+          const pincode = a.postcode || "";
+          const parts = [
+            a.amenity || a.building,
+            a.house_number,
+            a.road || a.pedestrian || a.footway || a.path || a.street,
+            a.quarter || a.neighbourhood || a.suburb,
+            a.city_district || a.district,
+            city,
+            a.state,
+            pincode,
+          ].filter(Boolean);
+          const fullAddress = parts.join(", ");
+          setAddress(fullAddress);
+          // persist to profile so it's ready on next visit
+          const { data: updated } = await api.put("/users/me", {
+            address: fullAddress,
+            city:    city    || undefined,
+            pincode: pincode || undefined,
+          });
+          updateUser(updated);
+          toast.success("Location saved to your profile");
+        } catch {
+          toast.error("Could not fetch address");
+        } finally {
+          setLocLoading(false);
+        }
+      },
+      () => {
+        toast.error("Location permission denied");
+        setLocLoading(false);
+      },
+      { timeout: 10000 }
+    );
+  };
 
   useEffect(() => {
     api.get(`/services/${serviceId}`).then((r) => setService(r.data));
@@ -126,12 +183,28 @@ export default function BookService() {
       <div className="px-5 mt-5 flex flex-col gap-5">
         {/* Address */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2.5">
-            <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
-              <MapPin size={13} className="text-blue-600" />
-            </div>
-            Service Address
-          </label>
+          <div className="flex items-center justify-between mb-2.5">
+            <label className="flex items-center gap-2 text-sm font-bold text-slate-700">
+              <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                <MapPin size={13} className="text-blue-600" />
+              </div>
+              Service Address
+            </label>
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.95 }}
+              onClick={fetchAddress}
+              disabled={locLoading}
+              className="flex items-center gap-1.5 text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-xl disabled:opacity-60"
+            >
+              {locLoading ? (
+                <span className="w-3 h-3 border border-blue-300 border-t-blue-600 rounded-full animate-spin" />
+              ) : (
+                <LocateFixed size={12} />
+              )}
+              Use my location
+            </motion.button>
+          </div>
           <textarea
             placeholder="Enter your full address (house no, street, area, city)"
             value={address}
@@ -153,7 +226,16 @@ export default function BookService() {
             {days.map((d, i) => (
               <motion.button
                 key={i}
-                onClick={() => setSelectedDate(i)}
+                onClick={() => {
+                  setSelectedDate(i);
+                  if (i === 0) {
+                    const nowMins = now.getHours() * 60 + now.getMinutes();
+                    if (selectedTime) {
+                      const [h, m] = selectedTime.split(":").map(Number);
+                      if (h * 60 + m <= nowMins) setSelectedTime("");
+                    }
+                  }
+                }}
                 whileTap={{ scale: 0.92 }}
                 className={`flex flex-col items-center min-w-14.5 py-3.5 rounded-2xl border-2 transition-all ${
                   selectedDate === i
@@ -187,7 +269,7 @@ export default function BookService() {
             Select Time
           </label>
           <div className="grid grid-cols-3 gap-2.5">
-            {TIME_SLOTS.map((t, i) => (
+            {availableSlots.map((t, i) => (
               <motion.button
                 key={t}
                 onClick={() => setSelectedTime(t)}

@@ -8,6 +8,9 @@ export interface User {
   is_verified: boolean;
   created_at: string;
   profile_picture?: string;
+  address?: string;
+  city?: string;
+  pincode?: string;
 }
 
 export interface ServiceCategory {

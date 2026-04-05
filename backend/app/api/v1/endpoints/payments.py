@@ -9,7 +9,7 @@ from app.db.session import get_db
 from app.models.payment import Payment, PaymentStatus
 from app.models.booking import Booking, BookingStatus
 from app.models.user import User
-from app.schemas.payment import PaymentIntentCreate, PaymentConfirm, PaymentResponse, StripeIntentResponse
+from app.schemas.payment import PaymentIntentCreate, PaymentConfirm, PaymentResponse, StripeIntentResponse, OfflinePaymentCreate
 from app.core.dependencies import get_current_user
 from app.services import payment_service
 
@@ -88,6 +88,32 @@ def confirm_payment(
     booking = db.query(Booking).filter(Booking.id == payment.booking_id).first()
     if booking:
         booking.status = BookingStatus.CONFIRMED
+    db.commit()
+    db.refresh(payment)
+    return payment
+
+
+@router.post("/offline", response_model=PaymentResponse, status_code=201)
+def confirm_offline_payment(
+    data: OfflinePaymentCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Confirm a booking via COD or UPI without Stripe."""
+    booking = db.query(Booking).filter(Booking.id == data.booking_id).first()
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    if booking.customer_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    payment = Payment(
+        booking_id=booking.id,
+        user_id=current_user.id,
+        amount=booking.total_amount,
+        status=PaymentStatus.PENDING if data.method == "cod" else PaymentStatus.SUCCESS,
+    )
+    db.add(payment)
+    booking.status = BookingStatus.CONFIRMED
     db.commit()
     db.refresh(payment)
     return payment
