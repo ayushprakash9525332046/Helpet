@@ -49,7 +49,7 @@ const FAQS = [
       },
       {
         q: "I was charged twice for one booking. What do I do?",
-        a: "Email billing@apnasewa.in with your booking ID and bank statement screenshot. We'll investigate and reverse the duplicate charge within 48 hours.",
+        a: "Email billing@helpet.in with your booking ID and bank statement screenshot. We'll investigate and reverse the duplicate charge within 48 hours.",
       },
     ],
   },
@@ -64,7 +64,7 @@ const FAQS = [
       },
       {
         q: "Are the providers verified?",
-        a: "Yes. Every provider goes through Aadhaar verification, skill assessment, and a background check before being listed on ApnaSewa.",
+        a: "Yes. Every provider goes through Aadhaar verification, skill assessment, and a background check before being listed on Helpet.",
       },
       {
         q: "The provider damaged something. What now?",
@@ -102,7 +102,7 @@ const FAQS = [
       },
       {
         q: "How do I delete my account?",
-        a: "Email privacy@apnasewa.in from your registered email with the subject 'Account Deletion Request'. We'll process it within 30 days.",
+        a: "Email privacy@helpet.in from your registered email with the subject 'Account Deletion Request'. We'll process it within 30 days.",
       },
     ],
   },
@@ -130,9 +130,9 @@ const CONTACT = [
     icon: Mail,
     color: "bg-violet-100 text-violet-600",
     label: "Email Support",
-    value: "support@apnasewa.in",
+    value: "support@helpet.in",
     sub: "Reply within 24 hours",
-    href: "mailto:support@apnasewa.in",
+    href: "mailto:support@helpet.in",
   },
 ];
 
@@ -263,7 +263,7 @@ export default function HelpSupport() {
       <div className="mx-5 mt-6 bg-blue-50 rounded-2xl p-4 border border-blue-100">
         <p className="text-blue-700 text-xs font-semibold leading-relaxed text-center">
           Couldn't find your answer? Drop us a message at{" "}
-          <a href="mailto:support@apnasewa.in" className="underline">support@apnasewa.in</a>{" "}
+          <a href="mailto:support@helpet.in" className="underline">support@helpet.in</a>{" "}
           — we'll get back to you within 24 hours.
         </p>
       </div>

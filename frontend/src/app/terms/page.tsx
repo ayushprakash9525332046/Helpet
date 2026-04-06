@@ -10,10 +10,10 @@ const SECTIONS = [
     color: "bg-blue-100 text-blue-600",
     title: "1. Eligibility & Account",
     body: [
-      "You must be at least 18 years old to register and use ApnaSewa.",
+      "You must be at least 18 years old to register and use Helpet.",
       "You agree to provide accurate, current, and complete information during registration.",
       "You are responsible for maintaining the confidentiality of your login credentials.",
-      "ApnaSewa reserves the right to suspend or terminate accounts that violate these Terms.",
+      "Helpet reserves the right to suspend or terminate accounts that violate these Terms.",
       "One person may not operate multiple customer accounts to abuse promotional offers.",
     ],
   },
@@ -22,11 +22,11 @@ const SECTIONS = [
     color: "bg-violet-100 text-violet-600",
     title: "2. Services & Bookings",
     body: [
-      "ApnaSewa is a platform that connects customers with independent service professionals — we are not the service provider.",
+      "Helpet is a platform that connects customers with independent service professionals — we are not the service provider.",
       "All bookings are subject to provider availability and location coverage.",
       "You must ensure someone is present at the service address at the scheduled time.",
       "Service prices shown are inclusive of labour only unless explicitly stated otherwise (e.g., material cost extra).",
-      "ApnaSewa reserves the right to cancel or reschedule bookings due to unforeseen circumstances.",
+      "Helpet reserves the right to cancel or reschedule bookings due to unforeseen circumstances.",
     ],
   },
   {
@@ -34,7 +34,7 @@ const SECTIONS = [
     color: "bg-green-100 text-green-600",
     title: "3. Payments & Refunds",
     body: [
-      "Payments are processed securely through Razorpay. ApnaSewa does not store card or UPI details.",
+      "Payments are processed securely through Razorpay. Helpet does not store card or UPI details.",
       "Full payment is collected at the time of booking confirmation.",
       "Cancellations made more than 4 hours before the scheduled time are eligible for a 100% refund.",
       "Cancellations within 4 hours are non-refundable. No-shows by the customer attract a ₹99 convenience fee.",
@@ -46,10 +46,10 @@ const SECTIONS = [
     color: "bg-amber-100 text-amber-600",
     title: "4. Provider Conduct",
     body: [
-      "All providers on ApnaSewa are background-checked and verified; however, we do not guarantee their conduct.",
-      "If a provider behaves inappropriately, you must report it immediately via the app or at support@apnasewa.in.",
-      "Providers are independent contractors, not employees of ApnaSewa.",
-      "ApnaSewa is not liable for property damage caused by providers — each case is reviewed individually.",
+      "All providers on Helpet are background-checked and verified; however, we do not guarantee their conduct.",
+      "If a provider behaves inappropriately, you must report it immediately via the app or at support@helpet.in.",
+      "Providers are independent contractors, not employees of Helpet.",
+      "Helpet is not liable for property damage caused by providers — each case is reviewed individually.",
       "Customer reviews must be honest and based on actual experience; fake reviews will lead to account suspension.",
     ],
   },
@@ -58,10 +58,10 @@ const SECTIONS = [
     color: "bg-red-100 text-red-600",
     title: "5. Prohibited Activities",
     body: [
-      "You may not use ApnaSewa to book services for illegal or unlawful purposes.",
+      "You may not use Helpet to book services for illegal or unlawful purposes.",
       "Harassment, threats, or abusive language toward providers or support staff is strictly prohibited.",
       "Attempting to contact providers directly to bypass the platform and avoid platform fees is not allowed.",
-      "Scraping, reverse-engineering, or copying any part of the ApnaSewa platform is prohibited.",
+      "Scraping, reverse-engineering, or copying any part of the Helpet platform is prohibited.",
       "Creating fake bookings, fraudulent reviews, or misuse of referral credits will result in a permanent ban.",
     ],
   },
@@ -70,10 +70,10 @@ const SECTIONS = [
     color: "bg-teal-100 text-teal-600",
     title: "6. Liability & Governing Law",
     body: [
-      "ApnaSewa's total liability for any claim arising from platform use shall not exceed the amount paid for the relevant booking.",
+      "Helpet's total liability for any claim arising from platform use shall not exceed the amount paid for the relevant booking.",
       "We are not liable for indirect, incidental, or consequential damages.",
       "These Terms are governed by the laws of India. Disputes are subject to the exclusive jurisdiction of courts in Mumbai, Maharashtra.",
-      "For any grievance, contact: legal@apnasewa.in within 30 days of the incident.",
+      "For any grievance, contact: legal@helpet.in within 30 days of the incident.",
     ],
   },
 ];
@@ -94,7 +94,7 @@ export default function TermsAndConditions() {
           <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-3 border border-white/30">
             <FileText size={22} className="text-white" />
           </div>
-          <p className="text-blue-200 text-xs font-semibold uppercase tracking-widest mb-1">ApnaSewa</p>
+          <p className="text-blue-200 text-xs font-semibold uppercase tracking-widest mb-1">Helpet</p>
           <h1 className="text-white text-2xl font-extrabold leading-tight">Terms &amp; Conditions</h1>
           <p className="text-blue-200 text-xs mt-2">Effective from: 1 April 2026</p>
         </motion.div>
@@ -107,7 +107,7 @@ export default function TermsAndConditions() {
       >
         <p className="text-slate-600 text-sm leading-relaxed">
           Please read these Terms &amp; Conditions carefully before using the{" "}
-          <span className="font-bold text-slate-800">ApnaSewa</span> platform. By creating an account or placing
+          <span className="font-bold text-slate-800">Helpet</span> platform. By creating an account or placing
           a booking, you agree to be bound by these terms.
         </p>
       </motion.div>
@@ -140,8 +140,8 @@ export default function TermsAndConditions() {
       </div>
 
       <p className="text-center text-slate-400 text-xs mt-8 px-8 pb-2">
-        ApnaSewa Technologies Pvt. Ltd. · Mumbai, India
-        <br />Questions? Email <span className="text-blue-500">legal@apnasewa.in</span>
+        Helpet Technologies Pvt. Ltd. · Mumbai, India
+        <br />Questions? Email <span className="text-blue-500">legal@helpet.in</span>
       </p>
     </div>
   );

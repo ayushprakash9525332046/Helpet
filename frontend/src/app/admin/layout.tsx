@@ -55,7 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <ShieldCheck size={16} className="text-white" />
           </div>
           <div>
-            <p className="text-white font-bold text-sm">ApnaSewa</p>
+            <p className="text-white font-bold text-sm">Helpet</p>
             <p className="text-slate-400 text-[10px] font-medium">Admin Panel</p>
           </div>
         </div>

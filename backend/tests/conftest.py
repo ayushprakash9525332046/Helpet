@@ -2,7 +2,7 @@
 Shared test fixtures.
 
 Strategy:
-- Create a separate `apnasewa_test` postgres database.
+- Create a separate `helpet_test` postgres database.
 - Drop + recreate all tables once per session (clean slate).
 - Each test gets its own DB session; committed data is visible across fixtures.
 - The TestClient overrides get_db to use the test session factory.
@@ -26,19 +26,19 @@ from app.models import user, service, booking, payment, review, notification  # 
 # ── Test DB ─────────────────────────────────────────────────────
 
 _base_url = settings.DATABASE_URL.rsplit("/", 1)[0]
-TEST_DB_URL = _base_url + "/apnasewa_test"
+TEST_DB_URL = _base_url + "/helpet_test"
 
 
 def _ensure_test_db():
-    """Create apnasewa_test database if it doesn't exist."""
+    """Create helpet_test database if it doesn't exist."""
     admin_engine = create_engine(_base_url + "/postgres", isolation_level="AUTOCOMMIT")
     try:
         with admin_engine.connect() as conn:
             exists = conn.execute(
-                text("SELECT 1 FROM pg_database WHERE datname = 'apnasewa_test'")
+                text("SELECT 1 FROM pg_database WHERE datname = 'helpet_test'")
             ).fetchone()
             if not exists:
-                conn.execute(text("CREATE DATABASE apnasewa_test"))
+                conn.execute(text("CREATE DATABASE helpet_test"))
     finally:
         admin_engine.dispose()
 

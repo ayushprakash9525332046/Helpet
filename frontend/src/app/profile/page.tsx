@@ -155,7 +155,7 @@ export default function Profile() {
           Sign Out
         </motion.button>
 
-        <p className="text-center text-slate-400 text-xs pb-2">ApnaSewa v1.0.0 · Made with ❤️ in India</p>
+        <p className="text-center text-slate-400 text-xs pb-2">Helpet v1.0.0 · Made with ❤️ in India</p>
       </div>
 
       <BottomNav />

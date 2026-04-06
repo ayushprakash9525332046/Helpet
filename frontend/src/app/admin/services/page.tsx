@@ -4,8 +4,16 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
 import { Service, ServiceCategory } from "@/lib/types";
-import { Plus, Pencil, Trash2, X, Check, Search, ChevronDown, Clock, IndianRupee } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, Search, ChevronDown, Clock, IndianRupee, ImagePlus, Link2 } from "lucide-react";
 import toast from "react-hot-toast";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
+
+function resolveImage(url: string) {
+  if (!url) return "";
+  if (url.startsWith("http") || url.startsWith("data:")) return url;
+  return `${API_BASE}${url}`;
+}
 
 interface FormState {
   name: string;
@@ -30,6 +38,26 @@ export default function ServicesPage() {
   const [editTarget, setEditTarget] = useState<Service | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [imgUploading, setImgUploading] = useState(false);
+  const [imgTab, setImgTab] = useState<"upload" | "url">("upload");
+
+  async function handleImageFile(file: File) {
+    if (!file) return;
+    setImgUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const { data } = await api.post("/services/upload-image", fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setForm((f) => ({ ...f, image: data.url }));
+      toast.success("Image uploaded");
+    } catch {
+      toast.error("Image upload failed");
+    } finally {
+      setImgUploading(false);
+    }
+  }
 
   useEffect(() => {
     Promise.all([
@@ -97,8 +125,9 @@ export default function ServicesPage() {
         toast.success("Service updated");
       }
       closeModal();
-    } catch {
-      toast.error("Failed to save service");
+    } catch (err: any) {
+      const msg = err?.response?.data?.detail;
+      toast.error(Array.isArray(msg) ? msg[0]?.msg : msg || "Failed to save service");
     } finally {
       setSaving(false);
     }
@@ -189,8 +218,10 @@ export default function ServicesPage() {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center text-lg shrink-0">
-                      {svc.category.name === "Cleaning" ? "🧹" : svc.category.name === "Plumbing" ? "🔧" : "🏠"}
+                    <div className="w-9 h-9 bg-blue-50 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-lg">
+                      {svc.image
+                        ? <img src={resolveImage(svc.image)} alt={svc.name} className="w-full h-full object-cover" />
+                        : svc.category.name === "Cleaning" ? "🧹" : svc.category.name === "Plumbing" ? "🔧" : "🏠"}
                     </div>
                     <div className="min-w-0">
                       <p className="font-bold text-slate-800 text-sm truncate">{svc.name}</p>
@@ -322,15 +353,71 @@ export default function ServicesPage() {
                     />
                   </div>
                 </div>
+                {/* Image picker */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">Image URL</label>
-                  <input
-                    type="url"
-                    value={form.image}
-                    onChange={(e) => setForm({ ...form, image: e.target.value })}
-                    placeholder="https://..."
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
-                  />
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">Service Image</label>
+
+                  {/* Preview */}
+                  {form.image && (
+                    <div className="relative mb-2 w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                      <img src={resolveImage(form.image)} alt="preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setForm({ ...form, image: "" })}
+                        className="absolute top-2 right-2 w-6 h-6 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Tabs */}
+                  <div className="flex gap-1 bg-slate-100 rounded-xl p-1 mb-2">
+                    <button
+                      type="button"
+                      onClick={() => setImgTab("upload")}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${imgTab === "upload" ? "bg-white shadow text-slate-800" : "text-slate-500"}`}
+                    >
+                      <ImagePlus size={12} /> Upload
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImgTab("url")}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${imgTab === "url" ? "bg-white shadow text-slate-800" : "text-slate-500"}`}
+                    >
+                      <Link2 size={12} /> URL
+                    </button>
+                  </div>
+
+                  {imgTab === "upload" ? (
+                    <label className={`flex flex-col items-center justify-center gap-2 w-full py-5 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${imgUploading ? "border-blue-300 bg-blue-50" : "border-slate-200 hover:border-blue-400 hover:bg-blue-50/50"}`}>
+                      {imgUploading ? (
+                        <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          <ImagePlus size={20} className="text-slate-400" />
+                          <span className="text-xs text-slate-500 font-medium">Click to upload or drag an image</span>
+                          <span className="text-[10px] text-slate-400">JPEG, PNG, WebP — max 5 MB</span>
+                        </>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        className="hidden"
+                        disabled={imgUploading}
+                        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFile(f); e.target.value = ""; }}
+                      />
+                    </label>
+                  ) : (
+                    <input
+                      type="url"
+                      value={form.image}
+                      onChange={(e) => setForm({ ...form, image: e.target.value })}
+                      placeholder="https://example.com/image.jpg"
+                      className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                    />
+                  )}
+                  <p className="text-[10px] text-slate-400 mt-1.5">Leave empty to use an emoji icon as fallback</p>
                 </div>
               </div>
 

@@ -24,7 +24,7 @@ class ServiceCategory(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(100), nullable=False)  # "Home Cleaning"
     description = Column(Text, nullable=True)
-    icon = Column(String(500), nullable=True)  # icon image URL
+    icon = Column(Text, nullable=True)  # icon image URL or base64
     is_active = Column(Boolean, default=True)
     created_at = Column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
@@ -47,7 +47,7 @@ class Service(Base):
 
     name = Column(String(200), nullable=False)  # "Deep Clean 2BHK"
     description = Column(Text, nullable=True)
-    image = Column(String(500), nullable=True)
+    image = Column(Text, nullable=True)
     price = Column(Numeric(10, 2), nullable=False)  # 499.00
     duration_minutes = Column(Integer, default=60)  # 60 mins
     is_active = Column(Boolean, default=True)

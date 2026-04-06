@@ -6,7 +6,7 @@ from typing import List
 
 class Settings(BaseSettings):
     # App
-    APP_NAME: str = "ApnaSewa"
+    APP_NAME: str = "Helpet"
     DEBUG: bool = True
     SECRET_KEY: str
 

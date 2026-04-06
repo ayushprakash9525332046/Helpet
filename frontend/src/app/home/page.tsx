@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 import { Service, ServiceCategory } from "@/lib/types";
@@ -155,30 +155,36 @@ export default function Home() {
       {/* ── Promo Banner ───────────────────────────────── */}
       <div className="px-5 mt-5 overflow-hidden">
         <div className="relative h-28 rounded-2xl overflow-hidden">
-          {PROMO_CARDS.map((card, i) => (
-            <motion.div
-              key={i}
-              animate={{ opacity: promoIdx === i ? 1 : 0, x: promoIdx === i ? 0 : 30 }}
-              transition={{ duration: 0.5 }}
-              className={`absolute inset-0 bg-gradient-to-r ${card.gradient} rounded-2xl p-4 flex items-center justify-between`}
-            >
-              <div className="relative z-10">
-                <span className="text-[10px] font-black text-white/70 uppercase tracking-widest">{card.label}</span>
-                <p className="text-white font-extrabold text-base mt-0.5 leading-snug">{card.title}</p>
-                <Link href="/categories"
-                  className="mt-2 bg-white text-blue-600 text-xs font-black px-4 py-1.5 rounded-full inline-block shadow-md">
-                  {card.cta} →
-                </Link>
-              </div>
-              <motion.span
-                animate={{ rotate: [0, 5, -5, 0], y: [0, -5, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="text-5xl"
-              >
-                {card.emoji}
-              </motion.span>
-            </motion.div>
-          ))}
+          <AnimatePresence mode="wait" initial={false}>
+            {PROMO_CARDS.map((card, i) =>
+              promoIdx === i ? (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -40 }}
+                  transition={{ duration: 0.4 }}
+                  className={`absolute inset-0 bg-linear-to-r ${card.gradient} rounded-2xl p-4 flex items-center justify-between`}
+                >
+                  <div className="relative z-10">
+                    <span className="text-[10px] font-black text-white/70 uppercase tracking-widest">{card.label}</span>
+                    <p className="text-white font-extrabold text-base mt-0.5 leading-snug">{card.title}</p>
+                    <Link href="/categories"
+                      className="mt-2 bg-white text-blue-600 text-xs font-black px-4 py-1.5 rounded-full inline-block shadow-md">
+                      {card.cta} →
+                    </Link>
+                  </div>
+                  <motion.span
+                    animate={{ rotate: [0, 5, -5, 0], y: [0, -5, 0] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                    className="text-5xl"
+                  >
+                    {card.emoji}
+                  </motion.span>
+                </motion.div>
+              ) : null
+            )}
+          </AnimatePresence>
         </div>
       </div>
 

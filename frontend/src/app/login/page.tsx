@@ -64,7 +64,7 @@ export default function Login() {
           transition={{ delay: 0.2 }}
           className="text-white/80 text-sm font-medium z-10"
         >
-          ApnaSewa
+          Helpet
         </motion.p>
       </div>
 
@@ -147,7 +147,7 @@ export default function Login() {
         {/* Divider */}
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-slate-100" />
-          <span className="text-xs text-slate-400 font-medium">New to ApnaSewa?</span>
+          <span className="text-xs text-slate-400 font-medium">New to Helpet?</span>
           <div className="flex-1 h-px bg-slate-100" />
         </div>
 

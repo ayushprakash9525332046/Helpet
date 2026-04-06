@@ -28,6 +28,7 @@ function getIcon(name: string): string {
   return "🏠";
 }
 
+
 interface Props {
   service: Service;
   index?: number;
@@ -47,21 +48,26 @@ export default function ServiceCard({ service, index = 0 }: Props) {
       <Link href={`/services/${service.id}`}>
         <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
           {/* Image area */}
-          <div className={`relative h-36 bg-gradient-to-br ${gradient} flex items-center justify-center overflow-hidden`}>
-            {/* Pattern overlay */}
-            <div className="absolute inset-0 opacity-10">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="absolute rounded-full bg-white"
-                  style={{ width: 60 + i * 20, height: 60 + i * 20, top: `${i * 15}%`, right: `-${i * 5}%`, opacity: 0.5 }} />
-              ))}
-            </div>
-            <motion.span
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 2.5 + index * 0.3, repeat: Infinity, ease: "easeInOut" }}
-              className="text-5xl relative z-10 drop-shadow-lg"
-            >
-              {icon}
-            </motion.span>
+          <div className={`relative h-36 bg-linear-to-br ${gradient} flex items-center justify-center overflow-hidden`}>
+            {service.image ? (
+              <img src={service.image} alt={service.name} className="absolute inset-0 w-full h-full object-cover" />
+            ) : (
+              <>
+                <div className="absolute inset-0 opacity-10">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="absolute rounded-full bg-white"
+                      style={{ width: 60 + i * 20, height: 60 + i * 20, top: `${i * 15}%`, right: `-${i * 5}%`, opacity: 0.5 }} />
+                  ))}
+                </div>
+                <motion.span
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 2.5 + index * 0.3, repeat: Infinity, ease: "easeInOut" }}
+                  className="text-5xl relative z-10 drop-shadow-lg"
+                >
+                  {icon}
+                </motion.span>
+              </>
+            )}
 
             {/* Discount badge */}
             <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-blue-600 text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm">

@@ -44,16 +44,21 @@ export default function BookService() {
   const [address, setAddress] = useState(user?.address ?? "");
   const [locLoading, setLocLoading] = useState(false);
   const [notes, setNotes] = useState("");
-  const [selectedDate, setSelectedDate] = useState(0);
-  const [selectedTime, setSelectedTime] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const days = getNext7Days();
   const now = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  const todayHasSlots = TIME_SLOTS.some((t) => {
+    const [h, m] = t.split(":").map(Number);
+    return h * 60 + m > nowMins;
+  });
+  const [selectedDate, setSelectedDate] = useState(todayHasSlots ? 0 : 1);
+  const [selectedTime, setSelectedTime] = useState("");
   const availableSlots = TIME_SLOTS.filter((t) => {
     if (selectedDate !== 0) return true;
     const [h, m] = t.split(":").map(Number);
-    return h * 60 + m > now.getHours() * 60 + now.getMinutes();
+    return h * 60 + m > nowMins;
   });
 
   const fetchAddress = () => {
@@ -70,7 +75,7 @@ export default function BookService() {
           const a = data.address ?? {};
           const city    = a.city || a.town || a.village || a.county || "";
           const pincode = a.postcode || "";
-          const parts = [
+          const fullAddress = data.display_name || [
             a.amenity || a.building,
             a.house_number,
             a.road || a.pedestrian || a.footway || a.path || a.street,
@@ -79,8 +84,7 @@ export default function BookService() {
             city,
             a.state,
             pincode,
-          ].filter(Boolean);
-          const fullAddress = parts.join(", ");
+          ].filter(Boolean).join(", ");
           setAddress(fullAddress);
           // persist to profile so it's ready on next visit
           const { data: updated } = await api.put("/users/me", {
@@ -223,40 +227,38 @@ export default function BookService() {
             Select Date
           </label>
           <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
-            {days.map((d, i) => (
-              <motion.button
-                key={i}
-                onClick={() => {
-                  setSelectedDate(i);
-                  if (i === 0) {
-                    const nowMins = now.getHours() * 60 + now.getMinutes();
-                    if (selectedTime) {
-                      const [h, m] = selectedTime.split(":").map(Number);
-                      if (h * 60 + m <= nowMins) setSelectedTime("");
-                    }
-                  }
-                }}
-                whileTap={{ scale: 0.92 }}
-                className={`flex flex-col items-center min-w-14.5 py-3.5 rounded-2xl border-2 transition-all ${
-                  selectedDate === i
-                    ? "bg-blue-600 border-blue-600 shadow-lg shadow-blue-200"
-                    : "bg-white border-slate-200 shadow-sm"
-                }`}
-              >
-                <span className={`text-[10px] font-bold uppercase tracking-wide ${selectedDate === i ? "text-blue-200" : "text-slate-400"}`}>
-                  {DAY_NAMES[d.getDay()]}
-                </span>
-                <span className={`text-xl font-extrabold mt-0.5 ${selectedDate === i ? "text-white" : "text-slate-800"}`}>
-                  {d.getDate()}
-                </span>
-                <span className={`text-[10px] font-medium ${selectedDate === i ? "text-blue-200" : "text-slate-400"}`}>
-                  {MONTH_NAMES[d.getMonth()]}
-                </span>
-                {selectedDate === i && (
-                  <motion.div layoutId="dateDot" className="w-1.5 h-1.5 bg-white rounded-full mt-1" />
-                )}
-              </motion.button>
-            ))}
+            {days.map((d, i) => {
+              const disabled = i === 0 && !todayHasSlots;
+              const active = selectedDate === i;
+              return (
+                <motion.button
+                  key={i}
+                  onClick={() => { if (!disabled) { setSelectedDate(i); setSelectedTime(""); } }}
+                  whileTap={disabled ? {} : { scale: 0.92 }}
+                  disabled={disabled}
+                  className={`flex flex-col items-center min-w-14.5 py-3.5 rounded-2xl border-2 transition-all ${
+                    disabled
+                      ? "bg-slate-50 border-slate-100 opacity-40 cursor-not-allowed"
+                      : active
+                      ? "bg-blue-600 border-blue-600 shadow-lg shadow-blue-200"
+                      : "bg-white border-slate-200 shadow-sm"
+                  }`}
+                >
+                  <span className={`text-[10px] font-bold uppercase tracking-wide ${active ? "text-blue-200" : "text-slate-400"}`}>
+                    {i === 0 ? "Today" : DAY_NAMES[d.getDay()]}
+                  </span>
+                  <span className={`text-xl font-extrabold mt-0.5 ${active ? "text-white" : "text-slate-800"}`}>
+                    {d.getDate()}
+                  </span>
+                  <span className={`text-[10px] font-medium ${active ? "text-blue-200" : "text-slate-400"}`}>
+                    {MONTH_NAMES[d.getMonth()]}
+                  </span>
+                  {active && (
+                    <motion.div layoutId="dateDot" className="w-1.5 h-1.5 bg-white rounded-full mt-1" />
+                  )}
+                </motion.button>
+              );
+            })}
           </div>
         </motion.div>
 

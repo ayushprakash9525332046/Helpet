@@ -1,5 +1,5 @@
 """
-Seed script — Indian dummy data for ApnaSewa
+Seed script — Indian dummy data for Helpet
 Run: python seed.py
 """
 

@@ -21,7 +21,7 @@ const SECTIONS = [
     color: "bg-violet-100 text-violet-600",
     title: "How We Use Your Information",
     body: [
-      "To create and manage your ApnaSewa account and authenticate you securely.",
+      "To create and manage your Helpet account and authenticate you securely.",
       "To connect you with verified local service professionals (carpenters, plumbers, electricians, etc.).",
       "To send booking confirmations, OTPs, service reminders, and important updates via SMS or push notification.",
       "To process payments securely through Razorpay and issue refunds where applicable.",
@@ -36,7 +36,7 @@ const SECTIONS = [
       "All passwords are hashed using bcrypt — we never store plain-text passwords.",
       "API communication is encrypted via HTTPS/TLS.",
       "Access tokens (JWT) expire after 30 minutes and are stored only in your device's local storage.",
-      "Payment data is handled exclusively by Razorpay — ApnaSewa never stores card details.",
+      "Payment data is handled exclusively by Razorpay — Helpet never stores card details.",
       "Our servers are hosted in India and comply with IT Act 2000 data security requirements.",
     ],
   },
@@ -56,7 +56,7 @@ const SECTIONS = [
     color: "bg-pink-100 text-pink-600",
     title: "Your Rights",
     body: [
-      "You may request a copy of all personal data we hold about you by emailing privacy@apnasewa.in.",
+      "You may request a copy of all personal data we hold about you by emailing privacy@helpet.in.",
       "You can update your profile information anytime from the Edit Profile screen.",
       "You may request deletion of your account and associated data — we will process it within 30 days.",
       "You can opt out of promotional notifications from Settings → Notifications.",
@@ -67,9 +67,9 @@ const SECTIONS = [
     color: "bg-teal-100 text-teal-600",
     title: "Contact Us",
     body: [
-      "For privacy-related queries, write to: privacy@apnasewa.in",
-      "Grievance Officer: support@apnasewa.in | Response within 72 hours.",
-      "Registered Address: ApnaSewa Technologies Pvt. Ltd., Mumbai, Maharashtra – 400001.",
+      "For privacy-related queries, write to: privacy@helpet.in",
+      "Grievance Officer: support@helpet.in | Response within 72 hours.",
+      "Registered Address: Helpet Technologies Pvt. Ltd., Mumbai, Maharashtra – 400001.",
     ],
   },
 ];
@@ -90,7 +90,7 @@ export default function PrivacyPolicy() {
           <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-3 border border-white/30">
             <Shield size={22} className="text-white" />
           </div>
-          <p className="text-blue-200 text-xs font-semibold uppercase tracking-widest mb-1">ApnaSewa</p>
+          <p className="text-blue-200 text-xs font-semibold uppercase tracking-widest mb-1">Helpet</p>
           <h1 className="text-white text-2xl font-extrabold leading-tight">Privacy Policy</h1>
           <p className="text-blue-200 text-xs mt-2">Last updated: 1 April 2026</p>
         </motion.div>
@@ -102,7 +102,7 @@ export default function PrivacyPolicy() {
         className="mx-5 -mt-5 bg-white rounded-2xl p-4 shadow-lg border border-slate-100 relative z-10"
       >
         <p className="text-slate-600 text-sm leading-relaxed">
-          At <span className="font-bold text-slate-800">ApnaSewa</span>, we respect your privacy and are committed
+          At <span className="font-bold text-slate-800">Helpet</span>, we respect your privacy and are committed
           to protecting the personal information you share with us. This policy explains what data we collect,
           how we use it, and the choices you have.
         </p>
@@ -136,7 +136,7 @@ export default function PrivacyPolicy() {
       </div>
 
       <p className="text-center text-slate-400 text-xs mt-8 px-8">
-        By using ApnaSewa, you agree to this Privacy Policy.
+        By using Helpet, you agree to this Privacy Policy.
         We may update it occasionally — changes will be notified in-app.
       </p>
     </div>
