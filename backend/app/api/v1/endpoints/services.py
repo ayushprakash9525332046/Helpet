@@ -14,6 +14,7 @@ from app.schemas.service import (
     ServiceResponse,
     ServiceCategoryCreate,
     ServiceCategoryResponse,
+    CategoryReorderItem,
 )
 from app.core.dependencies import get_current_user, get_current_admin
 
@@ -25,7 +26,25 @@ router = APIRouter()
 
 @router.get("/categories", response_model=List[ServiceCategoryResponse])
 def get_categories(db: Session = Depends(get_db)):
-    return db.query(ServiceCategory).filter(ServiceCategory.is_active == True).all()
+    return (
+        db.query(ServiceCategory)
+        .filter(ServiceCategory.is_active == True)
+        .order_by(ServiceCategory.order, ServiceCategory.created_at)
+        .all()
+    )
+
+
+@router.put("/categories/reorder", status_code=204)
+def reorder_categories(
+    items: List[CategoryReorderItem],
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    for item in items:
+        db.query(ServiceCategory).filter(ServiceCategory.id == item.id).update(
+            {"order": item.order}
+        )
+    db.commit()
 
 
 @router.post("/categories", response_model=ServiceCategoryResponse, status_code=201)

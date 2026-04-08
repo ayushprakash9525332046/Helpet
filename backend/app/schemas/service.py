@@ -15,10 +15,16 @@ class ServiceCategoryResponse(BaseModel):
     name: str
     description: Optional[str] = None
     icon: Optional[str] = None
+    order: int = 0
     is_active: bool
 
     class Config:
         from_attributes = True
+
+
+class CategoryReorderItem(BaseModel):
+    id: UUID
+    order: int
 
 
 class ServiceCreate(BaseModel):

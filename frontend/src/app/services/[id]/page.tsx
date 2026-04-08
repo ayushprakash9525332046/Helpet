@@ -5,28 +5,20 @@ import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { Service } from "@/lib/types";
+import { getServiceIcon } from "@/lib/icons";
 import BackHeader from "@/components/BackHeader";
 import StarRating from "@/components/StarRating";
-import { Clock, Shield, CheckCircle2, Users, Zap, Award } from "lucide-react";
+import { Clock, Shield, CheckCircle2, Users, Zap, Award, ChevronRight, Star, Heart, Share2, MessageSquare, Timer, IndianRupee } from "lucide-react";
 
 const GRADIENTS = [
   "from-blue-500 to-indigo-600", "from-violet-500 to-purple-600",
   "from-emerald-500 to-teal-600", "from-orange-500 to-amber-600",
 ];
-const ICONS: Record<string, string> = {
-  clean:"🧹",plumb:"🔧",electr:"⚡",carp:"🪚",paint:"🎨",ac:"❄️",salon:"✂️",pest:"🐛",repair:"🔩",
-};
-function getIcon(name: string) {
-  const n = name.toLowerCase();
-  for (const [k,v] of Object.entries(ICONS)) if (n.includes(k)) return v;
-  return "🏠";
-}
-
 const PERKS = [
-  { icon: <Shield size={15} className="text-green-600"/>, text: "Background-verified professional" },
-  { icon: <Zap size={15} className="text-blue-600"/>,    text: "Instant booking confirmation" },
-  { icon: <Award size={15} className="text-amber-500"/>, text: "Satisfaction guarantee or refund" },
-  { icon: <Users size={15} className="text-violet-600"/>, text: "Post-service quality check" },
+  { icon: <Shield size={18} className="text-emerald-600"/>, text: "Background-verified professional", bg: "bg-emerald-50" },
+  { icon: <Zap size={18} className="text-blue-600"/>,    text: "Instant booking confirmation", bg: "bg-blue-50" },
+  { icon: <Award size={18} className="text-amber-500"/>, text: "Satisfaction guarantee or refund", bg: "bg-amber-50" },
+  { icon: <Users size={18} className="text-violet-600"/>, text: "Post-service quality check", bg: "bg-violet-50" },
 ];
 
 const REVIEWS = [
@@ -60,144 +52,215 @@ export default function ServiceDetail() {
   if (!service) return null;
 
   const gradient = GRADIENTS[Math.abs(service.id.charCodeAt(0) - 48) % GRADIENTS.length];
-  const icon = getIcon(service.name);
+  const IconComponent = getServiceIcon(service.name);
 
   return (
-    <div className="flex flex-col min-h-screen bg-white pb-32">
+    <div className="flex flex-col min-h-screen bg-white pb-32 md:pb-16">
       <BackHeader title="Service Details" />
 
-      {/* Hero */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
-        className={`mx-5 mt-4 rounded-3xl bg-linear-to-br ${gradient} h-52 flex items-center justify-center relative overflow-hidden shadow-xl`}
-      >
-        <div className="absolute -top-8 -right-8 w-40 h-40 bg-white/10 rounded-full" />
-        <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-white/10 rounded-full" />
-        <div className="absolute top-4 left-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
-          <span className="text-white text-xs font-semibold">{service.category.name}</span>
-        </div>
-        <motion.span
-          animate={{ y: [0, -10, 0], rotate: [0, 3, -3, 0] }}
-          transition={{ duration: 3, repeat: Infinity }}
-          className="text-7xl drop-shadow-2xl"
-        >{icon}</motion.span>
-        <div className="absolute bottom-4 right-4 bg-white/20 backdrop-blur-sm rounded-xl px-3 py-1.5 flex items-center gap-1.5">
-          <Clock size={12} className="text-white" />
-          <span className="text-white text-xs font-semibold">{service.duration_minutes} min</span>
-        </div>
-      </motion.div>
-
-      <div className="px-5 mt-5">
-        {/* Rating + title */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <StarRating rating={4.5} count={130} size={15} />
-          <h1 className="text-xl font-extrabold text-slate-800 mt-2 leading-snug">{service.name}</h1>
-        </motion.div>
-
-        {/* Price + stats row */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="flex gap-3 mt-4"
-        >
-          <div className="flex-1 bg-blue-50 rounded-2xl p-3.5 text-center border border-blue-100">
-            <p className="text-xs text-blue-500 font-semibold mb-0.5">Price</p>
-            <p className="text-blue-700 font-extrabold text-xl">₹{service.price}</p>
-            <p className="text-slate-400 text-xs line-through">₹{Math.round(service.price * 1.2)}</p>
-          </div>
-          <div className="flex-1 bg-slate-50 rounded-2xl p-3.5 text-center border border-slate-100">
-            <p className="text-xs text-slate-500 font-semibold mb-0.5">Duration</p>
-            <p className="text-slate-800 font-extrabold text-xl">{service.duration_minutes}</p>
-            <p className="text-slate-400 text-xs">minutes</p>
-          </div>
-          <div className="flex-1 bg-green-50 rounded-2xl p-3.5 text-center border border-green-100">
-            <p className="text-xs text-green-600 font-semibold mb-0.5">Rating</p>
-            <p className="text-green-700 font-extrabold text-xl">4.9</p>
-            <p className="text-slate-400 text-xs">/ 5.0</p>
-          </div>
-        </motion.div>
-
-        {/* Tabs */}
-        <div className="flex gap-1 mt-5 bg-slate-100 rounded-2xl p-1">
-          {(["about", "reviews"] as const).map((tab) => (
-            <button key={tab} onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2.5 rounded-xl text-sm font-bold capitalize transition-all ${
-                activeTab === tab ? "bg-white text-slate-800 shadow-sm" : "text-slate-400"
-              }`}>
-              {tab === "about" ? "About" : `Reviews (${REVIEWS.length})`}
-            </button>
-          ))}
-        </div>
-
-        {activeTab === "about" ? (
-          <motion.div key="about" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="mt-5 space-y-5">
-            {service.description && (
-              <div>
-                <h2 className="font-extrabold text-slate-800 mb-2">About This Service</h2>
-                <p className="text-slate-500 text-sm leading-relaxed">{service.description}</p>
+      <div className="container-fluid py-6 md:py-10 lg:py-12">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12">
+          {/* Left Column: Image & Hero */}
+          <div className="lg:col-span-7">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
+              className={`rounded-[24px] md:rounded-[32px] bg-linear-to-br ${gradient} h-64 md:h-[380px] lg:h-[420px] flex items-center justify-center relative overflow-hidden shadow-2xl shadow-blue-900/10 group`}
+            >
+              {service.image ? (
+                <img src={service.image} alt={service.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
+              ) : (
+                <>
+                  <div className="absolute -top-12 -right-12 w-48 h-48 md:w-80 md:h-80 bg-white/10 rounded-full" />
+                  <div className="absolute -bottom-10 -left-10 w-40 h-40 md:w-64 md:h-64 bg-white/10 rounded-full" />
+                  <motion.div
+                    animate={{ y: [0, -15, 0], rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="relative z-10"
+                  >
+                    <IconComponent size={120} className="text-white drop-shadow-2xl md:w-[150px] md:h-[150px]" />
+                  </motion.div>
+                </>
+              )}
+              <div className="absolute top-4 left-4 md:top-6 md:left-6 bg-white/25 backdrop-blur-xl rounded-xl px-4 py-2 md:px-5 md:py-2.5 border border-white/30 shadow-2xl">
+                <span className="text-white text-[10px] md:text-sm font-black uppercase tracking-[0.1em]">{service.category.name}</span>
               </div>
-            )}
-            <div>
-              <h2 className="font-extrabold text-slate-800 mb-3">What&apos;s Included</h2>
-              <div className="space-y-2.5">
-                {PERKS.map((p) => (
-                  <div key={p.text} className="flex items-center gap-3 bg-slate-50 rounded-xl px-4 py-3">
-                    <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm">{p.icon}</div>
-                    <span className="text-slate-700 text-sm font-medium">{p.text}</span>
-                  </div>
-                ))}
+              <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 bg-black/40 backdrop-blur-xl rounded-xl px-4 py-2 md:px-5 md:py-2.5 flex items-center gap-2 md:gap-3 border border-white/10 shadow-2xl">
+                <Clock size={16} className="text-white md:w-4 md:h-4" />
+                <span className="text-white text-xs md:text-base font-black">{service.duration_minutes} min duration</span>
               </div>
-            </div>
-            <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 mb-8 border border-blue-100">
-              <div className="flex items-center gap-2 mb-1">
-                <Zap size={15} className="text-blue-600" />
-                <span className="text-xs font-bold text-blue-700 uppercase tracking-wide">Pro Tip</span>
-              </div>
-              <p className="text-slate-600 text-sm leading-relaxed">Most customers bundle this with a deep cleaning for the best results and save up to 20%.</p>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div key="reviews" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="mt-5 space-y-3">
-            {REVIEWS.map((rv, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-                className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl bg-linear-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
-                      {rv.name[0]}
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-slate-800">{rv.name}</p>
-                      <p className="text-xs text-slate-400">{rv.time}</p>
-                    </div>
-                  </div>
-                  <StarRating rating={rv.rating} size={12} />
+            </motion.div>
+
+            {/* Price + stats row (Desktop version) */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+              className="hidden md:grid grid-cols-3 gap-4 lg:gap-6 mt-6 md:mt-8"
+            >
+              <div className="bg-white rounded-[24px] p-5 lg:p-6 text-center border border-slate-100 shadow-xl shadow-slate-200/50 group hover:border-blue-200 transition-all duration-500">
+                <div className="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                  <IndianRupee size={18} className="text-blue-600" />
                 </div>
-                <p className="text-slate-600 text-sm leading-relaxed">{rv.text}</p>
+                <p className="text-[10px] lg:text-xs text-slate-400 font-black uppercase tracking-widest mb-1">Base Price</p>
+                <p className="text-slate-800 font-black text-xl lg:text-2xl">₹{service.price}</p>
+                <p className="text-slate-400 text-[10px] lg:text-xs line-through mt-0.5">₹{Math.round(service.price * 1.2)}</p>
+              </div>
+              <div className="bg-white rounded-[24px] p-5 lg:p-6 text-center border border-slate-100 shadow-xl shadow-slate-200/50 group hover:border-blue-200 transition-all duration-500">
+                <div className="w-10 h-10 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                  <Timer size={18} className="text-slate-600" />
+                </div>
+                <p className="text-[10px] lg:text-xs text-slate-400 font-black uppercase tracking-widest mb-1">Est. Time</p>
+                <p className="text-slate-800 font-black text-xl lg:text-2xl">{service.duration_minutes}</p>
+                <p className="text-slate-400 text-[10px] lg:text-xs mt-0.5">minutes</p>
+              </div>
+              <div className="bg-white rounded-[24px] p-5 lg:p-6 text-center border border-slate-100 shadow-xl shadow-slate-200/50 group hover:border-blue-200 transition-all duration-500">
+                <div className="w-10 h-10 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                  <Star size={18} className="text-amber-500" fill="currentColor" />
+                </div>
+                <p className="text-[10px] lg:text-xs text-slate-400 font-black uppercase tracking-widest mb-1">Avg Rating</p>
+                <p className="text-slate-800 font-black text-xl lg:text-2xl">4.9</p>
+                <p className="text-green-600 text-[10px] font-black uppercase tracking-widest mt-0.5">Verified</p>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right Column: Details & Booking */}
+          <div className="lg:col-span-5 flex flex-col">
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              <div className="flex items-center gap-2 mb-3 md:mb-4">
+                <StarRating rating={4.5} count={130} size={14} />
+                <span className="text-slate-400 text-xs md:text-sm font-bold">• 1.2k+ bookings</span>
+              </div>
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-slate-800 leading-tight tracking-tight mb-6 md:mb-8">{service.name}</h1>
+
+              {/* Desktop Only Booking Button */}
+              <div className="hidden md:block mb-8">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => router.push(`/book/${service.id}`)}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-[20px] shadow-2xl shadow-blue-200 text-lg transition-all flex items-center justify-center gap-3"
+                >
+                  Book this Service Now <ChevronRight size={20} />
+                </motion.button>
+              </div>
+            </motion.div>
+
+            {/* Mobile Only Price Row */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+              className="flex gap-4 md:hidden"
+            >
+              <div className="flex-1 bg-white rounded-2xl p-4 text-center border border-slate-100 shadow-sm">
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <IndianRupee size={14} className="text-blue-600" />
+                </div>
+                <p className="text-[9px] text-slate-400 font-black uppercase tracking-wider mb-1">Price</p>
+                <p className="text-slate-800 font-black text-xl">₹{service.price}</p>
+              </div>
+              <div className="flex-1 bg-white rounded-2xl p-4 text-center border border-slate-100 shadow-sm">
+                <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <Timer size={14} className="text-slate-600" />
+                </div>
+                <p className="text-[9px] text-slate-400 font-black uppercase tracking-wider mb-1">Time</p>
+                <p className="text-slate-800 font-black text-xl">{service.duration_minutes}m</p>
+              </div>
+              <div className="flex-1 bg-white rounded-2xl p-4 text-center border border-slate-100 shadow-sm">
+                <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <Star size={14} className="text-amber-500" fill="currentColor" />
+                </div>
+                <p className="text-[9px] text-slate-400 font-black uppercase tracking-wider mb-1">Rating</p>
+                <p className="text-slate-800 font-black text-xl">4.9</p>
+              </div>
+            </motion.div>
+
+            {/* Tabs */}
+            <div className="flex gap-1.5 mt-8 md:mt-10 bg-slate-100/80 rounded-2xl p-1.5">
+              {(["about", "reviews"] as const).map((tab) => (
+                <button key={tab} onClick={() => setActiveTab(tab)}
+                  className={`flex-1 py-3 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-lg font-black capitalize transition-all duration-300 ${
+                    activeTab === tab ? "bg-white text-blue-600 shadow-xl shadow-slate-200/50" : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
+                  }`}>
+                  {tab === "about" ? "About" : `Reviews (${REVIEWS.length})`}
+                </button>
+              ))}
+            </div>
+
+            {activeTab === "about" ? (
+              <motion.div key="about" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="mt-8 md:mt-10 space-y-8 md:space-y-10">
+                {service.description && (
+                  <div>
+                    <h2 className="font-black text-slate-800 text-lg md:text-2xl mb-3 md:mb-4 tracking-tight">Service Description</h2>
+                    <p className="text-slate-500 text-sm md:text-lg leading-relaxed md:leading-relaxed font-medium">{service.description}</p>
+                  </div>
+                )}
+                <div>
+                  <h2 className="font-black text-slate-800 text-lg md:text-2xl mb-4 md:mb-6 tracking-tight">What&apos;s Included</h2>
+                  <div className="grid grid-cols-1 gap-4 md:gap-5">
+                    {PERKS.map((p) => (
+                      <div key={p.text} className="flex items-center gap-4 md:gap-6 bg-white rounded-2xl md:rounded-2xl px-5 py-4 md:px-8 md:py-6 border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-100 transition-all group">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-50 rounded-xl flex items-center justify-center shadow-inner shrink-0 group-hover:bg-blue-50 transition-colors">{p.icon}</div>
+                        <span className="text-slate-700 text-sm md:text-lg font-black tracking-tight">{p.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="bg-linear-to-br from-blue-600 to-indigo-700 rounded-[28px] md:rounded-[32px] p-6 md:p-8 text-white relative overflow-hidden shadow-2xl shadow-blue-200 group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000" />
+                  <div className="flex items-center gap-3 mb-3 relative z-10">
+                    <div className="w-8 h-8 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center">
+                      <Zap size={16} className="text-blue-100" />
+                    </div>
+                    <span className="text-[10px] md:text-sm font-black uppercase tracking-[0.2em] text-blue-100">Expert Tip</span>
+                  </div>
+                  <p className="text-white text-sm md:text-xl font-black leading-snug relative z-10 tracking-tight">
+                    Book this service during weekdays to get a complimentary express cleaning for one additional room!
+                  </p>
+                </div>
               </motion.div>
-            ))}
-          </motion.div>
-        )}
+            ) : (
+              <motion.div key="reviews" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="mt-8 md:mt-10 space-y-5 md:space-y-6">
+                {REVIEWS.map((rv, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
+                    className="bg-white rounded-[24px] p-5 md:p-8 border border-slate-100 shadow-sm hover:shadow-2xl transition-all">
+                    <div className="flex items-center justify-between mb-4 md:mb-6">
+                      <div className="flex items-center gap-3 md:gap-5">
+                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-lg md:text-2xl shadow-lg">
+                          {rv.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="text-slate-800 font-black text-sm md:text-xl tracking-tight">{rv.name}</p>
+                          <p className="text-slate-400 text-[10px] md:text-sm font-bold mt-0.5 uppercase tracking-widest">{rv.time}</p>
+                        </div>
+                      </div>
+                      <div className="bg-amber-50 px-2.5 py-1 md:px-4 md:py-2 rounded-lg border border-amber-100 flex items-center gap-1">
+                        <StarRating rating={rv.rating} count={0} size={12} />
+                      </div>
+                    </div>
+                    <p className="text-slate-500 text-xs md:text-lg leading-relaxed font-medium italic">&quot;{rv.text}&quot;</p>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* CTA */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/90 backdrop-blur-xl border-t border-slate-100 px-5 py-4">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <p className="text-xs text-slate-400">Total Amount</p>
+      {/* Mobile CTA (Fixed bottom) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 px-5 py-5 z-50">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          <div className="shrink-0">
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Total Price</p>
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-extrabold text-slate-800">₹{service.price}</span>
-              <span className="text-slate-300 text-sm line-through">₹{Math.round(service.price * 1.2)}</span>
+              <span className="text-xl font-black text-slate-800">₹{service.price}</span>
             </div>
           </div>
-          <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full">✓ Satisfaction Guaranteed</span>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={() => router.push(`/book/${service.id}`)}
+            className="flex-1 bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-blue-200 text-sm"
+          >
+            Book Now →
+          </motion.button>
         </div>
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={() => router.push(`/book/${service.id}`)}
-          className="btn-primary"
-        >
-          Book This Service →
-        </motion.button>
       </div>
     </div>
   );

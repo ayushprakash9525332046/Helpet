@@ -20,8 +20,25 @@ export default function PaymentsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
-    api.get("/admin/payments").then((r) => setPayments(r.data)).finally(() => setLoading(false));
+    fetchPayments();
   }, []);
+
+  const fetchPayments = () => {
+    setLoading(true);
+    api.get("/admin/payments").then((r) => {
+      const sorted = [...r.data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      setPayments(sorted);
+    }).finally(() => setLoading(false));
+  };
+
+  const handleUpdateStatus = async (id: string, status: string) => {
+    try {
+      await api.put(`/admin/payments/${id}/status?new_status=${status}`);
+      fetchPayments();
+    } catch {
+      alert("Failed to update status");
+    }
+  };
 
   const totalRevenue = payments
     .filter((p) => p.status === "success")
@@ -87,7 +104,7 @@ export default function PaymentsPage() {
                   <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wide">Booking ID</th>
                   <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wide">Amount</th>
                   <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wide">Status</th>
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wide">Stripe ID</th>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wide">Transaction ID</th>
                   <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wide">Date</th>
                 </tr>
               </thead>
@@ -103,12 +120,18 @@ export default function PaymentsPage() {
                       className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
                     >
                       <td className="px-5 py-4">
-                        <p className="font-mono text-xs text-slate-500 truncate max-w-28" title={payment.id}>
+                        <p
+                          className="font-mono text-xs text-slate-500 truncate max-w-28"
+                          title={payment.id}
+                        >
                           {payment.id.slice(0, 8)}…
                         </p>
                       </td>
                       <td className="px-5 py-4">
-                        <p className="font-mono text-xs text-slate-500 truncate max-w-28" title={payment.booking_id}>
+                        <p
+                          className="font-mono text-xs text-slate-500 truncate max-w-28"
+                          title={payment.booking_id}
+                        >
                           {payment.booking_id.slice(0, 8)}…
                         </p>
                       </td>
@@ -119,19 +142,34 @@ export default function PaymentsPage() {
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${sc.badge}`}>
-                          {sc.label}
-                        </span>
+                        <select
+                          value={payment.status}
+                          onChange={(e) =>
+                            handleUpdateStatus(payment.id, e.target.value)
+                          }
+                          className={`text-xs font-semibold px-2 py-1 rounded-full border-none outline-none cursor-pointer transition-colors ${sc.badge}mr-1`}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="success">Success</option>
+                          <option value="failed">Failed</option>
+                          <option value="refunded">Refunded</option>
+                        </select>
                       </td>
                       <td className="px-5 py-4">
                         <p className="font-mono text-xs text-slate-400 truncate max-w-32">
-                          {(payment as Payment & { stripe_payment_intent_id?: string }).stripe_payment_intent_id ?? "—"}
+                          {(payment as Payment & { transaction_id?: string })
+                            .transaction_id ?? "—"}
                         </p>
                       </td>
                       <td className="px-5 py-4 text-xs text-slate-500">
-                        {new Date(payment.created_at).toLocaleDateString("en-IN", {
-                          day: "numeric", month: "short", year: "numeric",
-                        })}
+                        {new Date(payment.created_at).toLocaleDateString(
+                          "en-IN",
+                          {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          },
+                        )}
                       </td>
                     </motion.tr>
                   );

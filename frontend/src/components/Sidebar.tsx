@@ -1,0 +1,97 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import { Home, Grid3X3, CalendarCheck, Bell, User, LogOut, Settings } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+
+const tabs = [
+  { href: "/home",          icon: Home,          label: "Home" },
+  { href: "/categories",    icon: Grid3X3,       label: "Services" },
+  { href: "/bookings",      icon: CalendarCheck, label: "Bookings" },
+  { href: "/notifications", icon: Bell,          label: "Notifications" },
+  { href: "/profile",       icon: User,          label: "Profile" },
+];
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const { user, logout } = useAuth();
+
+  return (
+    <div className="flex flex-col h-full bg-white border-r border-slate-100">
+      {/* Brand / Logo */}
+      <div className="px-5 py-6">
+        <Link href="/home" className="flex items-center gap-2.5">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-200">
+            <span className="text-white font-black text-lg italic">AS</span>
+          </div>
+          <div>
+            <h1 className="font-black text-lg text-slate-800 tracking-tight leading-none">ApnaSewa</h1>
+            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Home Services</p>
+          </div>
+        </Link>
+      </div>
+
+      {/* Nav Links */}
+      <nav className="flex-1 px-3 space-y-0.5">
+        {tabs.map(({ href, icon: Icon, label }) => {
+          const active = pathname === href || pathname.startsWith(href + "/");
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+                active 
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-200" 
+                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+              }`}
+            >
+              <Icon 
+                size={18} 
+                className={active ? "text-white" : "text-slate-400 group-hover:text-blue-600"} 
+                strokeWidth={active ? 2.5 : 2}
+              />
+              <span className="font-bold text-[13px] tracking-wide">{label}</span>
+              {active && (
+                <motion.div 
+                  layoutId="sidebarActive" 
+                  className="ml-auto w-1 h-1 bg-white rounded-full"
+                />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* User Section */}
+      <div className="p-3 mt-auto border-t border-slate-50">
+        <div className="bg-slate-50 rounded-xl p-3">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-blue-600 font-bold text-xs shadow-sm">
+              {user?.full_name?.charAt(0).toUpperCase() || "U"}
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-slate-800 truncate">{user?.full_name || "User"}</p>
+              <p className="text-[9px] text-slate-400 font-semibold truncate">{user?.email}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-1.5">
+            <Link 
+              href="/profile/edit"
+              className="flex items-center justify-center gap-1.5 py-1.5 bg-white rounded-lg text-[10px] font-bold text-slate-600 hover:text-blue-600 transition-colors shadow-sm"
+            >
+              <Settings size={12} /> Settings
+            </Link>
+            <button 
+              onClick={logout}
+              className="flex items-center justify-center gap-1.5 py-1.5 bg-white rounded-lg text-[10px] font-bold text-red-500 hover:bg-red-50 transition-colors shadow-sm"
+            >
+              <LogOut size={12} /> Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

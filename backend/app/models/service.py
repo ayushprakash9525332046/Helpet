@@ -25,6 +25,7 @@ class ServiceCategory(Base):
     name = Column(String(100), nullable=False)  # "Home Cleaning"
     description = Column(Text, nullable=True)
     icon = Column(Text, nullable=True)  # icon image URL or base64
+    order = Column(Integer, default=0, nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)

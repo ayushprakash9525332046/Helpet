@@ -2,14 +2,17 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1",
-  timeout: 30000, // 30 s — payment routes call Stripe externally
+  timeout: 30000,
 });
 
-// Attach token to every request
+// Attach token + disable browser HTTP cache for GET requests
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("token");
     if (token) config.headers.Authorization = `Bearer ${token}`;
+  }
+  if (config.method?.toLowerCase() === "get") {
+    config.params = { ...config.params, _t: Date.now() };
   }
   return config;
 });

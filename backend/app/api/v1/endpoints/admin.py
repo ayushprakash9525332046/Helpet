@@ -114,3 +114,18 @@ def list_payments(
     admin: User = Depends(get_current_admin),
 ):
     return db.query(Payment).all()
+
+
+@router.put("/payments/{payment_id}/status")
+def update_payment_status(
+    payment_id: UUID,
+    new_status: PaymentStatus,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    payment = db.query(Payment).filter(Payment.id == payment_id).first()
+    if not payment:
+        raise HTTPException(status_code=404, detail="Payment not found")
+    payment.status = new_status
+    db.commit()
+    return {"message": f"Payment status updated to {new_status.value}"}

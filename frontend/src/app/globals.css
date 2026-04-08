@@ -1,37 +1,63 @@
 @import "tailwindcss";
 
+@theme {
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
 :root {
   --primary: #2563EB;
   --primary-dark: #1D4ED8;
+  
+  /* Responsive Spacing Scale */
+  --space-xs: clamp(0.2rem, 0.3vw, 0.4rem);
+  --space-sm: clamp(0.4rem, 0.6vw, 0.6rem);
+  --space-md: clamp(0.6rem, 1vw, 0.8rem);
+  --space-lg: clamp(0.8rem, 1.5vw, 1.25rem);
+  --space-xl: clamp(1.2rem, 2.5vw, 2rem);
+
+  /* Responsive Typography */
+  --text-xs: clamp(0.6rem, 0.6rem + 0.05vw, 0.65rem);
+  --text-sm: clamp(0.7rem, 0.7rem + 0.1vw, 0.8rem);
+  --text-base: clamp(0.85rem, 0.85rem + 0.1vw, 0.95rem);
+  --text-lg: clamp(0.95rem, 0.95rem + 0.15vw, 1.05rem);
+  --text-xl: clamp(1.1rem, 1.1rem + 0.2vw, 1.25rem);
+  --text-2xl: clamp(1.25rem, 1.25rem + 0.3vw, 1.5rem);
+  --text-3xl: clamp(1.4rem, 1.4rem + 0.5vw, 2rem);
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari and Opera */
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
-  background: #F1F5F9;
+  background: #F8FAFC;
   color: #0F172A;
   -webkit-font-smoothing: antialiased;
-}
-
-/* Centers mobile UI on desktop */
-.app-shell {
-  max-width: 430px;
-  min-height: 100svh;
-  margin: 0 auto;
-  background: #ffffff;
-  position: relative;
   overflow-x: hidden;
-  box-shadow: 0 0 60px rgba(0,0,0,0.12);
 }
 
-
-html { scroll-behavior: smooth; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+/* Responsive Container */
+.container-fluid {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
 
 /* ── Custom Animations ─────────────────────────────────────── */
 @keyframes fadeUp {

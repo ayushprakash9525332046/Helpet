@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Service } from "@/lib/types";
 import BackHeader from "@/components/BackHeader";
 import toast from "react-hot-toast";
-import { MapPin, Calendar, Clock, FileText, CheckCircle2, Sparkles, LocateFixed } from "lucide-react";
+import { MapPin, Calendar, Clock, FileText, CheckCircle2, Sparkles, LocateFixed, ChevronRight } from "lucide-react";
 
 const TIME_SLOTS = ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
@@ -154,204 +154,192 @@ export default function BookService() {
   const icon = getIcon(service.name);
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 pb-40">
+    <div className="flex flex-col min-h-screen bg-slate-50 pb-20 md:pb-24">
       <BackHeader title="Book Service" />
 
-      {/* Service summary */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
-        className="mx-5 mt-4"
-      >
-        <div className={`rounded-3xl bg-linear-to-br ${gradient} p-4 flex items-center gap-4 shadow-xl relative overflow-hidden`}>
-          <div className="absolute -top-6 -right-6 w-28 h-28 bg-white/10 rounded-full" />
-          <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-3xl shrink-0">
-            {icon}
+      <div className="container-fluid pt-6 md:pt-10 pb-0">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-12">
+          
+          {/* Service summary - Left on Desktop */}
+          <div className="lg:col-span-5 flex flex-col gap-5">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 }}
+              className={`rounded-[24px] bg-linear-to-br ${gradient} p-6 md:p-10 flex flex-col md:flex-row lg:flex-col items-center md:items-start gap-6 md:gap-8 shadow-2xl relative overflow-hidden group`}
+            >
+              <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full group-hover:scale-150 transition-transform duration-1000" />
+              <div className="w-20 h-20 md:w-28 md:h-28 bg-white/20 backdrop-blur-md rounded-[24px] flex items-center justify-center text-4xl md:text-6xl shadow-xl relative z-10">
+                {icon}
+              </div>
+              <div className="flex-1 relative z-10 text-center md:text-left">
+                <h2 className="font-black text-white text-xl md:text-3xl lg:text-4xl leading-tight tracking-tight mb-2 md:mb-3">{service.name}</h2>
+                <p className="text-white/80 text-[10px] md:text-lg font-bold uppercase tracking-widest">{service.category.name}</p>
+                <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 md:gap-4 mt-6 md:mt-8">
+                  <span className="bg-white/25 backdrop-blur-md text-white text-xs md:text-xl font-black px-4 py-1.5 md:px-8 md:py-3 rounded-xl shadow-lg border border-white/20">₹{service.price}</span>
+                  <span className="bg-white/25 backdrop-blur-md text-white text-xs md:text-xl font-black px-4 py-1.5 md:px-8 md:py-3 rounded-xl shadow-lg border border-white/20 flex items-center gap-2">
+                    <Clock size={16} className="md:w-5 md:h-5" />{service.duration_minutes} min
+                  </span>
+                </div>
+              </div>
+              <div className="absolute top-6 right-6 md:top-8 md:right-8 bg-green-400/90 backdrop-blur-md rounded-xl px-4 py-2 md:px-5 md:py-2.5 flex items-center gap-2 shadow-xl border border-white/30">
+                <CheckCircle2 size={12} className="text-white md:w-4 md:h-4" />
+                <span className="text-white text-[9px] md:text-base font-black uppercase tracking-widest">Available</span>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
+              className="hidden lg:flex flex-col gap-3 bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm"
+            >
+              <h3 className="text-slate-800 font-black text-lg mb-1">Booking Benefits</h3>
+              {[
+                { icon: <Sparkles size={16} className="text-blue-600" />, text: "Professional & Verified Staff" },
+                { icon: <CheckCircle2 size={16} className="text-green-600" />, text: "Quality Service Guaranteed" },
+                { icon: <Clock size={16} className="text-amber-500" />, text: "On-time Arrival Commitment" },
+              ].map((b, i) => (
+                <div key={i} className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-50">
+                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">{b.icon}</div>
+                  <span className="text-slate-700 font-bold text-sm">{b.text}</span>
+                </div>
+              ))}
+            </motion.div>
           </div>
-          <div className="flex-1 relative z-10">
-            <p className="font-extrabold text-white text-base leading-snug line-clamp-1">{service.name}</p>
-            <p className="text-white/70 text-xs mt-0.5">{service.category.name}</p>
-            <div className="flex items-center gap-2 mt-1.5">
-              <span className="bg-white/20 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full">₹{service.price}</span>
-              <span className="bg-white/20 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                <Clock size={10} />{service.duration_minutes} min
-              </span>
-            </div>
-          </div>
-          <div className="bg-green-400/90 rounded-xl px-3 py-1.5 flex items-center gap-1 relative z-10">
-            <CheckCircle2 size={12} className="text-white" />
-            <span className="text-white text-[10px] font-bold">Available</span>
+
+          {/* Form - Right on Desktop */}
+          <div className="lg:col-span-7 flex flex-col gap-6 md:gap-8">
+            {/* Address */}
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              <div className="flex items-center justify-between mb-4 md:mb-5">
+                <label className="flex items-center gap-2 md:gap-3 text-sm md:text-lg font-black text-slate-800 tracking-tight">
+                  <div className="w-7 h-7 md:w-10 md:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <MapPin size={14} className="text-blue-600 md:w-5 md:h-5" />
+                  </div>
+                  Service Address
+                </label>
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={fetchAddress}
+                  disabled={locLoading}
+                  className="flex items-center gap-1.5 text-blue-600 text-[9px] md:text-sm font-black bg-blue-50 hover:bg-blue-100 px-3 py-1.5 md:px-5 md:py-2.5 rounded-lg transition-all"
+                >
+                  {locLoading ? <span className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" /> : <LocateFixed size={12} className="md:w-4 md:h-4" />}
+                  {locLoading ? "Locating..." : "Auto-detect"}
+                </motion.button>
+              </div>
+              <textarea
+                placeholder="Enter complete address where service is needed (house no, street, area, city)..."
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full bg-white rounded-xl md:rounded-[24px] px-5 py-4 md:px-7 md:py-6 text-sm md:text-lg font-bold text-slate-700 border-2 border-slate-50 focus:border-blue-100 focus:bg-blue-50/10 outline-none transition-all min-h-[100px] md:min-h-[140px] shadow-sm hover:shadow-md resize-none"
+              />
+            </motion.div>
+
+            {/* Date Selection */}
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+              <label className="flex items-center gap-2 md:gap-3 text-sm md:text-lg font-black text-slate-800 tracking-tight mb-4 md:mb-5">
+                <div className="w-7 h-7 md:w-10 md:h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Calendar size={14} className="text-purple-600 md:w-5 md:h-5" />
+                </div>
+                Select Service Date
+              </label>
+              <div className="flex gap-3 md:gap-4 overflow-x-auto no-scrollbar pb-2 px-1">
+                {days.map((d, i) => {
+                  const disabled = i === 0 && !todayHasSlots;
+                  const active = selectedDate === i;
+                  return (
+                    <motion.button
+                      key={i}
+                      whileHover={disabled ? {} : { scale: 1.05 }}
+                      whileTap={disabled ? {} : { scale: 0.95 }}
+                      onClick={() => { if (!disabled) { setSelectedDate(i); setSelectedTime(""); } }}
+                      disabled={disabled}
+                      className={`flex flex-col items-center min-w-[64px] md:min-w-[90px] py-4 md:py-6 rounded-xl md:rounded-[24px] border-2 transition-all duration-300 ${
+                        disabled ? "opacity-40 grayscale cursor-not-allowed border-slate-50" :
+                        active ? "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-200" : "bg-white border-slate-50 text-slate-500 hover:border-blue-100 hover:bg-blue-50/30"
+                      }`}
+                    >
+                      <span className={`text-[9px] md:text-xs font-black uppercase tracking-widest mb-1 md:mb-2 ${active ? "text-blue-100" : "text-slate-400"}`}>{i === 0 ? "Today" : DAY_NAMES[d.getDay()]}</span>
+                      <span className="text-base md:text-2xl font-black">{d.getDate()}</span>
+                      <span className={`text-[8px] md:text-[10px] font-bold mt-1 md:mt-2 ${active ? "text-blue-200" : "text-slate-300"}`}>{MONTH_NAMES[d.getMonth()]}</span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </motion.div>
+
+            {/* Time Selection */}
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+              <label className="flex items-center gap-2 md:gap-3 text-sm md:text-lg font-black text-slate-800 tracking-tight mb-4 md:mb-5">
+                <div className="w-7 h-7 md:w-10 md:h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                  <Clock size={14} className="text-amber-600 md:w-5 md:h-5" />
+                </div>
+                Select Time Slot
+              </label>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 md:gap-4">
+                {availableSlots.map((t) => {
+                  const active = selectedTime === t;
+                  return (
+                    <motion.button
+                      key={t}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setSelectedTime(t)}
+                      className={`py-3 md:py-4 rounded-xl md:rounded-2xl border-2 text-[10px] md:text-base font-black transition-all duration-300 ${
+                        active ? "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-200" : "bg-white border-slate-50 text-slate-500 hover:border-blue-100 hover:bg-blue-50/30"
+                      }`}
+                    >
+                      {t} {parseInt(t) < 12 ? "AM" : "PM"}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </motion.div>
+
+            {/* Notes */}
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+              <label className="flex items-center gap-2 md:gap-3 text-sm md:text-lg font-black text-slate-800 tracking-tight mb-4 md:mb-5">
+                <div className="w-7 h-7 md:w-10 md:h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <FileText size={14} className="text-green-600 md:w-5 md:h-5" />
+                </div>
+                Additional Instructions
+              </label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Any specific instructions for the professional? (e.g. Landmark, pet info...)"
+                className="w-full bg-white rounded-xl md:rounded-[24px] px-5 py-4 md:px-7 md:py-6 text-sm md:text-lg font-bold text-slate-700 border-2 border-slate-50 focus:border-blue-100 focus:bg-blue-50/10 outline-none transition-all min-h-[80px] md:min-h-[120px] shadow-sm hover:shadow-md resize-none"
+              />
+            </motion.div>
           </div>
         </div>
-      </motion.div>
-
-      <div className="px-5 mt-5 flex flex-col gap-5">
-        {/* Address */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <div className="flex items-center justify-between mb-2.5">
-            <label className="flex items-center gap-2 text-sm font-bold text-slate-700">
-              <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
-                <MapPin size={13} className="text-blue-600" />
-              </div>
-              Service Address
-            </label>
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.95 }}
-              onClick={fetchAddress}
-              disabled={locLoading}
-              className="flex items-center gap-1.5 text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-xl disabled:opacity-60"
-            >
-              {locLoading ? (
-                <span className="w-3 h-3 border border-blue-300 border-t-blue-600 rounded-full animate-spin" />
-              ) : (
-                <LocateFixed size={12} />
-              )}
-              Use my location
-            </motion.button>
-          </div>
-          <textarea
-            placeholder="Enter your full address (house no, street, area, city)"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            rows={3}
-            className="w-full px-4 py-3.5 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 resize-none transition shadow-sm"
-          />
-        </motion.div>
-
-        {/* Date */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-3">
-            <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Calendar size={13} className="text-purple-600" />
-            </div>
-            Select Date
-          </label>
-          <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
-            {days.map((d, i) => {
-              const disabled = i === 0 && !todayHasSlots;
-              const active = selectedDate === i;
-              return (
-                <motion.button
-                  key={i}
-                  onClick={() => { if (!disabled) { setSelectedDate(i); setSelectedTime(""); } }}
-                  whileTap={disabled ? {} : { scale: 0.92 }}
-                  disabled={disabled}
-                  className={`flex flex-col items-center min-w-14.5 py-3.5 rounded-2xl border-2 transition-all ${
-                    disabled
-                      ? "bg-slate-50 border-slate-100 opacity-40 cursor-not-allowed"
-                      : active
-                      ? "bg-blue-600 border-blue-600 shadow-lg shadow-blue-200"
-                      : "bg-white border-slate-200 shadow-sm"
-                  }`}
-                >
-                  <span className={`text-[10px] font-bold uppercase tracking-wide ${active ? "text-blue-200" : "text-slate-400"}`}>
-                    {i === 0 ? "Today" : DAY_NAMES[d.getDay()]}
-                  </span>
-                  <span className={`text-xl font-extrabold mt-0.5 ${active ? "text-white" : "text-slate-800"}`}>
-                    {d.getDate()}
-                  </span>
-                  <span className={`text-[10px] font-medium ${active ? "text-blue-200" : "text-slate-400"}`}>
-                    {MONTH_NAMES[d.getMonth()]}
-                  </span>
-                  {active && (
-                    <motion.div layoutId="dateDot" className="w-1.5 h-1.5 bg-white rounded-full mt-1" />
-                  )}
-                </motion.button>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Time */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-3">
-            <div className="w-6 h-6 bg-amber-100 rounded-lg flex items-center justify-center">
-              <Clock size={13} className="text-amber-600" />
-            </div>
-            Select Time
-          </label>
-          <div className="grid grid-cols-3 gap-2.5">
-            {availableSlots.map((t, i) => (
-              <motion.button
-                key={t}
-                onClick={() => setSelectedTime(t)}
-                whileTap={{ scale: 0.92 }}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 + i * 0.03 }}
-                className={`py-3 rounded-2xl border-2 text-sm font-bold transition-all ${
-                  selectedTime === t
-                    ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-200"
-                    : "bg-white text-slate-600 border-slate-200 shadow-sm"
-                }`}
-              >
-                {t} {parseInt(t) < 12 ? "AM" : "PM"}
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Notes */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-          <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2.5">
-            <div className="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
-              <FileText size={13} className="text-green-600" />
-            </div>
-            Special Instructions
-            <span className="text-slate-400 font-normal text-xs ml-auto">Optional</span>
-          </label>
-          <textarea
-            placeholder="Any specific instructions for the professional..."
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={2}
-            className="w-full px-4 py-3.5 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 resize-none transition shadow-sm"
-          />
-        </motion.div>
       </div>
 
-      {/* CTA */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/90 backdrop-blur-xl border-t border-slate-100 px-5 py-4 shadow-xl">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <p className="text-xs text-slate-400 font-medium">Grand Total</p>
-            <div className="flex items-baseline gap-2">
-              <span className="text-xl font-extrabold text-slate-800">₹{service.price}</span>
-              <span className="text-slate-300 text-sm line-through">₹{Math.round(service.price * 1.2)}</span>
+      {/* Fixed bottom bar for desktop / Floating for mobile */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-100 px-5 py-4 md:px-8 md:py-6 z-[100] shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-10">
+          <div className="flex flex-col shrink-0">
+            <p className="text-[10px] md:text-xs text-slate-400 font-black uppercase tracking-[0.15em] mb-0.5 md:mb-1">Final Amount</p>
+            <div className="flex items-baseline gap-2 md:gap-3">
+              <span className="text-xl md:text-4xl font-black text-slate-900 tracking-tight">₹{service.price}</span>
+              <span className="hidden md:inline text-slate-300 text-lg font-bold line-through decoration-slate-300/50">₹{Math.round(service.price * 1.2)}</span>
             </div>
           </div>
-          <AnimatePresence>
-            {selectedTime ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
-                className="text-right bg-blue-50 rounded-xl px-3 py-2"
-              >
-                <p className="text-[10px] text-blue-500 font-bold uppercase tracking-wide">Scheduled</p>
-                <p className="text-xs font-bold text-blue-700">
-                  {days[selectedDate].getDate()} {MONTH_NAMES[days[selectedDate].getMonth()]} · {selectedTime} {parseInt(selectedTime) < 12 ? "AM" : "PM"}
-                </p>
-              </motion.div>
+          
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleBook}
+            disabled={loading}
+            className="flex-1 md:flex-none md:min-w-[340px] bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-black py-4 md:py-5 rounded-2xl md:rounded-[24px] shadow-xl shadow-blue-600/20 transition-all flex items-center justify-center gap-3 text-sm md:text-xl"
+          >
+            {loading ? (
+              <span className="w-5 h-5 md:w-6 md:h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              <motion.div className="flex items-center gap-1.5 bg-amber-50 rounded-xl px-3 py-2">
-                <Sparkles size={12} className="text-amber-500" />
-                <span className="text-xs font-semibold text-amber-600">Pick a time</span>
-              </motion.div>
+              <>Confirm Booking <ChevronRight size={18} className="md:w-6 md:h-6" /></>
             )}
-          </AnimatePresence>
+          </motion.button>
         </div>
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={handleBook}
-          disabled={loading}
-          className="btn-primary disabled:opacity-60"
-        >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-              Confirming Booking...
-            </span>
-          ) : "Confirm & Pay →"}
-        </motion.button>
       </div>
     </div>
   );

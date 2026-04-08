@@ -18,6 +18,7 @@ export interface ServiceCategory {
   name: string;
   description?: string;
   icon?: string;
+  order: number;
   is_active: boolean;
 }
 
@@ -57,8 +58,7 @@ export interface Payment {
   user_id: string;
   amount: number;
   status: "pending" | "success" | "failed" | "refunded";
-  razorpay_order_id?: string;
-  razorpay_payment_id?: string;
+  transaction_id?: string;
   created_at: string;
 }
 

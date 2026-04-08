@@ -28,7 +28,10 @@ export default function UsersPage() {
   const [actionUser, setActionUser] = useState<string | null>(null);
 
   useEffect(() => {
-    api.get("/admin/users").then((r) => setUsers(r.data)).finally(() => setLoading(false));
+    api.get("/admin/users").then((r) => {
+      const sorted = [...r.data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      setUsers(sorted);
+    }).finally(() => setLoading(false));
   }, []);
 
   async function updateStatus(userId: string, newStatus: string) {

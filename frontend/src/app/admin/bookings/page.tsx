@@ -25,7 +25,10 @@ export default function BookingsPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
-    api.get("/admin/bookings").then((r) => setBookings(r.data)).finally(() => setLoading(false));
+    api.get("/admin/bookings").then((r) => {
+      const sorted = [...r.data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      setBookings(sorted);
+    }).finally(() => setLoading(false));
   }, []);
 
   async function updateStatus(bookingId: string, newStatus: string) {

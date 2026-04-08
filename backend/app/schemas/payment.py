@@ -24,15 +24,13 @@ class PaymentResponse(BaseModel):
     user_id: UUID
     amount: float
     status: PaymentStatus
-    stripe_payment_intent_id: Optional[str] = None
     created_at: datetime
 
     class Config:
         from_attributes = True
 
 
-class StripeIntentResponse(BaseModel):
-    client_secret: str
-    payment_intent_id: str
+class TransactionResponse(BaseModel):
+    transaction_id: str
     amount: int   # in paise
     payment_id: UUID

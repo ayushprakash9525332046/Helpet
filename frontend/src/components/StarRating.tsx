@@ -19,7 +19,7 @@ export default function StarRating({ rating, count, size = 14 }: Props) {
         ))}
       </div>
       {count !== undefined && (
-        <span className="text-xs text-slate-500">({count})</span>
+        <span className="text-[10px] md:text-sm text-slate-400 font-bold ml-1">({count})</span>
       )}
     </div>
   );

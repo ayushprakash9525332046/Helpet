@@ -9,7 +9,7 @@ const tabs = [
   { href: "/home",          icon: Home,          label: "Home" },
   { href: "/categories",    icon: Grid3X3,       label: "Services" },
   { href: "/bookings",      icon: CalendarCheck, label: "Bookings" },
-  { href: "/notifications", icon: Bell,          label: "Alerts" },
+  { href: "/notifications", icon: Bell,          label: "Notifications" },
   { href: "/profile",       icon: User,          label: "Profile" },
 ];
 
@@ -17,7 +17,7 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50">
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 md:hidden">
       {/* Frosted glass bar */}
       <div className="mx-4 mb-4 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/80 border border-white/60">
         <div className="flex items-center justify-around h-16 px-2">
