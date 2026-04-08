@@ -47,6 +47,9 @@ class UserResponse(BaseModel):
     is_verified: bool
     created_at: datetime
     profile_picture: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    pincode: Optional[str] = None
 
     class Config:
         from_attributes = True
