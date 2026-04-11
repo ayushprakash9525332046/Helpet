@@ -100,8 +100,8 @@ export default function Home() {
         <div className="container-fluid relative z-10">
           <div className="flex items-start justify-between mb-4 md:mb-6">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-              <p className="text-blue-200 text-[9px] md:text-[11px] font-semibold mb-0.5">{greeting()},</p>
-              <h1 className="text-white text-base md:text-xl lg:text-2xl font-extrabold leading-tight">
+              <p className="text-blue-200 text-xs font-semibold mb-0.5">{greeting()},</p>
+              <h1 className="text-white text-xl md:text-2xl lg:text-3xl font-extrabold leading-tight">
                 {user?.full_name?.split(" ")[0] ?? "there"} 👋
               </h1>
               <button
@@ -114,7 +114,7 @@ export default function Home() {
                 ) : (
                   <LocateFixed size={10} className="text-blue-200" />
                 )}
-                <span className="text-blue-100 text-[9px] md:text-[10px] font-medium">{location}</span>
+                <span className="text-blue-100 text-xs font-medium">{location}</span>
               </button>
             </motion.div>
 
@@ -266,20 +266,20 @@ export default function Home() {
         <div className="mt-10 md:mt-12">
           <div className="flex items-end justify-between mb-4 md:mb-6">
             <div>
-              <h2 className="text-slate-800 font-black text-lg md:text-xl lg:text-2xl tracking-tight">Our Services</h2>
-              <p className="text-slate-400 text-xs md:text-sm mt-0.5 md:mt-1">Professional help for every task</p>
+              <h2 className="text-slate-800 font-black text-xl md:text-2xl lg:text-3xl tracking-tight">Our Services</h2>
+              <p className="text-slate-400 text-sm md:text-base mt-0.5 md:mt-1">Professional help for every task</p>
             </div>
-            <Link href="/categories" className="flex items-center gap-1.5 text-blue-600 text-[10px] md:text-xs font-bold bg-blue-50 hover:bg-blue-100 px-4 py-1.5 md:px-5 md:py-2 rounded-xl transition-all">
+            <Link href="/categories" className="flex items-center gap-1.5 text-blue-600 text-xs md:text-sm font-bold bg-blue-50 hover:bg-blue-100 px-4 py-1.5 md:px-5 md:py-2 rounded-xl transition-all">
               See All <ChevronRight size={14} />
             </Link>
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4 md:gap-6 lg:gap-8">
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3 md:gap-4 lg:gap-6">
               {[...Array(8)].map((_, i) => <div key={i} className="skeleton rounded-2xl md:rounded-[24px] h-24 md:h-32 lg:h-36" />)}
             </div>
           ) : (
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4 md:gap-6 lg:gap-8">
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3 md:gap-4 lg:gap-6">
               {categories.map((cat, i) => {
                 const imgSrc = resolveCategoryImage(cat.icon);
                 return (
@@ -301,7 +301,7 @@ export default function Home() {
                           })()
                         )}
                       </div>
-                      <span className="text-[10px] md:text-xs lg:text-sm font-bold text-slate-600 text-center leading-tight group-hover:text-blue-600 transition-colors">
+                      <span className="text-[10px] md:text-xs font-bold text-slate-600 text-center leading-tight group-hover:text-blue-600 transition-colors">
                         {cat.name}
                       </span>
                     </Link>
@@ -323,8 +323,8 @@ export default function Home() {
               <div key={label} className="bg-white rounded-2xl md:rounded-[32px] p-6 md:p-10 flex flex-row md:flex-col items-center md:items-start text-left gap-5 md:gap-8 border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
                 <div className={`w-14 h-14 md:w-20 md:h-20 ${bg} rounded-2xl md:rounded-3xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>{icon}</div>
                 <div>
-                  <span className="text-sm md:text-xl font-black text-slate-800 block uppercase tracking-wider md:tracking-normal md:capitalize">{label}</span>
-                  <p className="text-xs md:text-base text-slate-400 font-medium mt-1 md:mt-3 leading-relaxed">{desc}</p>
+                  <span className="text-sm md:text-lg font-black text-slate-800 block uppercase tracking-wider md:tracking-normal md:capitalize">{label}</span>
+                  <p className="text-xs md:text-sm text-slate-400 font-medium mt-1 md:mt-3 leading-relaxed">{desc}</p>
                 </div>
               </div>
             ))}
@@ -344,14 +344,12 @@ export default function Home() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
               {[...Array(4)].map((_, i) => <div key={i} className="skeleton rounded-2xl md:rounded-[32px] h-64 md:h-80" />)}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10">
-              {services.map((service, i) => (
-                <ServiceCard key={service.id} service={service} index={i} />
-              ))}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+              {services.map((svc, i) => <ServiceCard key={svc.id} service={svc} index={i} />)}
             </div>
           )}
         </div>

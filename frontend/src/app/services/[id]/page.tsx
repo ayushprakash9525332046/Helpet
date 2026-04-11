@@ -35,6 +35,7 @@ export default function ServiceDetail() {
   const router = useRouter();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     api.get(`/services/${id}`).then((r) => setService(r.data)).finally(() => setLoading(false));
   }, [id]);
 
@@ -82,11 +83,11 @@ export default function ServiceDetail() {
                 </>
               )}
               <div className="absolute top-4 left-4 md:top-6 md:left-6 bg-white/25 backdrop-blur-xl rounded-xl px-4 py-2 md:px-5 md:py-2.5 border border-white/30 shadow-2xl">
-                <span className="text-white text-[10px] md:text-sm font-black uppercase tracking-[0.1em]">{service.category.name}</span>
+                <span className="text-white text-xs md:text-sm font-black uppercase tracking-[0.1em]">{service.category.name}</span>
               </div>
               <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 bg-black/40 backdrop-blur-xl rounded-xl px-4 py-2 md:px-5 md:py-2.5 flex items-center gap-2 md:gap-3 border border-white/10 shadow-2xl">
                 <Clock size={16} className="text-white md:w-4 md:h-4" />
-                <span className="text-white text-xs md:text-base font-black">{service.duration_minutes} min duration</span>
+                <span className="text-white text-sm md:text-base font-black">{service.duration_minutes} min duration</span>
               </div>
             </motion.div>
 
@@ -99,24 +100,24 @@ export default function ServiceDetail() {
                 <div className="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                   <IndianRupee size={18} className="text-blue-600" />
                 </div>
-                <p className="text-[10px] lg:text-xs text-slate-400 font-black uppercase tracking-widest mb-1">Base Price</p>
-                <p className="text-slate-800 font-black text-xl lg:text-2xl">₹{service.price}</p>
-                <p className="text-slate-400 text-[10px] lg:text-xs line-through mt-0.5">₹{Math.round(service.price * 1.2)}</p>
+                <p className="text-xs text-slate-400 font-black uppercase tracking-widest mb-1">Base Price</p>
+                <p className="text-slate-800 font-black text-lg md:text-xl">₹{service.price}</p>
+                <p className="text-slate-400 text-xs line-through mt-0.5">₹{Math.round(service.price * 1.2)}</p>
               </div>
               <div className="bg-white rounded-[24px] p-5 lg:p-6 text-center border border-slate-100 shadow-xl shadow-slate-200/50 group hover:border-blue-200 transition-all duration-500">
                 <div className="w-10 h-10 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                   <Timer size={18} className="text-slate-600" />
                 </div>
-                <p className="text-[10px] lg:text-xs text-slate-400 font-black uppercase tracking-widest mb-1">Est. Time</p>
-                <p className="text-slate-800 font-black text-xl lg:text-2xl">{service.duration_minutes}</p>
-                <p className="text-slate-400 text-[10px] lg:text-xs mt-0.5">minutes</p>
+                <p className="text-xs text-slate-400 font-black uppercase tracking-widest mb-1">Est. Time</p>
+                <p className="text-slate-800 font-black text-lg md:text-xl">{service.duration_minutes}</p>
+                <p className="text-slate-400 text-xs mt-0.5">minutes</p>
               </div>
               <div className="bg-white rounded-[24px] p-5 lg:p-6 text-center border border-slate-100 shadow-xl shadow-slate-200/50 group hover:border-blue-200 transition-all duration-500">
                 <div className="w-10 h-10 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                   <Star size={18} className="text-amber-500" fill="currentColor" />
                 </div>
-                <p className="text-[10px] lg:text-xs text-slate-400 font-black uppercase tracking-widest mb-1">Avg Rating</p>
-                <p className="text-slate-800 font-black text-xl lg:text-2xl">4.9</p>
+                <p className="text-xs text-slate-400 font-black uppercase tracking-widest mb-1">Avg Rating</p>
+                <p className="text-slate-800 font-black text-lg md:text-xl">4.9</p>
                 <p className="text-green-600 text-[10px] font-black uppercase tracking-widest mt-0.5">Verified</p>
               </div>
             </motion.div>
@@ -129,7 +130,7 @@ export default function ServiceDetail() {
                 <StarRating rating={4.5} count={130} size={14} />
                 <span className="text-slate-400 text-xs md:text-sm font-bold">• 1.2k+ bookings</span>
               </div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-slate-800 leading-tight tracking-tight mb-6 md:mb-8">{service.name}</h1>
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-slate-800 leading-tight tracking-tight mb-6 md:mb-8">{service.name}</h1>
 
               {/* Desktop Only Booking Button */}
               <div className="hidden md:block mb-8">
@@ -137,7 +138,7 @@ export default function ServiceDetail() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => router.push(`/book/${service.id}`)}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-[20px] shadow-2xl shadow-blue-200 text-lg transition-all flex items-center justify-center gap-3"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-[20px] shadow-2xl shadow-blue-200 text-base transition-all flex items-center justify-center gap-3"
                 >
                   Book this Service Now <ChevronRight size={20} />
                 </motion.button>
@@ -153,21 +154,21 @@ export default function ServiceDetail() {
                 <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-2">
                   <IndianRupee size={14} className="text-blue-600" />
                 </div>
-                <p className="text-[9px] text-slate-400 font-black uppercase tracking-wider mb-1">Price</p>
+                <p className="text-xs text-slate-400 font-black uppercase tracking-wider mb-1">Price</p>
                 <p className="text-slate-800 font-black text-xl">₹{service.price}</p>
               </div>
               <div className="flex-1 bg-white rounded-2xl p-4 text-center border border-slate-100 shadow-sm">
                 <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center mx-auto mb-2">
                   <Timer size={14} className="text-slate-600" />
                 </div>
-                <p className="text-[9px] text-slate-400 font-black uppercase tracking-wider mb-1">Time</p>
+                <p className="text-xs text-slate-400 font-black uppercase tracking-wider mb-1">Time</p>
                 <p className="text-slate-800 font-black text-xl">{service.duration_minutes}m</p>
               </div>
               <div className="flex-1 bg-white rounded-2xl p-4 text-center border border-slate-100 shadow-sm">
                 <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center mx-auto mb-2">
                   <Star size={14} className="text-amber-500" fill="currentColor" />
                 </div>
-                <p className="text-[9px] text-slate-400 font-black uppercase tracking-wider mb-1">Rating</p>
+                <p className="text-xs text-slate-400 font-black uppercase tracking-wider mb-1">Rating</p>
                 <p className="text-slate-800 font-black text-xl">4.9</p>
               </div>
             </motion.div>
@@ -176,7 +177,7 @@ export default function ServiceDetail() {
             <div className="flex gap-1.5 mt-8 md:mt-10 bg-slate-100/80 rounded-2xl p-1.5">
               {(["about", "reviews"] as const).map((tab) => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-3 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-lg font-black capitalize transition-all duration-300 ${
+                  className={`flex-1 py-3 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-black capitalize transition-all duration-300 ${
                     activeTab === tab ? "bg-white text-blue-600 shadow-xl shadow-slate-200/50" : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
                   }`}>
                   {tab === "about" ? "About" : `Reviews (${REVIEWS.length})`}
@@ -188,17 +189,17 @@ export default function ServiceDetail() {
               <motion.div key="about" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="mt-8 md:mt-10 space-y-8 md:space-y-10">
                 {service.description && (
                   <div>
-                    <h2 className="font-black text-slate-800 text-lg md:text-2xl mb-3 md:mb-4 tracking-tight">Service Description</h2>
-                    <p className="text-slate-500 text-sm md:text-lg leading-relaxed md:leading-relaxed font-medium">{service.description}</p>
+                    <h2 className="font-black text-slate-800 text-lg md:text-xl mb-3 md:mb-4 tracking-tight">Service Description</h2>
+                    <p className="text-slate-500 text-sm md:text-base leading-relaxed md:leading-relaxed font-medium">{service.description}</p>
                   </div>
                 )}
                 <div>
-                  <h2 className="font-black text-slate-800 text-lg md:text-2xl mb-4 md:mb-6 tracking-tight">What&apos;s Included</h2>
+                  <h2 className="font-black text-slate-800 text-lg md:text-xl mb-4 md:mb-6 tracking-tight">What&apos;s Included</h2>
                   <div className="grid grid-cols-1 gap-4 md:gap-5">
                     {PERKS.map((p) => (
                       <div key={p.text} className="flex items-center gap-4 md:gap-6 bg-white rounded-2xl md:rounded-2xl px-5 py-4 md:px-8 md:py-6 border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-100 transition-all group">
                         <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-50 rounded-xl flex items-center justify-center shadow-inner shrink-0 group-hover:bg-blue-50 transition-colors">{p.icon}</div>
-                        <span className="text-slate-700 text-sm md:text-lg font-black tracking-tight">{p.text}</span>
+                        <span className="text-slate-700 text-sm md:text-base font-black tracking-tight">{p.text}</span>
                       </div>
                     ))}
                   </div>
@@ -209,9 +210,9 @@ export default function ServiceDetail() {
                     <div className="w-8 h-8 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center">
                       <Zap size={16} className="text-blue-100" />
                     </div>
-                    <span className="text-[10px] md:text-sm font-black uppercase tracking-[0.2em] text-blue-100">Expert Tip</span>
+                    <span className="text-xs font-black uppercase tracking-[0.2em] text-blue-100">Expert Tip</span>
                   </div>
-                  <p className="text-white text-sm md:text-xl font-black leading-snug relative z-10 tracking-tight">
+                  <p className="text-white text-sm md:text-lg font-black leading-snug relative z-10 tracking-tight">
                     Book this service during weekdays to get a complimentary express cleaning for one additional room!
                   </p>
                 </div>
@@ -223,19 +224,19 @@ export default function ServiceDetail() {
                     className="bg-white rounded-[24px] p-5 md:p-8 border border-slate-100 shadow-sm hover:shadow-2xl transition-all">
                     <div className="flex items-center justify-between mb-4 md:mb-6">
                       <div className="flex items-center gap-3 md:gap-5">
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-lg md:text-2xl shadow-lg">
+                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-lg md:text-xl shadow-lg">
                           {rv.name.charAt(0)}
                         </div>
                         <div>
-                          <p className="text-slate-800 font-black text-sm md:text-xl tracking-tight">{rv.name}</p>
-                          <p className="text-slate-400 text-[10px] md:text-sm font-bold mt-0.5 uppercase tracking-widest">{rv.time}</p>
+                          <p className="text-slate-800 font-black text-sm md:text-lg tracking-tight">{rv.name}</p>
+                          <p className="text-slate-400 text-xs font-bold mt-0.5 uppercase tracking-widest">{rv.time}</p>
                         </div>
                       </div>
                       <div className="bg-amber-50 px-2.5 py-1 md:px-4 md:py-2 rounded-lg border border-amber-100 flex items-center gap-1">
                         <StarRating rating={rv.rating} count={0} size={12} />
                       </div>
                     </div>
-                    <p className="text-slate-500 text-xs md:text-lg leading-relaxed font-medium italic">&quot;{rv.text}&quot;</p>
+                    <p className="text-slate-500 text-xs md:text-base leading-relaxed font-medium italic">&quot;{rv.text}&quot;</p>
                   </motion.div>
                 ))}
               </motion.div>

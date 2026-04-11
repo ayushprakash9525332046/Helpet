@@ -16,8 +16,21 @@ export default function Register() {
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1); // 2-step form
+  const [step, setStep] = useState(1); // 3-step form
+  const [otpCode, setOtpCode] = useState("");
+  const [otpCooldown, setOtpCooldown] = useState(0);
   const router = useRouter();
+
+  // Cooldown ticker for OTP resend
+  const startCooldown = () => {
+    setOtpCooldown(60);
+    const tick = () => setOtpCooldown((c) => {
+      if (c <= 1) return 0;
+      setTimeout(tick, 1000);
+      return c - 1;
+    });
+    setTimeout(tick, 1000);
+  };
 
   const update = (key: string, val: string) => setForm((p) => ({ ...p, [key]: val }));
 
@@ -41,14 +54,43 @@ export default function Register() {
         password: form.password,
         role: form.role,
       });
-      toast.success("Account created! Welcome aboard 🎉");
-      router.push("/login");
+      // Send verification OTP then go to step 3
+      await api.post("/auth/otp/send", { phone: form.phone, purpose: "verify" });
+      startCooldown();
+      setStep(3);
     } catch (err: any) {
       console.error("Register error:", err?.response?.status, err?.response?.data, err?.message);
       const detail = err?.response?.data?.detail;
       const msg = Array.isArray(detail) ? detail.map((d: any) => d.msg).join(", ")
         : detail || err?.message || "Registration failed";
       toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (otpCooldown > 0) return;
+    try {
+      await api.post("/auth/otp/send", { phone: form.phone, purpose: "verify" });
+      startCooldown();
+      toast.success("OTP resent");
+    } catch {
+      toast.error("Failed to resend OTP");
+    }
+  };
+
+  const handleVerifyPhone = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otpCode.trim()) return toast.error("Enter the OTP");
+    setLoading(true);
+    try {
+      await api.post("/auth/otp/verify-phone", { phone: form.phone, code: otpCode });
+      toast.success("Phone verified! Welcome aboard 🎉");
+      router.push("/login");
+    } catch (err: any) {
+      const detail = err?.response?.data?.detail;
+      toast.error(typeof detail === "string" ? detail : "Invalid or expired OTP");
     } finally {
       setLoading(false);
     }
@@ -72,7 +114,7 @@ export default function Register() {
 
         {/* Step indicator */}
         <div className="flex gap-2 mt-3 z-10">
-          {[1, 2].map((s) => (
+          {[1, 2, 3].map((s) => (
             <div key={s} className={`h-1.5 rounded-full transition-all duration-300 ${
               s === step ? "w-8 bg-white" : s < step ? "w-4 bg-white/80" : "w-4 bg-white/30"
             }`} />
@@ -116,22 +158,22 @@ export default function Register() {
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 block">I want to</label>
               <div className="grid grid-cols-2 gap-3">
-                {[
-                  { val: "customer", icon: "🏠", title: "Book Services", sub: "Find & hire professionals" },
-                  { val: "provider", icon: "🔧", title: "Offer Services", sub: "Earn by doing what you love" },
-                ].map(({ val, icon, title, sub }) => (
-                  <motion.button key={val} type="button" whileTap={{ scale: 0.96 }}
-                    onClick={() => update("role", val)}
-                    className={`p-4 rounded-2xl border-2 text-left transition-all ${
-                      form.role === val
-                        ? "border-blue-500 bg-blue-50 shadow-md shadow-blue-100"
-                        : "border-slate-200 bg-white"
-                    }`}>
-                    <span className="text-2xl block mb-1">{icon}</span>
-                    <p className={`text-sm font-bold ${form.role === val ? "text-blue-700" : "text-slate-700"}`}>{title}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">{sub}</p>
-                  </motion.button>
-                ))}
+                <motion.button type="button" whileTap={{ scale: 0.96 }}
+                  onClick={() => update("role", "customer")}
+                  className="p-4 rounded-2xl border-2 text-left transition-all border-blue-500 bg-blue-50 shadow-md shadow-blue-100">
+                  <span className="text-2xl block mb-1">🏠</span>
+                  <p className="text-sm font-bold text-blue-700">Book Services</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Find &amp; hire professionals</p>
+                </motion.button>
+
+                <div className="p-4 rounded-2xl border-2 text-left border-slate-200 bg-slate-50 opacity-50 cursor-not-allowed relative">
+                  <span className="text-2xl block mb-1">🔧</span>
+                  <p className="text-sm font-bold text-slate-400">Offer Services</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Coming soon</p>
+                  <span className="absolute top-2 right-2 text-[10px] font-bold bg-slate-200 text-slate-500 px-2 py-0.5 rounded-full">
+                    Soon
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -215,6 +257,50 @@ export default function Register() {
                 </span>
               ) : "Create Account 🎉"}
             </motion.button>
+          </form>
+        )}
+
+        {/* ── Step 3: Verify Phone ── */}
+        {step === 3 && (
+          <form onSubmit={handleVerifyPhone} className="flex flex-col gap-5">
+            <div className="flex items-center gap-3 mb-1 mt-8">
+              <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center text-2xl">📱</div>
+              <div>
+                <h2 className="text-xl font-extrabold text-slate-800">Verify Your Phone</h2>
+                <p className="text-slate-400 text-sm">OTP sent to <span className="font-semibold text-slate-600">{form.phone}</span></p>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 rounded-2xl px-4 py-3 text-sm text-blue-700 font-medium">
+              Enter the 6-digit OTP to confirm your phone number and activate your account.
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">6-Digit OTP</label>
+              <input
+                type="text" inputMode="numeric" maxLength={6}
+                placeholder="- - - - - -"
+                value={otpCode} onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                autoFocus
+                className="w-full px-4 py-4 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 text-center text-2xl font-bold tracking-[0.5em] placeholder-slate-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition shadow-sm"
+              />
+            </div>
+
+            <motion.button type="submit" disabled={loading || otpCode.length < 6} whileTap={{ scale: 0.97 }}
+              className="btn-primary disabled:opacity-60">
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Verifying...
+                </span>
+              ) : "Verify & Finish ✓"}
+            </motion.button>
+
+            <button type="button" onClick={handleResendOtp}
+              disabled={otpCooldown > 0}
+              className="text-sm text-blue-600 font-semibold text-center disabled:text-slate-400">
+              {otpCooldown > 0 ? `Resend OTP in ${otpCooldown}s` : "Resend OTP"}
+            </button>
           </form>
         )}
 

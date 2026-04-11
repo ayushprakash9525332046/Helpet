@@ -147,7 +147,7 @@ export default function PaymentsPage() {
                           onChange={(e) =>
                             handleUpdateStatus(payment.id, e.target.value)
                           }
-                          className={`text-xs font-semibold px-2 py-1 rounded-full border-none outline-none cursor-pointer transition-colors ${sc.badge}mr-1`}
+                          className={`text-xs font-semibold px-2 py-1 rounded-full border-none outline-none cursor-pointer transition-colors ${sc.badge}`}
                         >
                           <option value="pending">Pending</option>
                           <option value="success">Success</option>

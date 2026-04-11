@@ -1,16 +1,87 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { ReactNode, useState, useEffect } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { ReactNode, useState, useEffect, Suspense } from "react";
 import Sidebar from "./Sidebar";
 import BottomNav from "./BottomNav";
+import Footer from "./Footer";
 import { Menu, X, Bell, Search, User } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
+function AppShellHeader() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user } = useAuth();
+  const [mounted, setMounted] = useState(false);
+  
+  const [searchValue, setSearchValue] = useState(searchParams.get("q") || "");
+
+  useEffect(() => {
+    setMounted(true);
+    setSearchValue(searchParams.get("q") || "");
+  }, [searchParams]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearchValue(val);
+    
+    const params = new URLSearchParams(searchParams.toString());
+    if (val) {
+      params.set("q", val);
+    } else {
+      params.delete("q");
+    }
+    
+    // Always push to /categories if we're searching
+    router.push(`/categories?${params.toString()}`);
+  };
+
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ?? "http://localhost:8000";
+
+  return (
+    <header className="hidden md:flex sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 h-[64px] items-center justify-between">
+      <div className="container-fluid flex items-center justify-between">
+        <div className="flex items-center gap-4 flex-1 max-w-lg">
+          <div className="relative flex-1 group/search">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/search:text-blue-600 transition-colors" size={16} />
+            <input 
+              type="text" 
+              placeholder="Search for services (cleaning, plumbing, AC...)"
+              value={searchValue}
+              onChange={handleSearchChange}
+              className="w-full bg-slate-50/50 border border-slate-100 rounded-xl py-2 pl-10 pr-4 text-xs font-medium focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-200 transition-all outline-none"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 ml-6">
+          <Link href="/notifications" className="p-2 rounded-lg bg-slate-50 text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all relative">
+            <Bell size={18} />
+            <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full border-2 border-white" />
+          </Link>
+          <Link href="/profile" className="flex items-center gap-2.5 pl-2 border-l border-slate-200">
+            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs overflow-hidden">
+              {mounted && user?.profile_picture ? (
+                <img src={`${API_BASE}${user.profile_picture}`} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                mounted ? (user?.full_name?.charAt(0).toUpperCase() || <User size={14} />) : <User size={14} />
+              )}
+            </div>
+            <div className="hidden lg:block">
+              <p className="text-xs font-bold text-slate-800 leading-none">{mounted ? (user?.full_name?.split(" ")[0] || "User") : "User"}</p>
+              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Verified User</p>
+            </div>
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+}
+
 export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Close sidebar on path change
@@ -42,41 +113,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
       {/* Main Content Area */}
       <div className="flex-1 md:ml-56 flex flex-col min-h-screen relative">
-        {/* Desktop Top Nav (Only visible on tablet/desktop) */}
-        <header className="hidden md:flex sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 px-5 py-3 items-center justify-between">
-          <div className="flex items-center gap-4 flex-1 max-w-lg">
-            <div className="relative flex-1 group/search">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/search:text-blue-600 transition-colors" size={16} />
-              <input 
-                type="text" 
-                placeholder="Search for services (cleaning, plumbing, AC...)"
-                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-200 transition-all outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 ml-6">
-            <Link href="/notifications" className="p-2 rounded-lg bg-slate-50 text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all relative">
-              <Bell size={18} />
-              <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full border-2 border-white" />
-            </Link>
-            <Link href="/profile" className="flex items-center gap-2.5 pl-2 border-l border-slate-200">
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">
-                {user?.full_name?.charAt(0).toUpperCase() || <User size={14} />}
-              </div>
-              <div className="hidden lg:block">
-                <p className="text-xs font-bold text-slate-800 leading-none">{user?.full_name?.split(" ")[0] || "User"}</p>
-                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Verified User</p>
-              </div>
-            </Link>
-          </div>
-        </header>
+        <Suspense fallback={<div className="h-[64px] bg-white border-b border-slate-100" />}>
+          <AppShellHeader />
+        </Suspense>
 
         {/* Page Content */}
         <main className="flex-1 pb-20 md:pb-0">
           <div className="min-h-screen md:min-h-0">
             {children}
           </div>
+          <Footer />
         </main>
 
         {/* Mobile Navigation */}

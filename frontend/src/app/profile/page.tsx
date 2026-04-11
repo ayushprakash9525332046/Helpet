@@ -55,16 +55,26 @@ export default function Profile() {
       <div className="gradient-animated px-5 pt-10 pb-16 md:pt-12 md:pb-24 relative overflow-hidden md:rounded-b-[32px] lg:rounded-b-[40px]">
         <div className="absolute -top-10 -right-10 w-48 h-48 md:w-80 md:h-80 bg-white/10 rounded-full" />
         <div className="absolute top-8 right-16 w-16 h-16 md:w-24 md:h-24 bg-white/10 rounded-2xl rotate-12" />
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="container-fluid relative z-10 max-w-2xl">
-          <p className="text-blue-200 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mb-1 md:mb-1.5">Your Account</p>
-          <h1 className="text-white text-xl md:text-2xl lg:text-3xl font-black tracking-tight">My Profile</h1>
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="container-fluid relative z-10 max-w-2xl"
+        >
+          <p className="text-blue-200 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mb-1 md:mb-1.5">
+            Your Account
+          </p>
+          <h1 className="text-white text-xl md:text-2xl lg:text-3xl font-black tracking-tight">
+            My Profile
+          </h1>
         </motion.div>
       </div>
 
       <div className="container-fluid max-w-2xl">
         {/* Avatar card — overlaps header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
           className="-mt-10 md:-mt-12 bg-white rounded-[24px] md:rounded-[28px] p-5 md:p-6 shadow-2xl shadow-blue-900/10 border border-white flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-6 relative z-10"
         >
           <div className="relative group">
@@ -82,14 +92,18 @@ export default function Profile() {
             <div className="absolute -bottom-0.5 -right-0.5 md:bottom-0.5 md:right-0.5 w-5 h-5 md:w-6 md:h-6 bg-green-400 rounded-full border-4 border-white shadow-lg animate-pulse" />
           </div>
           <div className="flex-1 text-center md:text-left">
-            <h2 className="font-black text-slate-800 text-lg md:text-xl lg:text-2xl tracking-tight leading-tight mb-1.5 md:mb-1.5">{user?.full_name}</h2>
+            <h2 className="font-black text-slate-800 text-lg md:text-xl lg:text-2xl tracking-tight leading-tight mb-1.5 md:mb-1.5">
+              {user?.full_name}
+            </h2>
             <div className="flex flex-col md:flex-row items-center gap-1.5 md:gap-4">
               <p className="text-slate-500 text-xs md:text-sm font-bold flex items-center gap-1.5">
-                <span className="w-1 h-1 bg-blue-500 rounded-full" /> {user?.phone}
+                <span className="w-1 h-1 bg-blue-500 rounded-full" />{" "}
+                {user?.phone}
               </p>
               {user?.email && (
                 <p className="text-slate-400 text-[10px] md:text-xs font-medium flex items-center gap-1.5">
-                  <span className="w-1 h-1 bg-slate-300 rounded-full" /> {user?.email}
+                  <span className="w-1 h-1 bg-slate-300 rounded-full" />{" "}
+                  {user?.email}
                 </p>
               )}
             </div>
@@ -106,20 +120,46 @@ export default function Profile() {
 
         {/* Stats row */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18 }}
           className="mt-4 md:mt-5 bg-white rounded-2xl md:rounded-[24px] shadow-xl shadow-slate-200/50 border border-slate-50 grid grid-cols-3 divide-x divide-slate-100 overflow-hidden"
         >
           {[
-            { value: "12", label: "Bookings", icon: Package, color: "bg-blue-50 text-blue-600" },
-            { value: "4.8", label: "Avg Rating", icon: Star, color: "bg-amber-50 text-amber-600" },
-            { value: "3", label: "Reviews", icon: MessageSquare, color: "bg-purple-50 text-purple-600" },
+            {
+              value: "12",
+              label: "Bookings",
+              icon: Package,
+              color: "bg-blue-50 text-blue-600",
+            },
+            {
+              value: "4.8",
+              label: "Avg Rating",
+              icon: Star,
+              color: "bg-amber-50 text-amber-600",
+            },
+            {
+              value: "3",
+              label: "Reviews",
+              icon: MessageSquare,
+              color: "bg-purple-50 text-purple-600",
+            },
           ].map(({ value, label, icon: Icon, color }) => (
-            <div key={label} className="flex flex-col items-center py-4 md:py-5 gap-1 hover:bg-slate-50 transition-colors group">
-              <div className={`w-8 h-8 md:w-10 md:h-10 ${color} rounded-lg md:rounded-xl flex items-center justify-center mb-0.5 group-hover:scale-110 transition-transform`}>
+            <div
+              key={label}
+              className="flex flex-col items-center py-4 md:py-5 gap-1 hover:bg-slate-50 transition-colors group"
+            >
+              <div
+                className={`w-8 h-8 md:w-10 md:h-10 ${color} rounded-lg md:rounded-xl flex items-center justify-center mb-0.5 group-hover:scale-110 transition-transform`}
+              >
                 <Icon size={14} className="md:w-4 md:h-4" />
               </div>
-              <span className="text-base md:text-lg font-black text-slate-800 tracking-tight">{value}</span>
-              <span className="text-[8px] md:text-[9px] text-slate-400 font-black uppercase tracking-widest">{label}</span>
+              <span className="text-base md:text-lg font-black text-slate-800 tracking-tight">
+                {value}
+              </span>
+              <span className="text-[8px] md:text-[9px] text-slate-400 font-black uppercase tracking-widest">
+                {label}
+              </span>
             </div>
           ))}
         </motion.div>
@@ -129,10 +169,13 @@ export default function Profile() {
           {menuGroups.map((group, gi) => (
             <motion.div
               key={group.title}
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.22 + gi * 0.1 }}
             >
-              <p className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 px-2">{group.title}</p>
+              <p className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 px-2">
+                {group.title}
+              </p>
               <div className="bg-white rounded-2xl md:rounded-[24px] shadow-sm border border-slate-100 overflow-hidden divide-y divide-slate-50">
                 {group.items.map(({ icon: Icon, label, href, color }, i) => (
                   <Link
@@ -140,11 +183,18 @@ export default function Profile() {
                     href={href}
                     className="flex items-center gap-3.5 md:gap-4 px-4 py-3.5 md:px-5 md:py-4 hover:bg-slate-50 group transition-all duration-300"
                   >
-                    <div className={`w-8 h-8 md:w-9 md:h-9 rounded-lg md:rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-all ${color}`}>
+                    <div
+                      className={`w-8 h-8 md:w-9 md:h-9 rounded-lg md:rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-all ${color}`}
+                    >
                       <Icon size={14} className="md:w-4 md:h-4" />
                     </div>
-                    <span className="flex-1 text-xs md:text-sm font-bold text-slate-700 group-hover:text-blue-600 transition-colors tracking-tight">{label}</span>
-                    <ChevronRight size={12} className="text-slate-300 group-hover:translate-x-1 transition-all md:w-4 md:h-4" />
+                    <span className="flex-1 text-xs md:text-sm font-bold text-slate-700 group-hover:text-blue-600 transition-colors tracking-tight">
+                      {label}
+                    </span>
+                    <ChevronRight
+                      size={12}
+                      className="text-slate-300 group-hover:translate-x-1 transition-all md:w-4 md:h-4"
+                    />
                   </Link>
                 ))}
               </div>
@@ -155,7 +205,9 @@ export default function Profile() {
         {/* Logout */}
         <div className="mt-8 md:mt-10 mb-8 md:mb-10">
           <motion.button
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleLogout}
@@ -165,10 +217,11 @@ export default function Profile() {
             Sign Out Account
           </motion.button>
 
-          <p className="text-center text-slate-400 text-[9px] md:text-[11px] font-bold mt-6 md:mt-8 opacity-60">ApnaSewa v1.0.0 · Professional Home Services</p>
+          <p className="text-center text-slate-400 text-[9px] md:text-[11px] font-bold mt-6 md:mt-8 opacity-60">
+            Helpet v1.0.0 · Professional Home Services
+          </p>
         </div>
       </div>
-
     </div>
   );
 }

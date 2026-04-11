@@ -14,6 +14,7 @@ export default function CategoryServices() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     api.get(`/services/?category_id=${id}`).then((r) => {
       setServices(r.data);
       if (r.data.length > 0) setCategoryName(r.data[0].category.name);
@@ -23,10 +24,10 @@ export default function CategoryServices() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       <BackHeader title={categoryName || "Services"} showSearch />
-      <div className="px-5 pt-5 pb-8">
+      <div className="container-fluid py-6 md:py-10">
         {loading ? (
-          <div className="grid grid-cols-2 gap-4">
-            {[...Array(4)].map((_, i) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+            {[...Array(8)].map((_, i) => (
               <div key={i} className="bg-slate-100 rounded-2xl h-52 animate-pulse" />
             ))}
           </div>
@@ -37,9 +38,9 @@ export default function CategoryServices() {
             <p className="text-slate-400 text-sm mt-1">Check back soon for new listings</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
-            {services.map((s) => (
-              <ServiceCard key={s.id} service={s} />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+            {services.map((s, i) => (
+              <ServiceCard key={s.id} service={s} index={i} />
             ))}
           </div>
         )}

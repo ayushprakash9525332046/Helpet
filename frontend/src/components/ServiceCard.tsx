@@ -46,9 +46,9 @@ export default function ServiceCard({ service, index = 0 }: Props) {
       whileTap={{ scale: 0.97 }}
     >
       <Link href={`/services/${service.id}`}>
-        <div className="group bg-white rounded-xl md:rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:border-blue-100 transition-all duration-500 hover:-translate-y-1">
+        <div className="group bg-white rounded-xl md:rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:border-blue-100 transition-all duration-500 hover:-translate-y-1 h-full">
           {/* Image area */}
-          <div className={`relative h-32 md:h-36 lg:h-40 bg-linear-to-br ${gradient} flex items-center justify-center overflow-hidden`}>
+          <div className={`relative h-28 md:h-32 lg:h-36 xl:h-40 bg-linear-to-br ${gradient} flex items-center justify-center overflow-hidden`}>
             {service.image ? (
               <img src={service.image} alt={service.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
             ) : (
@@ -72,13 +72,13 @@ export default function ServiceCard({ service, index = 0 }: Props) {
             {/* Discount badge */}
             <div className="absolute top-2.5 left-2.5 md:top-3 md:left-3 bg-white/95 backdrop-blur-md text-blue-600 px-2 py-1 rounded-lg shadow-lg flex items-center gap-1 border border-white/20">
               <Tag size={10} className="md:w-3 md:h-3" />
-              <span className="text-[8px] md:text-[10px] font-black uppercase tracking-wider">5% OFF</span>
+              <span className="text-xs font-black uppercase tracking-wider">5% OFF</span>
             </div>
 
             {/* Duration */}
             <div className="absolute bottom-2.5 right-2.5 md:bottom-3 md:right-3 bg-black/40 backdrop-blur-md text-white px-2 py-1 rounded-lg flex items-center gap-1 border border-white/10">
               <Clock size={10} className="md:w-3 md:h-3" />
-              <span className="text-[8px] md:text-[10px] font-bold">{service.duration_minutes} min</span>
+              <span className="text-xs font-bold">{service.duration_minutes} min</span>
             </div>
           </div>
 
@@ -87,17 +87,17 @@ export default function ServiceCard({ service, index = 0 }: Props) {
               <StarRating rating={4.5} count={130} size={10} />
               <div className="flex items-center gap-1 text-emerald-500">
                 <ShieldCheck size={10} />
-                <span className="text-[8px] font-bold uppercase tracking-tight">Verified</span>
+                <span className="text-xs font-bold uppercase tracking-tight">Verified</span>
               </div>
             </div>
             
-            <h3 className="font-black text-slate-800 text-xs md:text-base lg:text-lg line-clamp-1 group-hover:text-blue-600 transition-colors tracking-tight">{service.name}</h3>
+            <h3 className="font-black text-slate-800 text-sm md:text-base lg:text-lg line-clamp-1 group-hover:text-blue-600 transition-colors tracking-tight">{service.name}</h3>
 
             <div className="flex items-center justify-between mt-2 md:mt-4">
               <div>
                 <div className="flex items-baseline gap-1 md:gap-1.5">
-                  <span className="text-blue-600 font-black text-sm md:text-xl">₹{service.price}</span>
-                  <span className="text-slate-300 text-[9px] md:text-[11px] font-bold line-through">₹{Math.round(service.price * 1.2)}</span>
+                  <span className="text-blue-600 font-black text-base md:text-xl">₹{service.price}</span>
+                  <span className="text-slate-300 text-xs font-bold line-through">₹{Math.round(service.price * 1.2)}</span>
                 </div>
               </div>
               <motion.div

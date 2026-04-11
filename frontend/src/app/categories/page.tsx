@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
@@ -20,14 +21,34 @@ function resolveImage(url?: string) {
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 
-export default function Categories() {
+function CategoriesContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const q = searchParams.get("q") || "";
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(q);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setSearch(q);
+  }, [q]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
     api.get("/services/categories").then((r) => setCategories(r.data)).finally(() => setLoading(false));
   }, []);
+
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    const params = new URLSearchParams(searchParams.toString());
+    if (val) {
+      params.set("q", val);
+    } else {
+      params.delete("q");
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const filtered = categories.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
@@ -50,10 +71,10 @@ export default function Categories() {
             <div className="w-6 h-6 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/10">
               <Grid2X2 size={12} className="text-white" />
             </div>
-            <p className="text-blue-200 text-[10px] md:text-sm font-black uppercase tracking-[0.2em]">Explore</p>
+            <p className="text-blue-200 text-xs font-black uppercase tracking-[0.2em]">Explore</p>
           </div>
-          <h1 className="text-white text-2xl md:text-3xl lg:text-4xl font-black tracking-tight">All Services</h1>
-          <p className="text-blue-100 text-xs md:text-base mt-2 md:mt-3 max-w-2xl leading-relaxed opacity-90">Find the perfect professional for any task around your home.</p>
+          <h1 className="text-white text-xl md:text-3xl lg:text-4xl font-black tracking-tight">All Services</h1>
+          <p className="text-blue-100 text-sm md:text-base mt-2 md:mt-3 max-w-2xl leading-relaxed opacity-90">Find the perfect professional for any task around your home.</p>
         </motion.div>
       </div>
 
@@ -69,11 +90,11 @@ export default function Categories() {
               type="text"
               placeholder="Search services (cleaning, plumbing, repairs...)"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="flex-1 text-sm md:text-lg text-slate-700 placeholder-slate-400 outline-none bg-transparent font-medium"
             />
             {search ? (
-              <button onClick={() => setSearch("")} className="text-slate-300 text-2xl md:text-3xl leading-none hover:text-slate-500 transition-colors">×</button>
+              <button onClick={() => handleSearchChange("")} className="text-slate-300 text-2xl md:text-3xl leading-none hover:text-slate-500 transition-colors">×</button>
             ) : (
               <div className="hidden md:flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
                 <Sparkles size={14} className="text-blue-600" />
@@ -86,7 +107,7 @@ export default function Categories() {
         {/* Grid */}
         <div className="pt-10 md:pt-16 pb-16">
           {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-10">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
               {[...Array(8)].map((_, i) => <div key={i} className="skeleton rounded-2xl md:rounded-[32px] h-48 md:h-64 lg:h-72" />)}
             </div>
           ) : filtered.length === 0 ? (
@@ -98,38 +119,41 @@ export default function Categories() {
               <p className="text-slate-400 text-xs md:text-base mt-2">Try a different keyword or browse categories</p>
             </div>
           ) : (
-            <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-10">
+            <motion.div
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8"
+            >
               {filtered.map((cat) => {
                 const imgSrc = resolveImage(cat.icon);
                 return (
-                  <motion.div key={cat.id} variants={item} whileTap={{ scale: 0.95 }}>
+                  <motion.div key={cat.id} variants={item}>
                     <Link
                       href={`/categories/${cat.id}`}
-                      className="group block bg-white rounded-2xl md:rounded-[32px] overflow-hidden shadow-sm border border-slate-100 hover:shadow-2xl hover:border-blue-100 transition-all duration-500 hover:-translate-y-2"
+                      className="group flex flex-col items-center gap-3 md:gap-5"
                     >
-                      {/* Image / fallback top */}
-                      <div className="h-32 md:h-48 lg:h-52 bg-slate-50 flex items-center justify-center relative overflow-hidden">
+                      <div className="w-full aspect-square bg-white rounded-2xl md:rounded-[32px] overflow-hidden shadow-sm border border-slate-100 group-hover:border-blue-100 group-hover:shadow-2xl group-hover:shadow-blue-900/5 group-hover:-translate-y-1 transition-all duration-300 flex items-center justify-center p-6 md:p-10">
                         {imgSrc ? (
-                          <img src={imgSrc} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          <img
+                            src={imgSrc}
+                            alt={cat.name}
+                            className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                          />
                         ) : (
-                          <div className="flex flex-col items-center gap-2">
-                            {(() => {
-                              const Icon = getServiceIcon(cat.name);
-                              return <Icon size={32} className="text-slate-200 md:w-12 md:h-12" />;
-                            })()}
-                            <span className="text-[10px] md:text-xs font-bold text-slate-300 uppercase tracking-widest">Explore</span>
+                          <div className="flex flex-col items-center gap-2 text-slate-200 group-hover:text-blue-200 transition-colors">
+                            <ImageOff size={40} className="md:w-14 md:h-14" />
+                            <span className="text-[8px] font-bold uppercase tracking-widest">No Icon</span>
                           </div>
                         )}
-                        <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
-                      
-                      <div className="p-4 md:p-6 lg:p-8 flex items-center justify-between">
-                        <div>
-                          <h3 className="font-black text-slate-800 text-sm md:text-lg lg:text-xl group-hover:text-blue-600 transition-colors tracking-tight">{cat.name}</h3>
-                          <p className="text-[9px] md:text-xs text-slate-400 font-bold mt-1 uppercase tracking-wider">Explore Services</p>
-                        </div>
-                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-50 group-hover:bg-blue-600 flex items-center justify-center transition-all">
-                          <ChevronRight size={16} className="text-slate-400 group-hover:text-white md:w-5 md:h-5" />
+                      <div className="flex flex-col items-center text-center">
+                        <span className="text-xs md:text-lg font-black text-slate-800 group-hover:text-blue-600 transition-colors tracking-tight">
+                          {cat.name}
+                        </span>
+                        <div className="flex items-center gap-1.5 mt-1 md:mt-2 text-[8px] md:text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                          <span>Explore</span>
+                          <ChevronRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
                         </div>
                       </div>
                     </Link>
@@ -143,5 +167,13 @@ export default function Categories() {
 
       {/* BottomNav removed as it's now handled by AppShell */}
     </div>
+  );
+}
+
+export default function Categories() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CategoriesContent />
+    </Suspense>
   );
 }

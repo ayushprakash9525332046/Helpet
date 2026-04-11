@@ -50,9 +50,9 @@ export default function MyBookings() {
           animate={{ opacity: 1, y: 0 }}
           className="container-fluid relative z-10"
         >
-          <p className="text-blue-200 text-[10px] md:text-sm font-black mb-1 md:mb-2 uppercase tracking-widest">Track Your</p>
-          <h1 className="text-white text-2xl md:text-3xl lg:text-4xl font-black tracking-tight mb-3 md:mb-4">My Bookings</h1>
-          <p className="text-blue-100 text-xs md:text-base mt-2 md:mt-3 max-w-2xl leading-relaxed opacity-90">{bookings.length} booking{bookings.length !== 1 ? "s" : ""} found in your history.</p>
+          <p className="text-blue-200 text-xs font-black mb-1 md:mb-2 uppercase tracking-widest">Track Your</p>
+          <h1 className="text-white text-xl md:text-3xl lg:text-4xl font-black tracking-tight mb-3 md:mb-4">My Bookings</h1>
+          <p className="text-blue-100 text-sm md:text-base mt-2 md:mt-3 max-w-2xl leading-relaxed opacity-90">{bookings.length} booking{bookings.length !== 1 ? "s" : ""} found in your history.</p>
         </motion.div>
       </div>
 

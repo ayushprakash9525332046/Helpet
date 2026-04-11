@@ -1,7 +1,7 @@
 # Environment variables, settings
 
 from pydantic_settings import BaseSettings #type: ignore
-from typing import List
+from typing import List, Optional
 
 
 class Settings(BaseSettings):
@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     # JWT
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     ALGORITHM: str = "HS256"
+
+    # Twilio SMS (optional — omit for dev mode, OTP printed to console)
+    TWILIO_ACCOUNT_SID: Optional[str] = None
+    TWILIO_AUTH_TOKEN: Optional[str] = None
+    TWILIO_PHONE_NUMBER: Optional[str] = None
 
     # CORS - Next.js frontend & admin
     ALLOWED_ORIGINS: List[str] = [

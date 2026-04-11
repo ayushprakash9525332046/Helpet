@@ -19,9 +19,9 @@ export default function EditProfile() {
   const [form, setForm] = useState({
     full_name: user?.full_name ?? "",
     email:     user?.email ?? "",
-    address:   "",
-    city:      "",
-    pincode:   "",
+    address:   user?.address ?? "",
+    city:      user?.city ?? "",
+    pincode:   user?.pincode ?? "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -50,13 +50,14 @@ export default function EditProfile() {
   const handleSave = async () => {
     setLoading(true);
     try {
-      await api.put("/users/me", {
+      const { data } = await api.put("/users/me", {
         full_name: form.full_name || undefined,
         email:     form.email    || undefined,
         address:   form.address  || undefined,
         city:      form.city     || undefined,
         pincode:   form.pincode  || undefined,
       });
+      updateUser(data);
       toast.success("Profile updated successfully");
       router.back();
     } catch {
