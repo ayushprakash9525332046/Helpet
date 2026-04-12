@@ -112,7 +112,7 @@ export default function Home() {
                 {locLoading ? (
                   <span className="w-2 h-2 border border-blue-200/50 border-t-blue-100 rounded-full animate-spin" />
                 ) : (
-                  <LocateFixed size={10} className="text-blue-200" />
+                  <LocateFixed size={10} className="hidden md:block text-blue-200" />
                 )}
                 <span className="text-blue-100 text-xs font-medium">{location}</span>
               </button>

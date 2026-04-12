@@ -36,7 +36,9 @@ export interface Service {
 export interface Booking {
   id: string;
   customer_id: string;
+  customer?: User;
   provider_id?: string;
+  provider?: User;
   service_id: string;
   service: {
     id: string;

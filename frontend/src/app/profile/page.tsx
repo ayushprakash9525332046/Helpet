@@ -25,14 +25,14 @@ export default function Profile() {
       items: [
         { icon: User,          label: "Edit Profile",      href: "/profile/edit",      color: "bg-blue-100 text-blue-600" },
         { icon: Lock,          label: "Change Password",   href: "/profile/password",  color: "bg-purple-100 text-purple-600" },
-        { icon: MapPin,        label: "My Addresses",      href: "/profile/addresses", color: "bg-green-100 text-green-600" },
+        // { icon: MapPin,        label: "My Addresses",      href: "/profile/addresses", color: "bg-green-100 text-green-600" },
       ],
     },
     {
       title: "Activity",
       items: [
         { icon: CalendarCheck, label: "My Bookings",       href: "/bookings",          color: "bg-amber-100 text-amber-600" },
-        { icon: Star,          label: "My Reviews",        href: "/reviews",           color: "bg-yellow-100 text-yellow-600" },
+        // { icon: Star,          label: "My Reviews",        href: "/reviews",           color: "bg-yellow-100 text-yellow-600" },
         { icon: Shield,        label: "Privacy Policy",    href: "/privacy",           color: "bg-pink-100 text-pink-600" },
         { icon: FileText,      label: "Terms & Conditions",href: "/terms",             color: "bg-indigo-100 text-indigo-600" },
       ],

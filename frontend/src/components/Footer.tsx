@@ -20,9 +20,9 @@ export default function Footer() {
   return (
     <footer className="bg-white border-t border-slate-100 pt-16 pb-8">
       <div className="container-fluid">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
           {/* Brand section */}
-          <div className="space-y-6 flex flex-col items-center md:items-start text-center md:text-left">
+          <div className="col-span-2 md:col-span-1 space-y-6 flex flex-col items-center md:items-start text-center md:text-left mb-4 md:mb-0">
             <Link href="/home" className="flex items-center gap-2.5">
               <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 overflow-hidden">
                 <Image 
@@ -58,21 +58,23 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6">Quick Links</h3>
-            <ul className="space-y-4">
-              {["Home", "All Services", "About Us", "Contact Us", "Join as Professional"].map((link) => (
-                <li key={link}>
-                  <Link href="#" className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors">
-                    {link}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <div className="flex flex-col items-center md:items-start">
+            <div className="w-fit md:w-full">
+              <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6 text-left">Quick Links</h3>
+              <ul className="space-y-4 text-left">
+                {["Home", "All Services", "About Us", "Contact Us"].map((link) => (
+                  <li key={link}>
+                    <Link href="#" className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors">
+                      {link}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
-          {/* Categories */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+          {/* Categories - Hidden on mobile */}
+          <div className="hidden lg:flex flex-col items-start text-left">
             <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6">Popular Categories</h3>
             <ul className="space-y-4">
               {["Cleaning Services", "Plumbing", "Electrical Repairs", "Beauty & Salon", "AC Services"].map((cat) => (
@@ -86,22 +88,24 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6">Contact Info</h3>
-            <ul className="space-y-4">
-              <li className="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3">
-                <MapPin size={18} className="text-blue-600 shrink-0 mt-0.5" />
-                <span className="text-slate-500 text-sm">123 Service Lane, Business Hub,<br />City Center, 110001</span>
-              </li>
-              <li className="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3">
-                <Phone size={18} className="text-blue-600 shrink-0" />
-                <span className="text-slate-500 text-sm">+91 98765 43210</span>
-              </li>
-              <li className="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3">
-                <Mail size={18} className="text-blue-600 shrink-0" />
-                <span className="text-slate-500 text-sm">support@helpet.com</span>
-              </li>
-            </ul>
+          <div className="flex flex-col items-center md:items-start">
+            <div className="w-fit md:w-full">
+              <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6 text-left">Contact Info</h3>
+              <ul className="space-y-4 text-left">
+                <li className="flex flex-row items-start gap-2 md:gap-3">
+                  <MapPin size={18} className="hidden md:block text-blue-600 shrink-0 mt-0.5" />
+                  <span className="text-slate-500 text-sm">City Center, New Delhi, 110001</span>
+                </li>
+                <li className="flex flex-row items-start gap-2 md:gap-3">
+                  <Phone size={18} className="hidden md:block text-blue-600 shrink-0" />
+                  <span className="text-slate-500 text-sm">+91 98765 43210</span>
+                </li>
+                <li className="flex flex-row items-start gap-2 md:gap-3">
+                  <Mail size={18} className="hidden md:block text-blue-600 shrink-0" />
+                  <span className="text-slate-500 text-sm">support@helpet.in</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 

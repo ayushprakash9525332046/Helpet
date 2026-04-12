@@ -5,6 +5,9 @@ from datetime import datetime
 from app.models.booking import BookingStatus
 
 
+from app.schemas.user import UserResponse
+
+
 class BookingCreate(BaseModel):
     service_id: UUID
     scheduled_at: datetime
@@ -39,7 +42,9 @@ class ServiceInBooking(BaseModel):
 class BookingResponse(BaseModel):
     id: UUID
     customer_id: UUID
+    customer: Optional[UserResponse] = None
     provider_id: Optional[UUID] = None
+    provider: Optional[UserResponse] = None
     service_id: UUID
     service: ServiceInBooking
     status: BookingStatus

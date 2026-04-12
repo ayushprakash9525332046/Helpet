@@ -122,7 +122,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <div className="min-h-screen md:min-h-0">
             {children}
           </div>
-          <Footer />
+          {pathname === "/home" && <Footer />}
         </main>
 
         {/* Mobile Navigation */}
