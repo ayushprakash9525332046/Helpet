@@ -21,11 +21,13 @@ def send_otp_sms(phone: str, otp: str, purpose: str = "login") -> bool:
     token = getattr(settings, "TWILIO_AUTH_TOKEN",    None)
     from_ = getattr(settings, "TWILIO_PHONE_NUMBER",  None)
 
-    if not sid or not token or not from_:
+    # Check for actual credentials (not just placeholders)
+    if not sid or not token or not from_ or sid.startswith("AC...") or token == "your_token" or from_.startswith("+1..."):
         # Development mode — print OTP to console
-        print(f"\n{'='*50}")
+        print(f"\n{'='*60}")
         print(f"  DEV OTP  |  Phone: {phone}  |  Code: {otp}  |  Purpose: {purpose}")
-        print(f"{'='*50}\n")
+        print(f"  NOTE: To send actual SMS, provide TWILIO credentials in .env")
+        print(f"{'='*60}\n")
         logger.info(f"[DEV OTP] {phone}: {otp} ({purpose})")
         return True
 

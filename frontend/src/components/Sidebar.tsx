@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Home, Grid3X3, CalendarCheck, Bell, User, LogOut, Settings } from "lucide-react";
@@ -37,8 +38,14 @@ export default function Sidebar() {
       {/* Brand / Logo */}
       <div className="px-5 py-6">
         <Link href="/home" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-200">
-            <span className="text-white font-black text-lg italic">AS</span>
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-200 overflow-hidden">
+            <Image 
+              src="/assets/helpet-logo.png" 
+              alt="Helpet Logo" 
+              width={32} 
+              height={32} 
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
             <h1 className="font-black text-lg text-slate-800 tracking-tight leading-none">
