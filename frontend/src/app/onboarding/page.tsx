@@ -1,4 +1,8 @@
 "use client";
+// NOTE: Onboarding is no longer forced on first visit.
+// The root "/" now shows the public landing page directly.
+// This page is kept intact and accessible at /onboarding for future use
+// (e.g. mobile app intro, optional guided tour, etc.)
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";

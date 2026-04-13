@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,9 +12,11 @@ import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 type Mode = "password" | "otp" | "forgot";
 type ForgotStep = 1 | 2 | 3;
 
-export default function Login() {
+function LoginInner() {
   const { login, loginWithToken, user, isLoading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/home";
 
   // Mode: which screen is active
   const [mode, setMode] = useState<Mode>("password");
@@ -69,7 +71,7 @@ export default function Login() {
     setLoading(true);
     try {
       await login(phone, password);
-      window.location.replace("/home");
+      window.location.replace(redirectTo);
     } catch (err: any) {
       const detail = err?.response?.data?.detail;
       toast.error(typeof detail === "string" ? detail : "Invalid phone or password");
@@ -105,7 +107,7 @@ export default function Login() {
         code: otpCode,
       });
       loginWithToken(data.access_token, data.user);
-      window.location.replace("/home");
+      window.location.replace(redirectTo);
     } catch (err: any) {
       const detail = err?.response?.data?.detail;
       toast.error(typeof detail === "string" ? detail : "Invalid or expired OTP");
@@ -464,5 +466,13 @@ export default function Login() {
         </AnimatePresence>
       </motion.div>
     </div>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={null}>
+      <LoginInner />
+    </Suspense>
   );
 }

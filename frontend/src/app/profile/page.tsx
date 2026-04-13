@@ -24,7 +24,7 @@ export default function Profile() {
       title: "Account",
       items: [
         { icon: User,          label: "Edit Profile",      href: "/profile/edit",      color: "bg-blue-100 text-blue-600" },
-        { icon: Lock,          label: "Change Password",   href: "/profile/password",  color: "bg-purple-100 text-purple-600" },
+        // { icon: Lock,          label: "Change Password",   href: "/profile/password",  color: "bg-purple-100 text-purple-600" },
         // { icon: MapPin,        label: "My Addresses",      href: "/profile/addresses", color: "bg-green-100 text-green-600" },
       ],
     },

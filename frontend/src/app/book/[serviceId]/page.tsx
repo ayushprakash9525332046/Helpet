@@ -113,6 +113,11 @@ export default function BookService() {
   }, [serviceId]);
 
   const handleBook = async () => {
+    // Gate: must be logged in to confirm a booking
+    if (!user) {
+      router.push(`/login?redirect=/book/${serviceId}`);
+      return;
+    }
     if (!address.trim()) return toast.error("Please enter your address");
     if (!selectedTime) return toast.error("Please select a time slot");
     const date = new Date(days[selectedDate]);
