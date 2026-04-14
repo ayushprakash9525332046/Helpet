@@ -16,7 +16,7 @@ cloudinary.config(
 )
 
 
-def upload_image(data: bytes, folder: str = "apnasewa", public_id: str | None = None) -> str:
+def upload_image(data: bytes, folder: str = "helpet", public_id: str | None = None) -> str:
     """
     Upload raw image bytes to Cloudinary.
     Returns the secure HTTPS URL of the uploaded image.

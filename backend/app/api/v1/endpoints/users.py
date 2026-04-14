@@ -53,7 +53,7 @@ async def upload_avatar(
 
     public_id = f"avatars/{current_user.id}"
     try:
-        url = upload_image(contents, folder="apnasewa", public_id=public_id)
+        url = upload_image(contents, folder="helpet", public_id=public_id)
     except RuntimeError as exc:
         raise HTTPException(status_code=500, detail=str(exc))
 

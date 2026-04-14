@@ -1,4 +1,4 @@
-# uvicorn app.main:app--reload 
+# uvicorn app.main:app--reload
 # ────────────────────────────
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -55,3 +55,19 @@ async def root():
 @app.get("/health", tags=["Health"])
 async def health_check():
     return {"status": "ok"}
+
+
+@app.get("/debug")
+def debug():
+    import os
+
+    return {
+        "DATABASE_URL_exists": bool(os.getenv("DATABASE_URL")),
+        "DATABASE_URL_preview": (
+            str(os.getenv("DATABASE_URL", ""))[:80]
+            if os.getenv("DATABASE_URL")
+            else None
+        ),
+        "SUPABASE_URL_exists": bool(os.getenv("SUPABASE_URL")),
+        "SUPABASE_KEY_exists": bool(os.getenv("SUPABASE_KEY")),
+    }
