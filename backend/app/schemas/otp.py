@@ -1,18 +1,18 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from app.models.otp import OTPPurpose
 
 
 class OTPSendRequest(BaseModel):
-    phone: str
+    email: EmailStr
     purpose: OTPPurpose = OTPPurpose.LOGIN
 
 
 class OTPVerifyRequest(BaseModel):
-    phone: str
+    email: EmailStr
     code: str
 
 
 class PasswordResetConfirm(BaseModel):
-    phone: str
+    email: EmailStr
     code: str
     new_password: str

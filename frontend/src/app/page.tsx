@@ -12,7 +12,7 @@ import { getServiceIcon } from "@/lib/icons";
 import ServiceCard from "@/components/ServiceCard";
 import Footer from "@/components/Footer";
 import {
-  Search, ChevronRight, Sparkles, Shield, Clock,
+  Search, ChevronRight,CalendarDays, Sparkles, Shield, Clock,
   Users, CheckCircle2, Star, ArrowRight,
 } from "lucide-react";
 
@@ -26,8 +26,8 @@ function resolveCategoryImage(url?: string) {
 }
 
 const STATS = [
-  { icon: Users,         value: "2,000+", label: "Professionals", color: "text-blue-600",   bg: "bg-blue-50"   },
-  { icon: CheckCircle2,  value: "50K+",   label: "Jobs Done",     color: "text-emerald-600", bg: "bg-emerald-50" },
+  { icon: Users,         value: "40+", label: "Professionals", color: "text-blue-600",   bg: "bg-blue-50"   },
+  { icon: CheckCircle2,  value: "380+",   label: "Jobs Done",     color: "text-emerald-600", bg: "bg-emerald-50" },
   { icon: Star,          value: "4.9",    label: "Avg Rating",    color: "text-amber-500",  bg: "bg-amber-50"  },
 ];
 
@@ -38,9 +38,24 @@ const PROMO_CARDS = [
 ];
 
 const HOW_IT_WORKS = [
-  { step: "01", emoji: "🔍", title: "Browse Services",  desc: "Explore 200+ services across categories. See pricing upfront — no surprises." },
-  { step: "02", emoji: "📅", title: "Pick a Slot",      desc: "Choose a date and time that works for you. Same-day slots available."        },
-  { step: "03", emoji: "✅", title: "Service Done",     desc: "A verified professional arrives. Pay after the job is complete."              },
+  {
+    step: "01",
+    icon: Search,
+    title: "Browse Services",
+    desc: "Explore 200+ services across categories. See pricing upfront — no surprises.",
+  },
+  {
+    step: "02",
+    icon: CalendarDays,
+    title: "Pick a Slot",
+    desc: "Choose a date and time that works for you. Same-day slots available.",
+  },
+  {
+    step: "03",
+    icon: CheckCircle2,
+    title: "Service Done",
+    desc: "A verified professional arrives. Pay after the job is complete.",
+  },
 ];
 
 export default function LandingPage() {
@@ -85,37 +100,58 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
-
       {/* ── Public Navbar ──────────────────────────────── */}
       <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
         <div className="container-fluid flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 shrink-0">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center overflow-hidden shadow-lg shadow-blue-200">
-              <Image src="/assets/helpet-logo.png" alt="Helpet" width={32} height={32} className="w-full h-full object-cover" />
+              <Image
+                src="/assets/helpet-logo.png"
+                alt="Helpet"
+                width={32}
+                height={32}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
-              <h1 className="font-black text-lg text-slate-800 tracking-tight leading-none">Helpet</h1>
-              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Home Services</p>
+              <h1 className="font-black text-lg text-slate-800 tracking-tight leading-none">
+                Helpet
+              </h1>
+              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
+                Home Services
+              </p>
             </div>
           </Link>
 
           {/* Desktop centre links */}
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/categories" className="text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
+            <Link
+              href="/categories"
+              className="text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors"
+            >
               Browse Services
             </Link>
-            <Link href="/categories" className="text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
+            <Link
+              href="/categories"
+              className="text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors"
+            >
               Pricing
             </Link>
           </div>
 
           {/* Auth CTAs */}
           <div className="flex items-center gap-2 md:gap-3">
-            <Link href="/login" className="text-sm font-bold text-slate-700 hover:text-blue-600 transition-colors px-3 py-1.5 hidden sm:block">
+            <Link
+              href="/login"
+              className="text-sm font-bold text-slate-700 hover:text-blue-600 transition-colors px-3 py-1.5 hidden sm:block"
+            >
               Login
             </Link>
-            <Link href="/register" className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 md:px-5 py-2 rounded-xl transition-all shadow-md shadow-blue-200 active:scale-95">
+            <Link
+              href="/register"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 md:px-5 py-2 rounded-xl transition-all shadow-md shadow-blue-200 active:scale-95"
+            >
               Sign Up Free
             </Link>
           </div>
@@ -129,17 +165,21 @@ export default function LandingPage() {
         <div className="absolute -bottom-6 left-4 w-40 h-40 bg-white/5 rounded-full" />
 
         <div className="container-fluid relative z-10 max-w-3xl">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
             <span className="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em] bg-white/10 px-4 py-1.5 rounded-full border border-white/10 inline-block mb-4 md:mb-5">
               India&apos;s Trusted Home Service Platform
             </span>
             <h1 className="text-white text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4 md:mb-5">
-              Professional Home Services<br />
+              Professional Home Services
+              <br />
               <span className="text-blue-200">at Your Doorstep</span>
             </h1>
             <p className="text-white/80 text-base md:text-lg font-medium mb-8 max-w-xl leading-relaxed">
-              Book verified professionals for cleaning, plumbing, AC repair, and 200+ services.
-              Same-day booking, guaranteed quality.
+              Book verified professionals for cleaning, plumbing, AC repair, and
+              200+ services. Same-day booking, guaranteed quality.
             </p>
 
             {/* Search bar */}
@@ -150,7 +190,12 @@ export default function LandingPage() {
                   type="text"
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") router.push(`/categories?q=${encodeURIComponent(searchValue)}`); }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter")
+                      router.push(
+                        `/categories?q=${encodeURIComponent(searchValue)}`,
+                      );
+                  }}
                   placeholder="What service do you need?"
                   className="text-sm font-medium text-slate-700 placeholder:text-slate-400 outline-none bg-transparent w-full"
                 />
@@ -165,10 +210,17 @@ export default function LandingPage() {
 
             {/* Quick tags — resolve to /categories/[id] once categories load */}
             <div className="flex flex-wrap gap-2 mt-4">
-              {["Cleaning", "Plumbing", "AC Repair", "Electrician", "Painting"].map((tag) => {
-                const match = categories.find((c) =>
-                  c.name.toLowerCase().includes(tag.toLowerCase()) ||
-                  tag.toLowerCase().includes(c.name.toLowerCase())
+              {[
+                "Cleaning",
+                "Plumbing",
+                "AC Repair",
+                "Electrician",
+                "Painting",
+              ].map((tag) => {
+                const match = categories.find(
+                  (c) =>
+                    c.name.toLowerCase().includes(tag.toLowerCase()) ||
+                    tag.toLowerCase().includes(c.name.toLowerCase()),
                 );
                 const href = match
                   ? `/categories/${match.id}`
@@ -191,23 +243,36 @@ export default function LandingPage() {
       {/* ── Stats ─────────────────────────────────────── */}
       <div className="container-fluid -mt-5 relative z-20">
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
           className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 grid grid-cols-3 divide-x divide-slate-100"
         >
           {STATS.map(({ icon: Icon, value, label, color, bg }) => (
-            <div key={label} className="flex flex-col items-center justify-center py-5 md:py-7 gap-2">
-              <div className={`w-10 h-10 ${bg} rounded-full flex items-center justify-center ${color} mb-1`}>
-                <Icon size={18} fill={label.includes("Rating") ? "currentColor" : "none"} />
+            <div
+              key={label}
+              className="flex flex-col items-center justify-center py-5 md:py-7 gap-2"
+            >
+              <div
+                className={`w-10 h-10 ${bg} rounded-full flex items-center justify-center ${color} mb-1`}
+              >
+                <Icon
+                  size={18}
+                  fill={label.includes("Rating") ? "currentColor" : "none"}
+                />
               </div>
-              <span className="text-lg md:text-2xl font-black text-slate-800">{value}</span>
-              <span className="text-[9px] md:text-[10px] text-slate-400 font-bold uppercase tracking-widest">{label}</span>
+              <span className="text-lg md:text-2xl font-black text-slate-800">
+                {value}
+              </span>
+              <span className="text-[9px] md:text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                {label}
+              </span>
             </div>
           ))}
         </motion.div>
       </div>
 
       <div className="container-fluid">
-
         {/* ── Promo Carousel ────────────────────────────── */}
         <div className="mt-8 md:mt-10">
           <div className="relative h-36 md:h-44 rounded-2xl overflow-hidden shadow-xl">
@@ -224,9 +289,16 @@ export default function LandingPage() {
                   >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
                     <div>
-                      <span className="text-[9px] font-black text-white/90 uppercase tracking-[0.2em] bg-white/20 px-2 py-0.5 rounded-md">{card.label}</span>
-                      <p className="text-white font-black text-lg md:text-xl mt-2 mb-4">{card.title}</p>
-                      <Link href="/categories" className="bg-white text-blue-600 text-xs font-black px-5 py-2 rounded-xl inline-flex items-center gap-2 hover:bg-blue-50 transition-all">
+                      <span className="text-[9px] font-black text-white/90 uppercase tracking-[0.2em] bg-white/20 px-2 py-0.5 rounded-md">
+                        {card.label}
+                      </span>
+                      <p className="text-white font-black text-lg md:text-xl mt-2 mb-4">
+                        {card.title}
+                      </p>
+                      <Link
+                        href="/categories"
+                        className="bg-white text-blue-600 text-xs font-black px-5 py-2 rounded-xl inline-flex items-center gap-2 hover:bg-blue-50 transition-all"
+                      >
                         {card.cta} <ChevronRight size={14} />
                       </Link>
                     </div>
@@ -238,12 +310,16 @@ export default function LandingPage() {
                       {card.emoji}
                     </motion.span>
                   </motion.div>
-                ) : null
+                ) : null,
               )}
             </AnimatePresence>
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5 p-1 bg-black/10 backdrop-blur-md rounded-full">
               {PROMO_CARDS.map((_, i) => (
-                <button key={i} onClick={() => setPromoIdx(i)} className={`h-1.5 rounded-full transition-all duration-500 ${promoIdx === i ? "w-6 bg-white" : "w-1.5 bg-white/40"}`} />
+                <button
+                  key={i}
+                  onClick={() => setPromoIdx(i)}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${promoIdx === i ? "w-6 bg-white" : "w-1.5 bg-white/40"}`}
+                />
               ))}
             </div>
           </div>
@@ -253,33 +329,65 @@ export default function LandingPage() {
         <div className="mt-12 md:mt-16">
           <div className="flex items-end justify-between mb-5 md:mb-7">
             <div>
-              <h2 className="text-slate-800 font-black text-xl md:text-2xl lg:text-3xl tracking-tight">Our Services</h2>
-              <p className="text-slate-400 text-sm md:text-base mt-0.5">Professional help for every task</p>
+              <h2 className="text-slate-800 font-black text-xl md:text-2xl lg:text-3xl tracking-tight">
+                Our Services
+              </h2>
+              <p className="text-slate-400 text-sm md:text-base mt-0.5">
+                Professional help for every task
+              </p>
             </div>
-            <Link href="/categories" className="flex items-center gap-1.5 text-blue-600 text-xs md:text-sm font-bold bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-xl transition-all">
+            <Link
+              href="/categories"
+              className="flex items-center gap-1.5 text-blue-600 text-xs md:text-sm font-bold bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-xl transition-all"
+            >
               See All <ChevronRight size={14} />
             </Link>
           </div>
 
           {dataLoading ? (
             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 gap-3 md:gap-4">
-              {[...Array(8)].map((_, i) => <div key={i} className="skeleton rounded-2xl h-24 md:h-32" />)}
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="skeleton rounded-2xl h-24 md:h-32" />
+              ))}
             </div>
           ) : (
             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 gap-3 md:gap-4">
               {categories.slice(0, 8).map((cat, i) => {
                 const imgSrc = resolveCategoryImage(cat.icon);
                 return (
-                  <motion.div key={cat.id} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }} whileTap={{ scale: 0.9 }}>
-                    <Link href={`/categories/${cat.id}`} className="flex flex-col items-center gap-2 group">
+                  <motion.div
+                    key={cat.id}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.05 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Link
+                      href={`/categories/${cat.id}`}
+                      className="flex flex-col items-center gap-2 group"
+                    >
                       <div className="w-full aspect-square rounded-2xl overflow-hidden bg-white shadow-sm border border-slate-100 group-hover:border-blue-200 group-hover:shadow-xl group-hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
                         {imgSrc ? (
-                          <img src={imgSrc} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                          <img
+                            src={imgSrc}
+                            alt={cat.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
                         ) : (
-                          (() => { const Icon = getServiceIcon(cat.name); return <Icon size={24} className="text-slate-300 md:w-8 md:h-8" />; })()
+                          (() => {
+                            const Icon = getServiceIcon(cat.name);
+                            return (
+                              <Icon
+                                size={24}
+                                className="text-slate-300 md:w-8 md:h-8"
+                              />
+                            );
+                          })()
                         )}
                       </div>
-                      <span className="text-[10px] md:text-xs font-bold text-slate-600 text-center leading-tight group-hover:text-blue-600 transition-colors">{cat.name}</span>
+                      <span className="text-[10px] md:text-xs font-bold text-slate-600 text-center leading-tight group-hover:text-blue-600 transition-colors">
+                        {cat.name}
+                      </span>
                     </Link>
                   </motion.div>
                 );
@@ -291,18 +399,31 @@ export default function LandingPage() {
         {/* ── How It Works ──────────────────────────────── */}
         <div className="mt-16 md:mt-20">
           <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-slate-800 font-black text-xl md:text-2xl lg:text-3xl tracking-tight">How It Works</h2>
-            <p className="text-slate-400 text-sm md:text-base mt-1">Book a service in 3 simple steps</p>
+            <h2 className="text-slate-800 font-black text-xl md:text-2xl lg:text-3xl tracking-tight">
+              How It Works
+            </h2>
+            <p className="text-slate-400 text-sm md:text-base mt-1">
+              Book a service in 3 simple steps
+            </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8">
-            {HOW_IT_WORKS.map(({ step, emoji, title, desc }) => (
-              <div key={step} className="bg-white rounded-2xl p-6 md:p-8 border border-slate-100 shadow-sm text-center hover:shadow-lg transition-all group">
+            {HOW_IT_WORKS.map(({ step, icon: Icon, title, desc }) => (
+              <div
+                key={step}
+                className="bg-white rounded-2xl p-6 md:p-8 border border-slate-100 shadow-sm text-center hover:shadow-lg transition-all group"
+              >
                 <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  {emoji}
+                  <Icon className="w-7 h-7 text-blue-600" />
                 </div>
-                <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest block mb-1">Step {step}</span>
-                <h3 className="text-slate-800 font-black text-base md:text-lg mb-2">{title}</h3>
-                <p className="text-slate-400 text-sm font-medium leading-relaxed">{desc}</p>
+                <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest block mb-1">
+                  Step {step}
+                </span>
+                <h3 className="text-slate-800 font-black text-base md:text-lg mb-2">
+                  {title}
+                </h3>
+                <p className="text-slate-400 text-sm font-medium leading-relaxed">
+                  {desc}
+                </p>
               </div>
             ))}
           </div>
@@ -331,21 +452,32 @@ export default function LandingPage() {
         <div className="mt-16 md:mt-20 mb-8 md:mb-16">
           <div className="flex items-end justify-between mb-7 md:mb-10">
             <div>
-              <h2 className="text-slate-800 font-black text-xl md:text-2xl lg:text-3xl tracking-tight">Popular Services</h2>
-              <p className="text-slate-400 text-sm md:text-base mt-1">High-rated services by customers</p>
+              <h2 className="text-slate-800 font-black text-xl md:text-2xl lg:text-3xl tracking-tight">
+                Popular Services
+              </h2>
+              <p className="text-slate-400 text-sm md:text-base mt-1">
+                High-rated services by customers
+              </p>
             </div>
-            <Link href="/categories" className="flex items-center gap-2 text-blue-600 text-xs md:text-sm font-bold bg-blue-50 hover:bg-blue-100 px-5 py-2 rounded-2xl transition-all">
+            <Link
+              href="/categories"
+              className="flex items-center gap-2 text-blue-600 text-xs md:text-sm font-bold bg-blue-50 hover:bg-blue-100 px-5 py-2 rounded-2xl transition-all"
+            >
               See All <ChevronRight size={16} />
             </Link>
           </div>
 
           {dataLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {[...Array(4)].map((_, i) => <div key={i} className="skeleton rounded-2xl h-64" />)}
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="skeleton rounded-2xl h-64" />
+              ))}
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {services.map((svc, i) => <ServiceCard key={svc.id} service={svc} index={i} />)}
+              {services.map((svc, i) => (
+                <ServiceCard key={svc.id} service={svc} index={i} />
+              ))}
             </div>
           )}
         </div>
@@ -360,13 +492,20 @@ export default function LandingPage() {
                 Ready to get started?
               </h2>
               <p className="text-white/80 text-sm md:text-base font-medium mb-8 max-w-md mx-auto">
-                Join thousands of happy customers. Book your first service today and get ₹200 off.
+                Join thousands of happy customers. Book your first service today
+                and get ₹200 off.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/categories" className="bg-white text-blue-600 font-black px-8 py-4 rounded-2xl hover:bg-blue-50 transition-all shadow-xl text-sm md:text-base inline-flex items-center justify-center gap-2">
+                <Link
+                  href="/categories"
+                  className="bg-white text-blue-600 font-black px-8 py-4 rounded-2xl hover:bg-blue-50 transition-all shadow-xl text-sm md:text-base inline-flex items-center justify-center gap-2"
+                >
                   Browse Services <ArrowRight size={18} />
                 </Link>
-                <Link href="/register" className="bg-white/10 border border-white/20 text-white font-bold px-8 py-4 rounded-2xl hover:bg-white/20 transition-all text-sm md:text-base inline-flex items-center justify-center">
+                <Link
+                  href="/register"
+                  className="bg-white/10 border border-white/20 text-white font-bold px-8 py-4 rounded-2xl hover:bg-white/20 transition-all text-sm md:text-base inline-flex items-center justify-center"
+                >
                   Create Free Account
                 </Link>
               </div>

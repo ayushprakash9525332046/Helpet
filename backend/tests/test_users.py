@@ -8,11 +8,15 @@ def test_get_my_profile(client, customer_token, customer):
 
 
 def test_update_my_profile(client, customer_token):
-    r = client.put("/api/v1/users/me", json={
-        "full_name": "Updated Name",
-        "city": "Mumbai",
-        "pincode": "400001",
-    }, headers=auth(customer_token))
+    r = client.put(
+        "/api/v1/users/me",
+        json={
+            "full_name": "Updated Name",
+            "city": "Dehradun",
+            "pincode": "248008",
+        },
+        headers=auth(customer_token),
+    )
     assert r.status_code == 200
     data = r.json()
     assert data["full_name"] == "Updated Name"

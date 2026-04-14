@@ -1,6 +1,6 @@
 # /auth/register, /auth/login, /auth/otp/*, /auth/password-reset/*
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone, timedelta
 
@@ -10,7 +10,8 @@ from app.models.otp import OTP, OTPPurpose
 from app.schemas.user import UserRegister, TokenResponse, UserResponse
 from app.schemas.otp import OTPSendRequest, OTPVerifyRequest, PasswordResetConfirm
 from app.core.security import hash_password, verify_password, create_access_token
-from app.core.sms import generate_otp, send_otp_sms
+from app.core.sms import generate_otp
+from app.core.email import send_otp_email
 from app.core.config import settings
 from app.core.dependencies import get_current_user
 
@@ -25,9 +26,10 @@ OTP_RESEND_COOLDOWN_SECONDS = 60
 # ── Register ─────────────────────────────────────────────────────
 @router.post("/register", response_model=UserResponse, status_code=201)
 def register(user_data: UserRegister, db: Session = Depends(get_db)):
-    existing = db.query(User).filter(User.phone == user_data.phone).first()
-    if existing:
+    if db.query(User).filter(User.phone == user_data.phone).first():
         raise HTTPException(status_code=400, detail="Phone number already registered")
+    if db.query(User).filter(User.email == user_data.email).first():
+        raise HTTPException(status_code=400, detail="Email already registered")
 
     new_user = User(
         full_name=user_data.full_name,
@@ -39,14 +41,20 @@ def register(user_data: UserRegister, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    # Send email verification OTP
+    code = generate_otp()
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRE_MINUTES)
+    db.add(OTP(email=user_data.email, code=code, purpose=OTPPurpose.VERIFY, expires_at=expires_at))
+    db.commit()
+    send_otp_email(user_data.email, code, "verify")
+
     return new_user
 
 
 # ── Password Login ───────────────────────────────────────────────
 @router.post("/login", response_model=TokenResponse)
-def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
-):
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.phone == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid phone or password")
@@ -63,20 +71,17 @@ def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
-# ── OTP: Send ────────────────────────────────────────────────────
+# ── OTP: Send (email) ────────────────────────────────────────────
 @router.post("/otp/send")
 def send_otp(data: OTPSendRequest, db: Session = Depends(get_db)):
-    # For login/reset, verify user exists
     if data.purpose in (OTPPurpose.LOGIN, OTPPurpose.RESET):
-        user = db.query(User).filter(User.phone == data.phone).first()
-        if not user:
-            raise HTTPException(status_code=404, detail="No account found with this phone number")
+        if not db.query(User).filter(User.email == data.email).first():
+            raise HTTPException(status_code=404, detail="No account found with this email")
 
-    # Rate-limit: one OTP per phone per purpose per 60 seconds
     cooldown_cutoff = datetime.now(timezone.utc) - timedelta(seconds=OTP_RESEND_COOLDOWN_SECONDS)
     recent = (
         db.query(OTP)
-        .filter(OTP.phone == data.phone, OTP.purpose == data.purpose, OTP.created_at > cooldown_cutoff)
+        .filter(OTP.email == data.email, OTP.purpose == data.purpose, OTP.created_at > cooldown_cutoff)
         .first()
     )
     if recent:
@@ -84,12 +89,11 @@ def send_otp(data: OTPSendRequest, db: Session = Depends(get_db)):
 
     code = generate_otp()
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRE_MINUTES)
-    otp = OTP(phone=data.phone, code=code, purpose=data.purpose, expires_at=expires_at)
-    db.add(otp)
+    db.add(OTP(email=data.email, code=code, purpose=data.purpose, expires_at=expires_at))
     db.commit()
 
-    send_otp_sms(data.phone, code, data.purpose.value)
-    return {"message": "OTP sent successfully"}
+    send_otp_email(data.email, code, data.purpose.value)
+    return {"message": "OTP sent to your email"}
 
 
 # ── OTP: Verify Login ────────────────────────────────────────────
@@ -98,7 +102,7 @@ def verify_otp_login(data: OTPVerifyRequest, db: Session = Depends(get_db)):
     otp = (
         db.query(OTP)
         .filter(
-            OTP.phone == data.phone,
+            OTP.email == data.email,
             OTP.code == data.code,
             OTP.purpose == OTPPurpose.LOGIN,
             OTP.is_used == False,
@@ -110,12 +114,12 @@ def verify_otp_login(data: OTPVerifyRequest, db: Session = Depends(get_db)):
     if not otp:
         raise HTTPException(status_code=400, detail="Invalid or expired OTP")
 
-    user = db.query(User).filter(User.phone == data.phone).first()
+    user = db.query(User).filter(User.email == data.email).first()
     if not user:
-        raise HTTPException(status_code=404, detail="No account found with this phone number")
+        raise HTTPException(status_code=404, detail="No account found with this email")
 
     otp.is_used = True
-    user.is_phone_verified = True
+    user.is_email_verified = True
     db.commit()
 
     access_token = create_access_token(
@@ -125,13 +129,13 @@ def verify_otp_login(data: OTPVerifyRequest, db: Session = Depends(get_db)):
     return {"access_token": access_token, "token_type": "bearer", "user": user}
 
 
-# ── OTP: Verify Phone (registration) ────────────────────────────
-@router.post("/otp/verify-phone")
-def verify_phone_otp(data: OTPVerifyRequest, db: Session = Depends(get_db)):
+# ── OTP: Verify Email (after registration) ───────────────────────
+@router.post("/otp/verify-email")
+def verify_email_otp(data: OTPVerifyRequest, db: Session = Depends(get_db)):
     otp = (
         db.query(OTP)
         .filter(
-            OTP.phone == data.phone,
+            OTP.email == data.email,
             OTP.code == data.code,
             OTP.purpose == OTPPurpose.VERIFY,
             OTP.is_used == False,
@@ -144,24 +148,23 @@ def verify_phone_otp(data: OTPVerifyRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Invalid or expired OTP")
 
     otp.is_used = True
-    user = db.query(User).filter(User.phone == data.phone).first()
+    user = db.query(User).filter(User.email == data.email).first()
     if user:
-        user.is_phone_verified = True
+        user.is_email_verified = True
     db.commit()
-    return {"message": "Phone verified successfully"}
+    return {"message": "Email verified successfully"}
 
 
 # ── Password Reset: Request ──────────────────────────────────────
 @router.post("/password-reset/request")
 def request_password_reset(data: OTPSendRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.phone == data.phone).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="No account found with this phone number")
+    if not db.query(User).filter(User.email == data.email).first():
+        raise HTTPException(status_code=404, detail="No account found with this email")
 
     cooldown_cutoff = datetime.now(timezone.utc) - timedelta(seconds=OTP_RESEND_COOLDOWN_SECONDS)
     recent = (
         db.query(OTP)
-        .filter(OTP.phone == data.phone, OTP.purpose == OTPPurpose.RESET, OTP.created_at > cooldown_cutoff)
+        .filter(OTP.email == data.email, OTP.purpose == OTPPurpose.RESET, OTP.created_at > cooldown_cutoff)
         .first()
     )
     if recent:
@@ -169,12 +172,11 @@ def request_password_reset(data: OTPSendRequest, db: Session = Depends(get_db)):
 
     code = generate_otp()
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRE_MINUTES)
-    otp = OTP(phone=data.phone, code=code, purpose=OTPPurpose.RESET, expires_at=expires_at)
-    db.add(otp)
+    db.add(OTP(email=data.email, code=code, purpose=OTPPurpose.RESET, expires_at=expires_at))
     db.commit()
 
-    send_otp_sms(data.phone, code, "reset")
-    return {"message": "Password reset OTP sent"}
+    send_otp_email(data.email, code, "reset")
+    return {"message": "Password reset OTP sent to your email"}
 
 
 # ── Password Reset: Confirm ──────────────────────────────────────
@@ -186,7 +188,7 @@ def confirm_password_reset(data: PasswordResetConfirm, db: Session = Depends(get
     otp = (
         db.query(OTP)
         .filter(
-            OTP.phone == data.phone,
+            OTP.email == data.email,
             OTP.code == data.code,
             OTP.purpose == OTPPurpose.RESET,
             OTP.is_used == False,
@@ -198,7 +200,7 @@ def confirm_password_reset(data: PasswordResetConfirm, db: Session = Depends(get
     if not otp:
         raise HTTPException(status_code=400, detail="Invalid or expired OTP")
 
-    user = db.query(User).filter(User.phone == data.phone).first()
+    user = db.query(User).filter(User.email == data.email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 

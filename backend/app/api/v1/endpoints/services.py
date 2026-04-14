@@ -15,6 +15,7 @@ from app.schemas.service import (
     ServiceCategoryCreate,
     ServiceCategoryResponse,
     CategoryReorderItem,
+    ServiceReorderItem,
 )
 from app.core.dependencies import get_current_user, get_current_admin
 
@@ -98,7 +99,18 @@ def get_services(category_id: UUID = None, db: Session = Depends(get_db)):
     query = db.query(Service).filter(Service.is_active == True)
     if category_id:
         query = query.filter(Service.category_id == category_id)
-    return query.all()
+    return query.order_by(Service.order, Service.created_at).all()
+
+
+@router.put("/reorder", status_code=204)
+def reorder_services(
+    items: List[ServiceReorderItem],
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    for item in items:
+        db.query(Service).filter(Service.id == item.id).update({"order": item.order})
+    db.commit()
 
 
 @router.get("/{service_id}", response_model=ServiceResponse)

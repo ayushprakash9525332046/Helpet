@@ -27,6 +27,11 @@ class CategoryReorderItem(BaseModel):
     order: int
 
 
+class ServiceReorderItem(BaseModel):
+    id: UUID
+    order: int
+
+
 class ServiceCreate(BaseModel):
     category_id: UUID
     name: str
@@ -41,6 +46,7 @@ class ServiceUpdate(BaseModel):
     description: Optional[str] = None
     price: Optional[float] = None
     duration_minutes: Optional[int] = None
+    image: Optional[str] = None
     is_active: Optional[bool] = None
 
 
@@ -52,6 +58,7 @@ class ServiceResponse(BaseModel):
     duration_minutes: int
     is_active: bool
     image: Optional[str] = None
+    order: int = 0
     category: ServiceCategoryResponse
 
     class Config:

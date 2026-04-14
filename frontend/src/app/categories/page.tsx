@@ -133,12 +133,12 @@ function CategoriesContent() {
                       href={`/categories/${cat.id}`}
                       className="group flex flex-col items-center gap-3 md:gap-5"
                     >
-                      <div className="w-full aspect-square bg-white rounded-2xl md:rounded-[32px] overflow-hidden shadow-sm border border-slate-100 group-hover:border-blue-100 group-hover:shadow-2xl group-hover:shadow-blue-900/5 group-hover:-translate-y-1 transition-all duration-300 flex items-center justify-center p-6 md:p-10">
+                      <div className="w-full aspect-square bg-white rounded-2xl md:rounded-[32px] overflow-hidden shadow-sm border border-slate-100 group-hover:border-blue-100 group-hover:shadow-2xl group-hover:shadow-blue-900/5 group-hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
                         {imgSrc ? (
                           <img
                             src={imgSrc}
                             alt={cat.name}
-                            className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                         ) : (
                           <div className="flex flex-col items-center gap-2 text-slate-200 group-hover:text-blue-200 transition-colors">

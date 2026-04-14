@@ -8,6 +8,7 @@ import api from "@/lib/api";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import Image from "next/image";
 
 type Mode = "password" | "otp" | "forgot";
 type ForgotStep = 1 | 2 | 3;
@@ -18,7 +19,6 @@ function LoginInner() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/home";
 
-  // Mode: which screen is active
   const [mode, setMode] = useState<Mode>("password");
 
   // Password login
@@ -26,15 +26,15 @@ function LoginInner() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // OTP login
-  const [otpPhone, setOtpPhone] = useState("");
+  // OTP login (email-based)
+  const [otpEmail, setOtpEmail] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [otpCooldown, setOtpCooldown] = useState(0);
 
-  // Forgot password
+  // Forgot password (email-based)
   const [forgotStep, setForgotStep] = useState<ForgotStep>(1);
-  const [forgotPhone, setForgotPhone] = useState("");
+  const [forgotEmail, setForgotEmail] = useState("");
   const [forgotCode, setForgotCode] = useState("");
   const [forgotCooldown, setForgotCooldown] = useState(0);
   const [newPassword, setNewPassword] = useState("");
@@ -44,12 +44,10 @@ function LoginInner() {
 
   const [loading, setLoading] = useState(false);
 
-  // Redirect if already logged in
   useEffect(() => {
     if (!isLoading && user) router.replace("/home");
   }, [isLoading, user, router]);
 
-  // Cooldown ticker
   useEffect(() => {
     if (otpCooldown <= 0) return;
     const t = setTimeout(() => setOtpCooldown((c) => c - 1), 1000);
@@ -81,13 +79,13 @@ function LoginInner() {
 
   // ── OTP Login: send ──────────────────────────────────────────
   const handleSendOtp = async () => {
-    if (!otpPhone.trim()) return toast.error("Enter your phone number");
+    if (!otpEmail.trim()) return toast.error("Enter your email address");
     setLoading(true);
     try {
-      await api.post("/auth/otp/send", { phone: otpPhone, purpose: "login" });
+      await api.post("/auth/otp/send", { email: otpEmail, purpose: "login" });
       setOtpSent(true);
       setOtpCooldown(60);
-      toast.success("OTP sent to your phone");
+      toast.success("OTP sent to your email");
     } catch (err: any) {
       const detail = err?.response?.data?.detail;
       toast.error(typeof detail === "string" ? detail : "Failed to send OTP");
@@ -103,7 +101,7 @@ function LoginInner() {
     setLoading(true);
     try {
       const { data } = await api.post("/auth/otp/verify-login", {
-        phone: otpPhone,
+        email: otpEmail,
         code: otpCode,
       });
       loginWithToken(data.access_token, data.user);
@@ -117,16 +115,16 @@ function LoginInner() {
 
   // ── Forgot: send OTP ─────────────────────────────────────────
   const handleForgotSendOtp = async () => {
-    if (!forgotPhone.trim()) return toast.error("Enter your phone number");
+    if (!forgotEmail.trim()) return toast.error("Enter your email address");
     setLoading(true);
     try {
       await api.post("/auth/password-reset/request", {
-        phone: forgotPhone,
+        email: forgotEmail,
         purpose: "reset",
       });
       setForgotStep(2);
       setForgotCooldown(60);
-      toast.success("OTP sent to your phone");
+      toast.success("OTP sent to your email");
     } catch (err: any) {
       const detail = err?.response?.data?.detail;
       toast.error(typeof detail === "string" ? detail : "Failed to send OTP");
@@ -150,14 +148,14 @@ function LoginInner() {
     setLoading(true);
     try {
       await api.post("/auth/password-reset/confirm", {
-        phone: forgotPhone,
+        email: forgotEmail,
         code: forgotCode,
         new_password: newPassword,
       });
       toast.success("Password reset! Please sign in.");
       setMode("password");
       setForgotStep(1);
-      setForgotPhone("");
+      setForgotEmail("");
       setForgotCode("");
       setNewPassword("");
       setConfirmPassword("");
@@ -186,13 +184,13 @@ function LoginInner() {
         <motion.div
           initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", duration: 0.6 }}
-          className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-2xl mb-3 z-10"
+          className="mb-3 z-10"
         >
-          <span className="text-3xl font-black text-blue-600">A</span>
+          <Image src="/assets/helpet-logo.png" alt="Helpet" width={80} height={80} className="object-contain drop-shadow-2xl rounded-2xl" />
         </motion.div>
         <motion.p
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="text-white/80 text-sm font-medium z-10"
+          className="text-white font-bold text-base z-10"
         >
           Helpet
         </motion.p>
@@ -217,19 +215,19 @@ function LoginInner() {
                 <ArrowLeft size={16} /> Back to Sign In
               </button>
 
-              {/* Step 1: Enter phone */}
+              {/* Step 1: Enter email */}
               {forgotStep === 1 && (
                 <div className="flex flex-col gap-5">
                   <div>
                     <h1 className="text-2xl font-extrabold text-slate-800 mb-1">Forgot Password?</h1>
-                    <p className="text-slate-400 text-sm">Enter your registered phone number</p>
+                    <p className="text-slate-400 text-sm">Enter your registered email address</p>
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Phone Number</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Email Address</label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base">📱</span>
-                      <input type="tel" placeholder="Enter your phone number"
-                        value={forgotPhone} onChange={(e) => setForgotPhone(e.target.value)}
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base">✉️</span>
+                      <input type="email" placeholder="Enter your email address"
+                        value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)}
                         className="input-premium" />
                     </div>
                   </div>
@@ -250,7 +248,7 @@ function LoginInner() {
                 <div className="flex flex-col gap-5">
                   <div>
                     <h1 className="text-2xl font-extrabold text-slate-800 mb-1">Enter OTP</h1>
-                    <p className="text-slate-400 text-sm">Sent to <span className="font-semibold text-slate-600">{forgotPhone}</span></p>
+                    <p className="text-slate-400 text-sm">Sent to <span className="font-semibold text-slate-600">{forgotEmail}</span></p>
                   </div>
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">6-Digit OTP</label>
@@ -324,7 +322,7 @@ function LoginInner() {
                     className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
                       mode === m ? "bg-white text-blue-600 shadow-sm" : "text-slate-500"
                     }`}>
-                    {m === "password" ? "🔒 Password" : "📱 OTP"}
+                    {m === "password" ? "🔒 Password" : "✉️ OTP"}
                   </button>
                 ))}
               </div>
@@ -379,12 +377,12 @@ function LoginInner() {
                 <form onSubmit={otpSent ? handleVerifyOtp : (e) => { e.preventDefault(); handleSendOtp(); }}
                   className="flex flex-col gap-5">
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Phone Number</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Email Address</label>
                     <div className="flex gap-2">
                       <div className="relative flex-1">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base">📱</span>
-                        <input type="tel" placeholder="Enter your phone number"
-                          value={otpPhone} onChange={(e) => setOtpPhone(e.target.value)}
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base">✉️</span>
+                        <input type="email" placeholder="Enter your email address"
+                          value={otpEmail} onChange={(e) => setOtpEmail(e.target.value)}
                           disabled={otpSent}
                           className="input-premium disabled:bg-slate-50 disabled:text-slate-500" />
                       </div>
@@ -418,7 +416,7 @@ function LoginInner() {
                             6-Digit OTP
                           </label>
                           <p className="text-xs text-slate-400 mb-3">
-                            Sent to <span className="font-semibold text-slate-600">{otpPhone}</span>
+                            Sent to <span className="font-semibold text-slate-600">{otpEmail}</span>
                           </p>
                           <input type="text" inputMode="numeric" maxLength={6}
                             placeholder="- - - - - -"

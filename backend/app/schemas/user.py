@@ -1,32 +1,35 @@
-from pydantic import BaseModel, EmailStr
+import re
+from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional
 from uuid import UUID
 from datetime import datetime
 from app.models.user import UserRole, UserStatus
 
+
 # ── What client SENDS ────────────────────────────────────────
 
-
 class UserRegister(BaseModel):
-    """Data needed to register"""
-
     full_name: str
     phone: str
-    email: Optional[EmailStr] = None
+    email: EmailStr
     password: str
     role: UserRole = UserRole.CUSTOMER
 
+    @field_validator("phone")
+    @classmethod
+    def validate_indian_phone(cls, v: str) -> str:
+        v = v.strip()
+        if not re.match(r"^[6-9]\d{9}$", v):
+            raise ValueError("Enter a valid 10-digit Indian mobile number (starts with 6-9)")
+        return v
+
 
 class UserLogin(BaseModel):
-    """Data needed to login"""
-
     phone: str
     password: str
 
 
 class UserUpdate(BaseModel):
-    """Data to update profile"""
-
     full_name: Optional[str] = None
     email: Optional[EmailStr] = None
     address: Optional[str] = None
@@ -36,15 +39,14 @@ class UserUpdate(BaseModel):
 
 # ── What server RETURNS ──────────────────────────────────────
 class UserResponse(BaseModel):
-    """User data returned to client — never includes password!"""
-
     id: UUID
     full_name: str
     phone: str
-    email: Optional[str] = None
+    email: str
     role: UserRole
     status: UserStatus
     is_verified: bool
+    is_email_verified: bool
     created_at: datetime
     profile_picture: Optional[str] = None
     address: Optional[str] = None
@@ -56,8 +58,6 @@ class UserResponse(BaseModel):
 
 
 class TokenResponse(BaseModel):
-    """JWT token returned after login"""
-
     access_token: str
     token_type: str = "bearer"
     user: UserResponse

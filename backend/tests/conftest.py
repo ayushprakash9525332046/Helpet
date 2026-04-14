@@ -212,11 +212,15 @@ def service_item(client, admin_token, category):
 
 @pytest.fixture
 def booking_item(client, customer_token, service_item):
-    r = client.post("/api/v1/bookings/", json={
-        "service_id": service_item["id"],
-        "scheduled_at": "2026-06-01T10:00:00Z",
-        "address": "123 Test Street, Mumbai",
-    }, headers=auth(customer_token))
+    r = client.post(
+        "/api/v1/bookings/",
+        json={
+            "service_id": service_item["id"],
+            "scheduled_at": "2026-06-01T10:00:00Z",
+            "address": "123 Test Street, Dehradun",
+        },
+        headers=auth(customer_token),
+    )
     assert r.status_code == 201
     return r.json()
 

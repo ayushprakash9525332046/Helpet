@@ -8,6 +8,7 @@ import api from "@/lib/api";
 import BackHeader from "@/components/BackHeader";
 import toast from "react-hot-toast";
 import { User, Mail, Phone, MapPin, Building2, Hash, Camera } from "lucide-react";
+import Avatar from "@/components/Avatar";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ?? "http://localhost:8000";
 
@@ -34,9 +35,7 @@ export default function EditProfile() {
     formData.append("file", file);
     setAvatarUploading(true);
     try {
-      const { data } = await api.post("/users/me/avatar", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const { data } = await api.post("/users/me/avatar", formData);
       updateUser(data);
       toast.success("Profile picture updated");
     } catch {
@@ -71,7 +70,7 @@ export default function EditProfile() {
     { key: "full_name", label: "Full Name",     placeholder: "Your full name",        icon: User,      type: "text" },
     { key: "email",     label: "Email Address", placeholder: "your@email.com",        icon: Mail,      type: "email" },
     { key: "address",   label: "Address",       placeholder: "Street, area, landmark",icon: MapPin,    type: "text" },
-    { key: "city",      label: "City",          placeholder: "Mumbai",                icon: Building2, type: "text" },
+    { key: "city",      label: "City",          placeholder: "Dehradun",                icon: Building2, type: "text" },
     { key: "pincode",   label: "Pincode",       placeholder: "400001",                icon: Hash,      type: "text" },
   ];
 
@@ -87,17 +86,14 @@ export default function EditProfile() {
         className="flex flex-col items-center pt-7 pb-5"
       >
         <div className="relative">
-          {user?.profile_picture ? (
-            <img
-              src={`${API_BASE}${user.profile_picture}`}
-              alt="Profile"
-              className="w-24 h-24 rounded-2xl object-cover shadow-xl shadow-blue-200"
-            />
-          ) : (
-            <div className="w-24 h-24 bg-linear-to-br from-blue-400 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-3xl font-extrabold shadow-xl shadow-blue-200">
-              {initial}
-            </div>
-          )}
+          <Avatar
+            src={user?.profile_picture?.startsWith("http") ? user.profile_picture : user?.profile_picture ? `${API_BASE}${user.profile_picture}` : null}
+            name={user?.full_name}
+            size="w-24 h-24"
+            radius="rounded-2xl"
+            textSize="text-3xl"
+            className="shadow-xl shadow-blue-200"
+          />
           <motion.div
             whileTap={{ scale: 0.9 }}
             onClick={() => fileInputRef.current?.click()}

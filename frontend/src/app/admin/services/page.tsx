@@ -2,17 +2,49 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import api from "@/lib/api";
 import { Service, ServiceCategory } from "@/lib/types";
-import { Plus, Pencil, Trash2, X, Check, Search, ChevronDown, Clock, IndianRupee } from "lucide-react";
+import {
+  Plus, Pencil, Trash2, X, Check, Search,
+  ChevronDown, Clock, IndianRupee, GripVertical,
+} from "lucide-react";
 import toast from "react-hot-toast";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
 
-function resolveImage(url: string) {
-  if (!url) return "";
+function resolveImage(url?: string | null) {
+  if (!url) return null;
   if (url.startsWith("http") || url.startsWith("data:")) return url;
-  return `${API_BASE}${url}`;
+  if (url.startsWith("/")) return `${API_BASE}${url}`;
+  return null;
+}
+
+const SERVICE_ICONS: Record<string, string> = {
+  clean: "🧹", plumb: "🔧", electr: "⚡", carp: "🪚",
+  paint: "🎨", ac: "❄️", salon: "✂️", pest: "🐛",
+  repair: "🔩", garden: "🌿",
+};
+function getIcon(name: string): string {
+  const n = name.toLowerCase();
+  for (const [k, v] of Object.entries(SERVICE_ICONS)) {
+    if (n.includes(k)) return v;
+  }
+  return "🏠";
 }
 
 interface FormState {
@@ -23,32 +55,163 @@ interface FormState {
   image: string;
   category_id: string;
 }
-
 const EMPTY_FORM: FormState = {
   name: "", description: "", price: "", duration_minutes: "60", image: "", category_id: "",
 };
 
+// ── Sortable service card ─────────────────────────────────────────
+function SortableServiceCard({
+  svc,
+  onEdit,
+  onDelete,
+}: {
+  svc: Service;
+  onEdit: (svc: Service) => void;
+  onDelete: (svc: Service) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: svc.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : undefined,
+    opacity: isDragging ? 0.85 : 1,
+  };
+
+  const imgSrc = resolveImage(svc.image);
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-start justify-between gap-3 ${
+        isDragging ? "shadow-xl ring-2 ring-blue-400" : ""
+      }`}
+    >
+      {/* Drag handle */}
+      <button
+        {...attributes}
+        {...listeners}
+        className="mt-0.5 p-1 -ml-1 rounded-lg text-slate-300 hover:text-slate-500 hover:bg-slate-100 transition-colors cursor-grab active:cursor-grabbing touch-none"
+        title="Drag to reorder"
+      >
+        <GripVertical size={16} />
+      </button>
+
+      <div className="flex items-start gap-3 flex-1 min-w-0">
+        {/* Image / icon thumbnail */}
+        <div className="w-12 h-12 rounded-xl overflow-hidden bg-blue-50 border border-slate-200 flex items-center justify-center text-xl shrink-0">
+          {imgSrc ? (
+            <img src={imgSrc} alt={svc.name} className="w-full h-full object-cover" />
+          ) : (
+            getIcon(svc.name)
+          )}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="font-bold text-slate-800 text-sm truncate">{svc.name}</p>
+            <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full shrink-0">
+              {svc.category.name}
+            </span>
+          </div>
+          {svc.description && (
+            <p className="text-slate-400 text-xs mt-0.5 line-clamp-1">{svc.description}</p>
+          )}
+          <div className="flex items-center gap-3 mt-2">
+            <span className="flex items-center gap-0.5 text-sm font-bold text-slate-700">
+              <IndianRupee size={11} className="text-blue-500" />
+              {Number(svc.price).toLocaleString("en-IN")}
+            </span>
+            <span className="flex items-center gap-1 text-xs text-slate-400">
+              <Clock size={11} />
+              {svc.duration_minutes} min
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex gap-1 shrink-0">
+        <button
+          onClick={() => onEdit(svc)}
+          className="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          <Pencil size={14} />
+        </button>
+        <button
+          onClick={() => onDelete(svc)}
+          className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Page ─────────────────────────────────────────────────────────
 export default function ServicesPage() {
-  const [services, setServices] = useState<Service[]>([]);
+  const [services, setServices]     = useState<Service[]>([]);
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [catFilter, setCatFilter] = useState("all");
-  const [modal, setModal] = useState<"create" | "edit" | null>(null);
+  const [loading, setLoading]       = useState(true);
+  const [reordering, setReordering] = useState(false);
+  const [search, setSearch]         = useState("");
+  const [catFilter, setCatFilter]   = useState("all");
+  const [modal, setModal]           = useState<"create" | "edit" | null>(null);
   const [editTarget, setEditTarget] = useState<Service | null>(null);
-  const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [saving, setSaving] = useState(false);
+  const [form, setForm]             = useState<FormState>(EMPTY_FORM);
+  const [saving, setSaving]         = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
 
   useEffect(() => {
-    Promise.all([
-      api.get("/services/"),
-      api.get("/services/categories"),
-    ]).then(([sRes, cRes]) => {
-      setServices(sRes.data);
-      setCategories(cRes.data);
-    }).finally(() => setLoading(false));
+    Promise.all([api.get("/services/"), api.get("/services/categories")])
+      .then(([sRes, cRes]) => {
+        setServices(sRes.data);
+        setCategories(cRes.data);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
+  // ── Drag end: reorder locally + persist ─────────────────────────
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    // Only reorder within the filtered view if no filter is active,
+    // otherwise reorder within full list
+    const listToReorder = isFiltered ? filtered : services;
+    const oldIndex = listToReorder.findIndex((s) => s.id === active.id);
+    const newIndex  = listToReorder.findIndex((s) => s.id === over.id);
+    const reordered = arrayMove(listToReorder, oldIndex, newIndex);
+
+    // Merge back into full list preserving non-filtered items
+    if (isFiltered) {
+      const reorderedIds = new Set(reordered.map((s) => s.id));
+      const others = services.filter((s) => !reorderedIds.has(s.id));
+      setServices([...reordered, ...others]);
+    } else {
+      setServices(reordered);
+    }
+
+    setReordering(true);
+    try {
+      await api.put(
+        "/services/reorder",
+        reordered.map((s, i) => ({ id: s.id, order: i }))
+      );
+    } catch {
+      toast.error("Failed to save order");
+      setServices(services); // revert
+    } finally {
+      setReordering(false);
+    }
+  }
+
+  // ── Modal helpers ────────────────────────────────────────────────
   function openCreate() {
     setForm({ ...EMPTY_FORM, category_id: categories[0]?.id ?? "" });
     setEditTarget(null);
@@ -124,18 +287,24 @@ export default function ServicesPage() {
     }
   }
 
+  const isFiltered = search.trim() !== "" || catFilter !== "all";
   const filtered = services.filter((s) => {
     const matchSearch = s.name.toLowerCase().includes(search.toLowerCase());
-    const matchCat = catFilter === "all" || s.category.id === catFilter;
+    const matchCat    = catFilter === "all" || s.category.id === catFilter;
     return matchSearch && matchCat;
   });
+
+  const previewSrc = resolveImage(form.image || null);
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-800">Services</h1>
-          <p className="text-slate-500 text-sm mt-1">{services.length} active services</p>
+          <p className="text-slate-500 text-sm mt-1">
+            {services.length} active services
+            {reordering && <span className="ml-2 text-blue-500 text-xs">Saving order…</span>}
+          </p>
         </div>
         <motion.button
           whileTap={{ scale: 0.96 }}
@@ -148,7 +317,7 @@ export default function ServicesPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="relative flex-1">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -177,7 +346,7 @@ export default function ServicesPage() {
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-36 bg-slate-100 animate-pulse rounded-2xl" />
+            <div key={i} className="h-24 bg-slate-100 animate-pulse rounded-2xl" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
@@ -185,63 +354,26 @@ export default function ServicesPage() {
           No services found
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          <AnimatePresence>
-            {filtered.map((svc, i) => (
-              <motion.div
-                key={svc.id}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ delay: i * 0.04 }}
-                className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 bg-blue-50 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-lg">
-                      {svc.image
-                        ? <img src={resolveImage(svc.image)} alt={svc.name} className="w-full h-full object-cover" />
-                        : svc.category.name === "Cleaning" ? "🧹" : svc.category.name === "Plumbing" ? "🔧" : "🏠"}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-bold text-slate-800 text-sm truncate">{svc.name}</p>
-                      <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                        {svc.category.name}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex gap-1 shrink-0">
-                    <button
-                      onClick={() => openEdit(svc)}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                    >
-                      <Pencil size={13} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(svc)}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
-                </div>
-                {svc.description && (
-                  <p className="text-slate-400 text-xs mb-3 line-clamp-2">{svc.description}</p>
-                )}
-                <div className="flex items-center gap-4 pt-3 border-t border-slate-50">
-                  <div className="flex items-center gap-1 text-sm font-bold text-slate-800">
-                    <IndianRupee size={12} className="text-blue-500" />
-                    {svc.price.toLocaleString("en-IN")}
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-slate-400">
-                    <Clock size={11} />
-                    {svc.duration_minutes} min
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+        <>
+          <p className="text-xs text-slate-400 mb-3 flex items-center gap-1">
+            <GripVertical size={12} /> Drag cards to reorder — order reflects on all service listings
+            {isFiltered && <span className="ml-1 text-amber-500">(filtering active — reorder applies to visible items)</span>}
+          </p>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={filtered.map((s) => s.id)} strategy={rectSortingStrategy}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {filtered.map((svc) => (
+                  <SortableServiceCard
+                    key={svc.id}
+                    svc={svc}
+                    onEdit={openEdit}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </>
       )}
 
       {/* Modal */}
@@ -289,6 +421,7 @@ export default function ServicesPage() {
                     </div>
                   </div>
                 )}
+
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 mb-1.5">Name *</label>
                   <input
@@ -299,6 +432,7 @@ export default function ServicesPage() {
                     className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
                   />
                 </div>
+
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 mb-1.5">Description</label>
                   <textarea
@@ -309,6 +443,7 @@ export default function ServicesPage() {
                     className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 resize-none"
                   />
                 </div>
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold text-slate-600 mb-1.5">Price (₹) *</label>
@@ -333,14 +468,13 @@ export default function ServicesPage() {
                     />
                   </div>
                 </div>
-                {/* Image picker */}
+
+                {/* Image */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 mb-1.5">Service Image</label>
-
-                  {/* Preview */}
-                  {form.image && (
+                  {previewSrc && (
                     <div className="relative mb-2 w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                      <img src={resolveImage(form.image)} alt="preview" className="w-full h-full object-cover" />
+                      <img src={previewSrc} alt="preview" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => setForm({ ...form, image: "" })}
@@ -350,7 +484,6 @@ export default function ServicesPage() {
                       </button>
                     </div>
                   )}
-
                   <input
                     type="url"
                     value={form.image}
@@ -377,10 +510,7 @@ export default function ServicesPage() {
                   {saving ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <>
-                      <Check size={14} />
-                      {modal === "create" ? "Create" : "Save"}
-                    </>
+                    <><Check size={14} />{modal === "create" ? "Create" : "Save"}</>
                   )}
                 </button>
               </div>

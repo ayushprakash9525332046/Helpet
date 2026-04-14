@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, FileText, Users, CreditCard, AlertTriangle, Ban, Scale } from "lucide-react";
+import {
+  ArrowLeft,
+  FileText,
+  Users,
+  CreditCard,
+  AlertTriangle,
+  Ban,
+  Scale,
+} from "lucide-react";
 
 const SECTIONS = [
   {
@@ -47,7 +55,7 @@ const SECTIONS = [
     title: "4. Provider Conduct",
     body: [
       "All providers on Helpet are background-checked and verified; however, we do not guarantee their conduct.",
-      "If a provider behaves inappropriately, you must report it immediately via the app or at support@helpet.in.",
+      "If a provider behaves inappropriately, you must report it immediately via the app or at support@helpet.com.",
       "Providers are independent contractors, not employees of Helpet.",
       "Helpet is not liable for property damage caused by providers — each case is reviewed individually.",
       "Customer reviews must be honest and based on actual experience; fake reviews will lead to account suspension.",
@@ -72,8 +80,8 @@ const SECTIONS = [
     body: [
       "Helpet's total liability for any claim arising from platform use shall not exceed the amount paid for the relevant booking.",
       "We are not liable for indirect, incidental, or consequential damages.",
-      "These Terms are governed by the laws of India. Disputes are subject to the exclusive jurisdiction of courts in Mumbai, Maharashtra.",
-      "For any grievance, contact: legal@helpet.in within 30 days of the incident.",
+      "These Terms are governed by the laws of India. Disputes are subject to the exclusive jurisdiction of courts in Dehradun, Uttarakhand.",
+      "For any grievance, contact: legal@helpet.com within 30 days of the incident.",
     ],
   },
 ];
@@ -86,29 +94,44 @@ export default function TermsAndConditions() {
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full" />
         <div className="absolute top-10 right-8 w-14 h-14 bg-white/10 rounded-2xl rotate-12" />
 
-        <Link href="/profile" className="flex items-center gap-2 text-white/80 text-sm font-semibold mb-5 w-fit">
+        <Link
+          href="/profile"
+          className="flex items-center gap-2 text-white/80 text-sm font-semibold mb-5 w-fit"
+        >
           <ArrowLeft size={16} /> Back
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
           <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-3 border border-white/30">
             <FileText size={22} className="text-white" />
           </div>
-          <p className="text-blue-200 text-xs font-semibold uppercase tracking-widest mb-1">Helpet</p>
-          <h1 className="text-white text-2xl font-extrabold leading-tight">Terms &amp; Conditions</h1>
-          <p className="text-blue-200 text-xs mt-2">Effective from: 1 April 2026</p>
+          <p className="text-blue-200 text-xs font-semibold uppercase tracking-widest mb-1">
+            Helpet
+          </p>
+          <h1 className="text-white text-2xl font-extrabold leading-tight">
+            Terms &amp; Conditions
+          </h1>
+          <p className="text-blue-200 text-xs mt-2">
+            Effective from: 1 April 2026
+          </p>
         </motion.div>
       </div>
 
       {/* Intro */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
         className="mx-5 -mt-5 bg-white rounded-2xl p-4 shadow-lg border border-slate-100 relative z-10"
       >
         <p className="text-slate-600 text-sm leading-relaxed">
           Please read these Terms &amp; Conditions carefully before using the{" "}
-          <span className="font-bold text-slate-800">Helpet</span> platform. By creating an account or placing
-          a booking, you agree to be bound by these terms.
+          <span className="font-bold text-slate-800">Helpet</span> platform. By
+          creating an account or placing a booking, you agree to be bound by
+          these terms.
         </p>
       </motion.div>
 
@@ -117,19 +140,25 @@ export default function TermsAndConditions() {
         {SECTIONS.map(({ icon: Icon, color, title, body }, i) => (
           <motion.div
             key={title}
-            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 + i * 0.07 }}
             className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"
           >
             <div className="flex items-center gap-3 mb-3">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${color}`}>
+              <div
+                className={`w-9 h-9 rounded-xl flex items-center justify-center ${color}`}
+              >
                 <Icon size={16} />
               </div>
               <h2 className="text-slate-800 font-extrabold text-sm">{title}</h2>
             </div>
             <ul className="flex flex-col gap-2">
               {body.map((point, j) => (
-                <li key={j} className="flex items-start gap-2 text-slate-600 text-xs leading-relaxed">
+                <li
+                  key={j}
+                  className="flex items-start gap-2 text-slate-600 text-xs leading-relaxed"
+                >
                   <span className="mt-1 w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />
                   {point}
                 </li>
@@ -140,8 +169,9 @@ export default function TermsAndConditions() {
       </div>
 
       <p className="text-center text-slate-400 text-xs mt-8 px-8 pb-2">
-        Helpet Technologies Pvt. Ltd. · Mumbai, India
-        <br />Questions? Email <span className="text-blue-500">legal@helpet.in</span>
+        Helpet Technologies Pvt. Ltd. · Dehradun, India
+        <br />
+        Questions? Email <span className="text-blue-500">legal@helpet.com</span>
       </p>
     </div>
   );

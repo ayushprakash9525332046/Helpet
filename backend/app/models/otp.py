@@ -16,7 +16,8 @@ class OTP(Base):
     __tablename__ = "otps"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    phone = Column(String(15), nullable=False, index=True)
+    email = Column(String(255), nullable=True, index=True)
+    phone = Column(String(15), nullable=True, index=True)
     code = Column(String(6), nullable=False)
     purpose = Column(SAEnum(OTPPurpose), nullable=False)
     is_used = Column(Boolean, default=False)

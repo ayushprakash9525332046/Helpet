@@ -51,6 +51,7 @@ class Service(Base):
     image = Column(Text, nullable=True)
     price = Column(Numeric(10, 2), nullable=False)  # 499.00
     duration_minutes = Column(Integer, default=60)  # 60 mins
+    order = Column(Integer, default=0, nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)

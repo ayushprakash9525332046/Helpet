@@ -1,7 +1,6 @@
 # /users/me, /users/{id}
 
-import os
-import uuid as uuid_lib
+import logging
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List
@@ -11,10 +10,11 @@ from app.db.session import get_db
 from app.models.user import User, UserRole, UserStatus
 from app.schemas.user import UserResponse, UserUpdate
 from app.core.dependencies import get_current_user, get_current_admin
+from app.services.storage_service import upload_image
 
-UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "uploads", "avatars")
-ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
-MAX_SIZE = 5 * 1024 * 1024  # 5 MB
+MAX_SIZE = 10 * 1024 * 1024  # 10 MB
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -43,30 +43,21 @@ async def upload_avatar(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    if file.content_type not in ALLOWED_TYPES:
-        raise HTTPException(status_code=400, detail="Only JPEG, PNG, WebP, or GIF images are allowed")
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Only image files are allowed")
 
     contents = await file.read()
+    logger.info(f"Avatar upload: {file.content_type}, {len(contents) / 1024:.1f} KB")
     if len(contents) > MAX_SIZE:
-        raise HTTPException(status_code=400, detail="File size must be under 5 MB")
+        raise HTTPException(status_code=400, detail=f"File too large ({len(contents)//1024//1024} MB). Max 10 MB.")
 
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    public_id = f"avatars/{current_user.id}"
+    try:
+        url = upload_image(contents, folder="apnasewa", public_id=public_id)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
 
-    ext = file.filename.rsplit(".", 1)[-1] if file.filename and "." in file.filename else "jpg"
-    filename = f"{uuid_lib.uuid4()}.{ext}"
-    file_path = os.path.join(UPLOAD_DIR, filename)
-
-    with open(file_path, "wb") as f:
-        f.write(contents)
-
-    # Delete old avatar file if it exists locally
-    if current_user.profile_picture:
-        old_filename = current_user.profile_picture.split("/uploads/avatars/")[-1]
-        old_path = os.path.join(UPLOAD_DIR, old_filename)
-        if os.path.isfile(old_path):
-            os.remove(old_path)
-
-    current_user.profile_picture = f"/uploads/avatars/{filename}"
+    current_user.profile_picture = url
     db.commit()
     db.refresh(current_user)
     return current_user

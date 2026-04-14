@@ -9,6 +9,7 @@ import {
   CalendarCheck, MapPin, Lock, FileText, HelpCircle, Star, Edit3,
   Package, MessageSquare, Award,
 } from "lucide-react";
+import Avatar from "@/components/Avatar";
 
 export default function Profile() {
   const { user, logout } = useAuth();
@@ -78,17 +79,14 @@ export default function Profile() {
           className="-mt-10 md:-mt-12 bg-white rounded-[24px] md:rounded-[28px] p-5 md:p-6 shadow-2xl shadow-blue-900/10 border border-white flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-6 relative z-10"
         >
           <div className="relative group">
-            {user?.profile_picture ? (
-              <img
-                src={`${API_BASE}${user.profile_picture}`}
-                alt="Profile"
-                className="w-16 h-16 md:w-20 md:h-20 rounded-[20px] md:rounded-[24px] object-cover shadow-2xl shadow-blue-200 ring-4 ring-white"
-              />
-            ) : (
-              <div className="w-16 h-16 md:w-20 md:h-20 bg-linear-to-br from-blue-400 to-indigo-600 rounded-[20px] md:rounded-[24px] flex items-center justify-center text-white text-2xl md:text-3xl font-black shadow-2xl shadow-blue-200 ring-4 ring-white">
-                {initial}
-              </div>
-            )}
+            <Avatar
+              src={user?.profile_picture?.startsWith("http") ? user.profile_picture : user?.profile_picture ? `${API_BASE}${user.profile_picture}` : null}
+              name={user?.full_name}
+              size="w-16 h-16 md:w-20 md:h-20"
+              radius="rounded-[20px] md:rounded-[24px]"
+              textSize="text-2xl md:text-3xl"
+              className="shadow-2xl shadow-blue-200 ring-4 ring-white"
+            />
             <div className="absolute -bottom-0.5 -right-0.5 md:bottom-0.5 md:right-0.5 w-5 h-5 md:w-6 md:h-6 bg-green-400 rounded-full border-4 border-white shadow-lg animate-pulse" />
           </div>
           <div className="flex-1 text-center md:text-left">

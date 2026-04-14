@@ -20,14 +20,14 @@ function resolveCategoryImage(url?: string) {
 }
 
 const STATS = [
-  { icon: Users, value: "2,000+", label: "Professionals", color: "text-blue-600", bg: "bg-blue-50" },
-  { icon: CheckCircle2, value: "50K+",   label: "Jobs Done", color: "text-emerald-600", bg: "bg-emerald-50" },
+  { icon: Users, value: "40+", label: "Professionals", color: "text-blue-600", bg: "bg-blue-50" },
+  { icon: CheckCircle2, value: "380+",   label: "Jobs Done", color: "text-emerald-600", bg: "bg-emerald-50" },
   { icon: Star, value: "4.9",    label: "Avg Rating", color: "text-amber-500", bg: "bg-amber-50" },
 ];
 
 const PROMO_CARDS = [
-  { gradient: "from-rose-500 to-orange-500",   emoji: "🎁", label: "SPECIAL OFFER",   title: "Flat ₹200 off on first cleaning",  cta: "Claim Now" },
-  { gradient: "from-emerald-500 to-teal-600",  emoji: "✨", label: "TOP RATED",      title: "Trusted by 10,000+ households",    cta: "Explore" },
+  { gradient: "from-rose-500 to-orange-500",   emoji: "🎁", label: "SPECIAL OFFER",   title: "Flat 20% off on first cleaning",  cta: "Claim Now" },
+  { gradient: "from-emerald-500 to-teal-600",  emoji: "✨", label: "TOP RATED",      title: "Trusted by 200+ households",    cta: "Explore" },
   { gradient: "from-blue-500 to-cyan-500",     emoji: "🛡️", label: "SECURE BOOKING", title: "100% Satisfaction Guaranteed",     cta: "Book Safe" },
 ];
 
@@ -338,7 +338,7 @@ export default function Home() {
               <h2 className="text-slate-800 font-black text-xl md:text-2xl lg:text-3xl tracking-tight">Popular Services</h2>
               <p className="text-slate-400 text-sm md:text-base mt-1 md:mt-2">High-rated services by customers</p>
             </div>
-            <Link href="/services" className="flex items-center gap-2 text-blue-600 text-xs md:text-sm font-bold bg-blue-50 hover:bg-blue-100 px-5 py-2.5 md:px-6 md:py-3 rounded-2xl transition-all">
+            <Link href="/categories" className="flex items-center gap-2 text-blue-600 text-xs md:text-sm font-bold bg-blue-50 hover:bg-blue-100 px-5 py-2.5 md:px-6 md:py-3 rounded-2xl transition-all">
               See All <ChevronRight size={16} />
             </Link>
           </div>

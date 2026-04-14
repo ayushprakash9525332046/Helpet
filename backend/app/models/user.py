@@ -31,7 +31,7 @@ class User(Base):
 
     # Basic Info
     full_name = Column(String(100), nullable=False)
-    email = Column(String(255), unique=True, nullable=True)
+    email = Column(String(255), unique=True, nullable=False)
     phone = Column(String(15), unique=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
 
@@ -48,6 +48,7 @@ class User(Base):
     # Verification
     is_verified = Column(Boolean, default=False)
     is_phone_verified = Column(Boolean, default=False)
+    is_email_verified = Column(Boolean, default=False)
 
     # Timestamps
     created_at = Column(

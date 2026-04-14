@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/context/AuthContext";
 import AppShell from "@/components/AppShell";
@@ -6,10 +6,19 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Helpet — Trusted Home Services at Your Doorstep",
-  description: "Book trusted local professionals for cleaning, plumbing, electrical repairs, and more. Quality service guaranteed with Helpet India.",
-  keywords: ["home services", "cleaning", "plumbing", "electrician", "helpet", "india", "service booking"],
+  description:
+    "Book trusted local professionals for cleaning, plumbing, electrical repairs, and more. Quality service guaranteed with Helpet India.",
+  keywords: [
+    "home services",
+    "cleaning",
+    "plumbing",
+    "electrician",
+    "helpet",
+    "india",
+    "service booking",
+  ],
   authors: [{ name: "Helpet India" }],
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+  metadataBase: new URL("https://helpet.com"),
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
@@ -18,9 +27,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://helpet.in",
+    url: "https://helpet.com",
     title: "Helpet — Trusted Home Services at Your Doorstep",
-    description: "Expert professionals for all your home needs. Safe, reliable, and affordable services in India.",
+    description:
+      "Expert professionals for all your home needs. Safe, reliable, and affordable services in India.",
     siteName: "Helpet India",
     images: [
       {
@@ -40,7 +50,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>

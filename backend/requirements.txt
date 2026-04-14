@@ -9,5 +9,6 @@ bcrypt==4.0.1
 python-dotenv
 pydantic[email]
 cloudinary
-twilio
+httpx
 python-multipart
+pydantic-settings

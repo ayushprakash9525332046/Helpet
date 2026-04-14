@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Home, Grid3X3, CalendarCheck, Bell, User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
+import Avatar from "@/components/Avatar";
 
 const tabs = [
   { href: "/home",          icon: Home,          label: "Home" },
@@ -99,13 +100,16 @@ export default function Sidebar() {
       <div className="p-3 mt-auto border-t border-slate-50">
         <div className="bg-slate-50 rounded-xl p-3">
           <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-blue-600 font-bold text-xs shadow-sm overflow-hidden">
-              {mounted && user?.profile_picture ? (
-                <img src={`${API_BASE}${user.profile_picture}`} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                mounted ? (user?.full_name?.charAt(0).toUpperCase() || "U") : "U"
-              )}
-            </div>
+            {mounted && (
+              <Avatar
+                src={user?.profile_picture?.startsWith("http") ? user.profile_picture : user?.profile_picture ? `${API_BASE}${user.profile_picture}` : null}
+                name={user?.full_name}
+                size="w-8 h-8"
+                radius="rounded-full"
+                textSize="text-xs"
+                className="border-2 border-white shadow-sm"
+              />
+            )}
             <div className="min-w-0">
               <p className="text-xs font-bold text-slate-800 truncate">
                 {mounted ? (user?.full_name || "User") : "User"}

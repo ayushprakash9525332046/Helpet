@@ -4,6 +4,15 @@ import { Service } from "@/lib/types";
 import StarRating from "./StarRating";
 import { Clock, Plus, Tag, ShieldCheck } from "lucide-react";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
+
+function resolveImage(url?: string): string | null {
+  if (!url) return null;
+  if (url.startsWith("http") || url.startsWith("data:")) return url;
+  if (url.startsWith("/")) return `${API_BASE}${url}`;
+  return null;
+}
+
 // Gradient palettes for services without images
 const GRADIENTS = [
   "from-blue-400 to-indigo-500",
@@ -37,6 +46,7 @@ interface Props {
 export default function ServiceCard({ service, index = 0 }: Props) {
   const gradient = GRADIENTS[index % GRADIENTS.length];
   const icon = getIcon(service.name);
+  const imgSrc = resolveImage(service.image);
 
   return (
     <motion.div
@@ -49,8 +59,8 @@ export default function ServiceCard({ service, index = 0 }: Props) {
         <div className="group bg-white rounded-xl md:rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:border-blue-100 transition-all duration-500 hover:-translate-y-1 h-full">
           {/* Image area */}
           <div className={`relative h-28 md:h-32 lg:h-36 xl:h-40 bg-linear-to-br ${gradient} flex items-center justify-center overflow-hidden`}>
-            {service.image ? (
-              <img src={service.image} alt={service.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+            {imgSrc ? (
+              <img src={imgSrc} alt={service.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
             ) : (
               <>
                 <div className="absolute inset-0 opacity-10">

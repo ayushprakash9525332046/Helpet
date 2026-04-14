@@ -7,6 +7,7 @@ import api from "@/lib/api";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -16,12 +17,11 @@ export default function Register() {
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1); // 3-step form
+  const [step, setStep] = useState(1);
   const [otpCode, setOtpCode] = useState("");
   const [otpCooldown, setOtpCooldown] = useState(0);
   const router = useRouter();
 
-  // Cooldown ticker for OTP resend
   const startCooldown = () => {
     setOtpCooldown(60);
     const tick = () => setOtpCooldown((c) => {
@@ -36,7 +36,13 @@ export default function Register() {
 
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.full_name || !form.phone) return toast.error("Please fill name and phone");
+    if (!form.full_name.trim()) return toast.error("Please enter your full name");
+    if (!form.phone.trim()) return toast.error("Please enter your mobile number");
+    if (!form.email.trim()) return toast.error("Please enter your email address");
+    if (!/^[6-9]\d{9}$/.test(form.phone.trim()))
+      return toast.error("Enter a valid 10-digit Indian mobile number (starts with 6-9)");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
+      return toast.error("Enter a valid email address");
     setStep(2);
   };
 
@@ -49,17 +55,15 @@ export default function Register() {
     try {
       await api.post("/auth/register", {
         full_name: form.full_name,
-        email: form.email || undefined,
+        email: form.email,
         phone: form.phone,
         password: form.password,
         role: form.role,
       });
-      // Send verification OTP then go to step 3
-      await api.post("/auth/otp/send", { phone: form.phone, purpose: "verify" });
+      // registration also triggers email OTP automatically — go straight to verify step
       startCooldown();
       setStep(3);
     } catch (err: any) {
-      console.error("Register error:", err?.response?.status, err?.response?.data, err?.message);
       const detail = err?.response?.data?.detail;
       const msg = Array.isArray(detail) ? detail.map((d: any) => d.msg).join(", ")
         : detail || err?.message || "Registration failed";
@@ -72,21 +76,21 @@ export default function Register() {
   const handleResendOtp = async () => {
     if (otpCooldown > 0) return;
     try {
-      await api.post("/auth/otp/send", { phone: form.phone, purpose: "verify" });
+      await api.post("/auth/otp/send", { email: form.email, purpose: "verify" });
       startCooldown();
-      toast.success("OTP resent");
+      toast.success("OTP resent to your email");
     } catch {
       toast.error("Failed to resend OTP");
     }
   };
 
-  const handleVerifyPhone = async (e: React.FormEvent) => {
+  const handleVerifyEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!otpCode.trim()) return toast.error("Enter the OTP");
     setLoading(true);
     try {
-      await api.post("/auth/otp/verify-phone", { phone: form.phone, code: otpCode });
-      toast.success("Phone verified! Welcome aboard 🎉");
+      await api.post("/auth/otp/verify-email", { email: form.email, code: otpCode });
+      toast.success("Email verified! Welcome aboard 🎉");
       router.push("/login");
     } catch (err: any) {
       const detail = err?.response?.data?.detail;
@@ -105,9 +109,9 @@ export default function Register() {
         <motion.div
           initial={{ scale: 0 }} animate={{ scale: 1 }}
           transition={{ type: "spring", duration: 0.5 }}
-          className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-2xl z-10"
+          className="z-10"
         >
-          <span className="text-2xl font-black text-blue-600">A</span>
+          <Image src="/assets/helpet-logo.png" alt="Helpet" width={64} height={64} className="object-contain drop-shadow-2xl rounded-2xl" />
         </motion.div>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
           className="text-white font-bold mt-2 z-10">Create Your Account</motion.p>
@@ -127,7 +131,8 @@ export default function Register() {
         transition={{ duration: 0.5 }}
         className="flex-1 bg-white rounded-t-3xl -mt-6 px-6 pt-8 pb-10 z-10 relative"
       >
-        {step === 1 ? (
+        {/* ── Step 1: Personal Details ── */}
+        {step === 1 && (
           <form onSubmit={handleNext} className="flex flex-col gap-5">
             <div>
               <h2 className="text-xl font-extrabold text-slate-800">Personal Details</h2>
@@ -137,7 +142,7 @@ export default function Register() {
             {[
               { key: "full_name", label: "Full Name", placeholder: "John Smith", icon: "👤", type: "text" },
               { key: "phone", label: "Mobile Number", placeholder: "9876543210", icon: "📱", type: "tel" },
-              { key: "email", label: "Email (Optional)", placeholder: "john@example.com", icon: "✉️", type: "email" },
+              { key: "email", label: "Email Address", placeholder: "john@example.com", icon: "✉️", type: "email" },
             ].map(({ key, label, placeholder, icon, type }, i) => (
               <motion.div key={key}
                 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
@@ -181,7 +186,10 @@ export default function Register() {
               Continue →
             </motion.button>
           </form>
-        ) : (
+        )}
+
+        {/* ── Step 2: Set Password ── */}
+        {step === 2 && (
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <div className="flex items-center gap-3 mb-1">
               <button type="button" onClick={() => setStep(1)}
@@ -201,7 +209,7 @@ export default function Register() {
               </div>
               <div>
                 <p className="font-bold text-slate-800 text-sm">{form.full_name}</p>
-                <p className="text-slate-500 text-xs">{form.phone}</p>
+                <p className="text-slate-500 text-xs">{form.phone} · {form.email}</p>
               </div>
               <span className="ml-auto text-xs font-semibold bg-blue-600 text-white px-2.5 py-1 rounded-full capitalize">
                 {form.role}
@@ -231,7 +239,6 @@ export default function Register() {
               </motion.div>
             ))}
 
-            {/* Strength hint */}
             {form.password.length > 0 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 className="flex gap-1.5">
@@ -260,19 +267,19 @@ export default function Register() {
           </form>
         )}
 
-        {/* ── Step 3: Verify Phone ── */}
+        {/* ── Step 3: Verify Email ── */}
         {step === 3 && (
-          <form onSubmit={handleVerifyPhone} className="flex flex-col gap-5">
+          <form onSubmit={handleVerifyEmail} className="flex flex-col gap-5">
             <div className="flex items-center gap-3 mb-1 mt-8">
-              <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center text-2xl">📱</div>
+              <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center text-2xl">✉️</div>
               <div>
-                <h2 className="text-xl font-extrabold text-slate-800">Verify Your Phone</h2>
-                <p className="text-slate-400 text-sm">OTP sent to <span className="font-semibold text-slate-600">{form.phone}</span></p>
+                <h2 className="text-xl font-extrabold text-slate-800">Verify Your Email</h2>
+                <p className="text-slate-400 text-sm">OTP sent to <span className="font-semibold text-slate-600">{form.email}</span></p>
               </div>
             </div>
 
             <div className="bg-blue-50 rounded-2xl px-4 py-3 text-sm text-blue-700 font-medium">
-              Enter the 6-digit OTP to confirm your phone number and activate your account.
+              Enter the 6-digit OTP to confirm your email and activate your account.
             </div>
 
             <div>

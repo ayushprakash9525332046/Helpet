@@ -2,20 +2,43 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { 
-  Globe, 
-  Share2, 
-  Link as LinkIcon, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  ShieldCheck, 
-  Star, 
-  Users 
+import {
+  Globe,
+  Share2,
+  Link as LinkIcon,
+  Mail,
+  Phone,
+  MapPin,
+  MapPinned,
+  Sparkles,
+  ShieldCheck,
+  Star,
+  Users,
 } from "lucide-react";
+import { FaFacebook, FaInstagram } from "react-icons/fa";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+
+  const handleShare = async () => {
+    const shareData = {
+      title: "Helpet",
+      text: "Check out Helpet.com!",
+      url: "https://helpet.com",
+    };
+
+    try {
+      if (navigator.share && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback to clipboard
+        await navigator.clipboard.writeText("https://helpet.com");
+        alert("Link copied to clipboard!");
+      }
+    } catch (err) {
+      console.error("Share failed:", err);
+    }
+  };
 
   return (
     <footer className="bg-white border-t border-slate-100 pt-16 pb-8">
@@ -25,61 +48,120 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1 space-y-6 flex flex-col items-center md:items-start text-center md:text-left mb-4 md:mb-0">
             <Link href="/home" className="flex items-center gap-2.5">
               <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 overflow-hidden">
-                <Image 
-                  src="/assets/helpet-logo.png" 
-                  alt="Helpet Logo" 
-                  width={40} 
-                  height={40} 
+                <Image
+                  src="/assets/helpet-logo.png"
+                  alt="Helpet Logo"
+                  width={40}
+                  height={40}
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="text-left">
-                <h1 className="font-black text-2xl text-slate-800 tracking-tight leading-none">Helpet India</h1>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Professional Home Services</p>
+                <h1 className="font-black text-2xl text-slate-800 tracking-tight leading-none">
+                  Helpet India
+                </h1>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                  Professional Home Services
+                </p>
               </div>
             </Link>
             <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
-              Connecting you with trusted local professionals for all your home needs. Quality service, guaranteed.
+              Connecting you with trusted local professionals for all your home
+              needs. Quality service, guaranteed.
             </p>
             <div className="flex items-center justify-center md:justify-start gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all">
-                <Globe size={18} />
+              <a
+                href="https://instagram.com/helpet.comdia"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all"
+              >
+                <FaInstagram size={18} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all">
+              <a
+                href="https://facebook.com/helpet.comdia"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all"
+              >
+                <FaFacebook size={18} />
+              </a>
+              <a
+                href="#"
+                className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all"
+              >
+                <MapPinned size={18} />
+              </a>
+              <button
+                onClick={handleShare}
+                className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer"
+              >
                 <Share2 size={18} />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all">
-                <LinkIcon size={18} />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all">
-                <Globe size={18} />
-              </a>
+              </button>
             </div>
           </div>
 
           {/* Quick Links */}
           <div className="flex flex-col items-center md:items-start">
             <div className="w-fit md:w-full">
-              <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6 text-left">Quick Links</h3>
+              <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6 text-left">
+                Quick Links
+              </h3>
               <ul className="space-y-4 text-left">
-                {["Home", "All Services", "About Us", "Contact Us"].map((link) => (
-                  <li key={link}>
-                    <Link href="#" className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors">
-                      {link}
-                    </Link>
-                  </li>
-                ))}
+                <li>
+                  <Link
+                    href="/"
+                    className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/categories"
+                    className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors"
+                  >
+                    All Services
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/privacy"
+                    className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors"
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/terms"
+                    className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors"
+                  >
+                    Terms & Conditions
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
 
           {/* Categories - Hidden on mobile */}
           <div className="hidden lg:flex flex-col items-start text-left">
-            <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6">Popular Categories</h3>
+            <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6">
+              Popular Categories
+            </h3>
             <ul className="space-y-4">
-              {["Cleaning Services", "Plumbing", "Electrical Repairs", "Beauty & Salon", "AC Services"].map((cat) => (
+              {[
+                "Cleaning Services",
+                "Plumbing",
+                "Electrical Repairs",
+                "Carpentry Services",
+                // "AC Services",
+              ].map((cat) => (
                 <li key={cat}>
-                  <Link href="#" className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors">
+                  <Link
+                    href="/categories"
+                    className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors"
+                  >
                     {cat}
                   </Link>
                 </li>
@@ -90,19 +172,36 @@ export default function Footer() {
           {/* Contact */}
           <div className="flex flex-col items-center md:items-start">
             <div className="w-fit md:w-full">
-              <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6 text-left">Contact Info</h3>
+              <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6 text-left">
+                Contact Info
+              </h3>
               <ul className="space-y-4 text-left">
                 <li className="flex flex-row items-start gap-2 md:gap-3">
-                  <MapPin size={18} className="hidden md:block text-blue-600 shrink-0 mt-0.5" />
-                  <span className="text-slate-500 text-sm">City Center, New Delhi, 110001</span>
+                  <MapPin
+                    size={18}
+                    className="hidden md:block text-blue-600 shrink-0 mt-0.5"
+                  />
+                  <span className="text-slate-500 text-sm">
+                    Keserwala, Raipur, Dehradun, 248008
+                  </span>
                 </li>
                 <li className="flex flex-row items-start gap-2 md:gap-3">
-                  <Phone size={18} className="hidden md:block text-blue-600 shrink-0" />
-                  <span className="text-slate-500 text-sm">+91 98765 43210</span>
+                  <Phone
+                    size={18}
+                    className="hidden md:block text-blue-600 shrink-0"
+                  />
+                  <span className="text-slate-500 text-sm">
+                    +91 6203 260 694
+                  </span>
                 </li>
                 <li className="flex flex-row items-start gap-2 md:gap-3">
-                  <Mail size={18} className="hidden md:block text-blue-600 shrink-0" />
-                  <span className="text-slate-500 text-sm">support@helpet.in</span>
+                  <Mail
+                    size={18}
+                    className="hidden md:block text-blue-600 shrink-0"
+                  />
+                  <span className="text-slate-500 text-sm">
+                    support@helpet.com
+                  </span>
                 </li>
               </ul>
             </div>
@@ -146,9 +245,25 @@ export default function Footer() {
             © {currentYear} helpet. All rights reserved.
           </p>
           <div className="flex items-center gap-8">
-            <Link href="#" className="text-slate-400 hover:text-slate-600 text-xs font-bold transition-colors">Privacy Policy</Link>
-            <Link href="#" className="text-slate-400 hover:text-slate-600 text-xs font-bold transition-colors">Terms of Service</Link>
-            <Link href="#" className="text-slate-400 hover:text-slate-600 text-xs font-bold transition-colors">Sitemap</Link>
+            {/* <Link
+              href="#"
+              className="text-slate-400 hover:text-slate-600 text-xs font-bold transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href="#"
+              className="text-slate-400 hover:text-slate-600 text-xs font-bold transition-colors"
+            >
+              Terms of Service
+            </Link>
+            <Link
+              href="#"
+              className="text-slate-400 hover:text-slate-600 text-xs font-bold transition-colors"
+            >
+              Sitemap
+            </Link> */}
+            <p className="text-slate-400 text-xs font-bold">hello@helpet.com</p>
           </div>
         </div>
       </div>

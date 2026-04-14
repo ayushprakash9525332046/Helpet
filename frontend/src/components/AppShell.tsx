@@ -8,6 +8,7 @@ import Footer from "./Footer";
 import { Bell, Search, User } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import Avatar from "@/components/Avatar";
 
 function AppShellHeader() {
   const pathname = usePathname();
@@ -65,13 +66,13 @@ function AppShellHeader() {
                 <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full border-2 border-white" />
               </Link>
               <Link href="/profile" className="flex items-center gap-2.5 pl-2 border-l border-slate-200">
-                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs overflow-hidden">
-                  {user.profile_picture ? (
-                    <img src={`${API_BASE}${user.profile_picture}`} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    user.full_name?.charAt(0).toUpperCase() || <User size={14} />
-                  )}
-                </div>
+                <Avatar
+                  src={user.profile_picture?.startsWith("http") ? user.profile_picture : user.profile_picture ? `${API_BASE}${user.profile_picture}` : null}
+                  name={user.full_name}
+                  size="w-8 h-8"
+                  radius="rounded-full"
+                  textSize="text-xs"
+                />
                 <div className="hidden lg:block">
                   <p className="text-xs font-bold text-slate-800 leading-none">{user.full_name?.split(" ")[0] || "User"}</p>
                   <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Verified User</p>

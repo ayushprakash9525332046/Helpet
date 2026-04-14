@@ -10,6 +10,15 @@ import BackHeader from "@/components/BackHeader";
 import toast from "react-hot-toast";
 import { MapPin, Calendar, Clock, FileText, CheckCircle2, Sparkles, LocateFixed, ChevronRight } from "lucide-react";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
+
+function resolveImage(url?: string): string | null {
+  if (!url) return null;
+  if (url.startsWith("http") || url.startsWith("data:")) return url;
+  if (url.startsWith("/")) return `${API_BASE}${url}`;
+  return null;
+}
+
 const TIME_SLOTS = ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
 function getNext7Days() {
@@ -157,6 +166,7 @@ export default function BookService() {
 
   const gradient = GRADIENTS[Math.abs((service.id.charCodeAt(0) - 48)) % GRADIENTS.length];
   const icon = getIcon(service.name);
+  const imgSrc = resolveImage(service.image);
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 pb-20 md:pb-24">
@@ -172,8 +182,12 @@ export default function BookService() {
               className={`rounded-[24px] bg-linear-to-br ${gradient} p-6 md:p-10 flex flex-col md:flex-row lg:flex-col items-center md:items-start gap-6 md:gap-8 shadow-2xl relative overflow-hidden group`}
             >
               <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full group-hover:scale-150 transition-transform duration-1000" />
-              <div className="w-20 h-20 md:w-28 md:h-28 bg-white/20 backdrop-blur-md rounded-[24px] flex items-center justify-center text-4xl md:text-6xl shadow-xl relative z-10">
-                {icon}
+              <div className="w-20 h-20 md:w-28 md:h-28 bg-white/20 backdrop-blur-md rounded-[24px] flex items-center justify-center shadow-xl relative z-10 overflow-hidden shrink-0">
+                {imgSrc ? (
+                  <img src={imgSrc} alt={service.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-4xl md:text-5xl">{icon}</span>
+                )}
               </div>
               <div className="flex-1 relative z-10 text-center md:text-left">
                 <h2 className="font-black text-white text-xl md:text-3xl lg:text-4xl leading-tight tracking-tight mb-2 md:mb-3">{service.name}</h2>
