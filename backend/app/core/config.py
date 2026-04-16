@@ -27,15 +27,26 @@ class Settings(BaseSettings):
     CLOUDINARY_API_SECRET: Optional[str] = None
 
     # CORS - Next.js frontend & admin
-    ALLOWED_ORIGINS: List[str] = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:3001",
-        "http://127.0.0.1:3001",
-        "http://192.168.1.40:3000",
-        "https://ggbl1mx8-3000.inc1.devtunnels.ms",
-        "https://ggbl1mx8-8000.inc1.devtunnels.ms",
-    ]
+    # Add production URLs via FRONTEND_URL env var (comma-separated for multiple)
+    FRONTEND_URL: Optional[str] = None
+
+    @property
+    def ALLOWED_ORIGINS(self) -> List[str]:
+        origins = [
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "http://localhost:3001",
+            "http://127.0.0.1:3001",
+            "http://192.168.1.40:3000",
+            "https://ggbl1mx8-3000.inc1.devtunnels.ms",
+            "https://ggbl1mx8-8000.inc1.devtunnels.ms",
+        ]
+        if self.FRONTEND_URL:
+            for url in self.FRONTEND_URL.split(","):
+                url = url.strip()
+                if url and url not in origins:
+                    origins.append(url)
+        return origins
 
     class Config:
         env_file = ".env"
