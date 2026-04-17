@@ -211,8 +211,8 @@ export default function Register() {
 
             {/* Summary pill */}
             <div className="bg-blue-50 rounded-2xl px-4 py-3 flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
-                {form.full_name[0]?.toUpperCase()}
+              <div className="w-10 h-10 min-w-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shrink-0">
+                {form.full_name[0]?.toUpperCase() || "?"}
               </div>
               <div>
                 <p className="font-bold text-slate-800 text-sm">{form.full_name}</p>
@@ -224,9 +224,9 @@ export default function Register() {
             </div>
 
             {[
-              { key: "password", label: "Password", show: showPass, toggle: () => setShowPass(!showPass) },
-              { key: "confirm_password", label: "Confirm Password", show: showConfirm, toggle: () => setShowConfirm(!showConfirm) },
-            ].map(({ key, label, show, toggle }, i) => (
+              { key: "password", label: "Password", placeholder: "Enter a strong password", show: showPass, toggle: () => setShowPass(!showPass) },
+              { key: "confirm_password", label: "Confirm Password", placeholder: "Re-enter your password", show: showConfirm, toggle: () => setShowConfirm(!showConfirm) },
+            ].map(({ key, label, placeholder, show, toggle }, i) => (
               <motion.div key={key}
                 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.1 }}
@@ -234,7 +234,7 @@ export default function Register() {
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{label}</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base">🔐</span>
-                  <input type={show ? "text" : "password"} placeholder="••••••••••"
+                  <input type={show ? "text" : "password"} placeholder={placeholder}
                     value={form[key as keyof typeof form]}
                     onChange={(e) => update(key, e.target.value)}
                     className="input-premium pr-12" />
