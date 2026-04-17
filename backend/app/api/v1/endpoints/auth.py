@@ -152,6 +152,14 @@ def verify_email_otp(data: OTPVerifyRequest, db: Session = Depends(get_db)):
     if user:
         user.is_email_verified = True
     db.commit()
+
+    # Auto-login: return a token so the frontend doesn't need a separate login step
+    if user:
+        access_token = create_access_token(
+            data={"sub": str(user.id), "role": user.role},
+            expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+        )
+        return {"message": "Email verified successfully", "access_token": access_token, "token_type": "bearer", "user": user}
     return {"message": "Email verified successfully"}
 
 

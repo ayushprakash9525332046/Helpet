@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
 
     # JWT
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 20160  # 14 days
     ALGORITHM: str = "HS256"
 
     # Email SMTP — Gmail (optional — omit for dev mode, OTP printed to console)

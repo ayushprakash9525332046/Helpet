@@ -4,12 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 
 export default function Register() {
+  const { loginWithToken } = useAuth();
   const [form, setForm] = useState({
     full_name: "", email: "", phone: "",
     password: "", confirm_password: "", role: "customer",
@@ -89,9 +91,14 @@ export default function Register() {
     if (!otpCode.trim()) return toast.error("Enter the OTP");
     setLoading(true);
     try {
-      await api.post("/auth/otp/verify-email", { email: form.email, code: otpCode });
-      toast.success("Email verified! Welcome aboard 🎉");
-      router.push("/login");
+      const { data } = await api.post("/auth/otp/verify-email", { email: form.email, code: otpCode });
+      toast.success("Welcome to Helpet! 🎉");
+      if (data.access_token) {
+        loginWithToken(data.access_token, data.user);
+        router.push("/home");
+      } else {
+        router.push("/login");
+      }
     } catch (err: any) {
       const detail = err?.response?.data?.detail;
       toast.error(typeof detail === "string" ? detail : "Invalid or expired OTP");
