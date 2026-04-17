@@ -101,26 +101,26 @@ SERVICES = {
 # ─── Providers (service professionals) ──────────────────────────────────────
 PROVIDERS = [
     # Carpenters
-    {"full_name": "Ramesh Vishwakarma",  "phone": "9811001001", "city": "Delhi",     "specialty": "Carpenter"},
-    {"full_name": "Suresh Suthar",       "phone": "9822002002", "city": "Mumbai",    "specialty": "Carpenter"},
+    {"full_name": "Ramesh Vishwakarma",  "phone": "9811001001", "email": "ramesh.vishwakarma@helpet.in",  "city": "Delhi",     "specialty": "Carpenter"},
+    {"full_name": "Suresh Suthar",       "phone": "9822002002", "email": "suresh.suthar@helpet.in",       "city": "Mumbai",    "specialty": "Carpenter"},
     # Plumbers
-    {"full_name": "Mohan Plumber",       "phone": "9833003003", "city": "Pune",      "specialty": "Plumbing"},
-    {"full_name": "Kishan Nalkari",      "phone": "9844004004", "city": "Delhi",     "specialty": "Plumbing"},
+    {"full_name": "Mohan Plumber",       "phone": "9833003003", "email": "mohan.plumber@helpet.in",       "city": "Pune",      "specialty": "Plumbing"},
+    {"full_name": "Kishan Nalkari",      "phone": "9844004004", "email": "kishan.nalkari@helpet.in",      "city": "Delhi",     "specialty": "Plumbing"},
     # Electricians
-    {"full_name": "Vijay Bijliwala",     "phone": "9855005005", "city": "Mumbai",    "specialty": "Electrician"},
-    {"full_name": "Deepak Electrician",  "phone": "9866006006", "city": "Bangalore", "specialty": "Electrician"},
+    {"full_name": "Vijay Bijliwala",     "phone": "9855005005", "email": "vijay.bijliwala@helpet.in",     "city": "Mumbai",    "specialty": "Electrician"},
+    {"full_name": "Deepak Electrician",  "phone": "9866006006", "email": "deepak.electrician@helpet.in",  "city": "Bangalore", "specialty": "Electrician"},
     # Mechanics
-    {"full_name": "Ajay Mistri",         "phone": "9877007007", "city": "Pune",      "specialty": "Mechanic"},
-    {"full_name": "Raju Mistry",         "phone": "9888008008", "city": "Delhi",     "specialty": "Mechanic"},
+    {"full_name": "Ajay Mistri",         "phone": "9877007007", "email": "ajay.mistri@helpet.in",         "city": "Pune",      "specialty": "Mechanic"},
+    {"full_name": "Raju Mistry",         "phone": "9888008008", "email": "raju.mistry@helpet.in",         "city": "Delhi",     "specialty": "Mechanic"},
     # Cleaning
-    {"full_name": "Sunita Bai",          "phone": "9899009009", "city": "Mumbai",    "specialty": "Cleaning"},
-    {"full_name": "Kavita Safai",        "phone": "9900010010", "city": "Bangalore", "specialty": "Cleaning"},
+    {"full_name": "Sunita Bai",          "phone": "9899009009", "email": "sunita.bai@helpet.in",          "city": "Mumbai",    "specialty": "Cleaning"},
+    {"full_name": "Kavita Safai",        "phone": "9900010010", "email": "kavita.safai@helpet.in",         "city": "Bangalore", "specialty": "Cleaning"},
     # Painter
-    {"full_name": "Prakash Rangwala",    "phone": "9711011011", "city": "Delhi",     "specialty": "Painter"},
+    {"full_name": "Prakash Rangwala",    "phone": "9711011011", "email": "prakash.rangwala@helpet.in",    "city": "Delhi",     "specialty": "Painter"},
     # AC Repair
-    {"full_name": "Salim AC Tech",       "phone": "9722012012", "city": "Mumbai",    "specialty": "AC Repair"},
+    {"full_name": "Salim AC Tech",       "phone": "9722012012", "email": "salim.actech@helpet.in",        "city": "Mumbai",    "specialty": "AC Repair"},
     # Pest Control
-    {"full_name": "Bunty Pest Pro",      "phone": "9733013013", "city": "Pune",      "specialty": "Pest Control"},
+    {"full_name": "Bunty Pest Pro",      "phone": "9733013013", "email": "bunty.pestpro@helpet.in",       "city": "Pune",      "specialty": "Pest Control"},
 ]
 
 # ─── Customers ───────────────────────────────────────────────────────────────

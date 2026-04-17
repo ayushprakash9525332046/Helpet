@@ -89,8 +89,8 @@ export default function LandingPage() {
     return (
       <div className="flex items-center justify-center h-screen bg-blue-600">
         <div className="text-center text-white">
-          <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
-            <span className="text-3xl font-bold">A</span>
+          <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 overflow-hidden">
+            <Image src="/assets/helpet-logo.png" alt="Helpet" width={56} height={56} className="w-full h-full object-cover" />
           </div>
           <p className="text-white/70 text-sm">Loading...</p>
         </div>
