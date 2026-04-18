@@ -8,7 +8,7 @@ from uuid import UUID
 
 from app.db.session import get_db
 from app.models.user import User, UserRole, UserStatus
-from app.schemas.user import UserResponse, UserUpdate
+from app.schemas.user import UserResponse, UserUpdate, UserStatusUpdate, UserRoleUpdate
 from app.core.dependencies import get_current_user, get_current_admin
 from app.services.storage_service import upload_image
 
@@ -85,14 +85,30 @@ def get_user(
 @router.put("/{user_id}/status", response_model=UserResponse)
 def update_user_status(
     user_id: UUID,
-    status: UserStatus,
+    body: UserStatusUpdate,
     db: Session = Depends(get_db),
     admin: User = Depends(get_current_admin),
 ):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    user.status = status
+    user.status = body.status
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+@router.put("/{user_id}/role", response_model=UserResponse)
+def update_user_role(
+    user_id: UUID,
+    body: UserRoleUpdate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.role = body.role
     db.commit()
     db.refresh(user)
     return user

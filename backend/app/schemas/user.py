@@ -37,6 +37,14 @@ class UserUpdate(BaseModel):
     pincode: Optional[str] = None
 
 
+class UserStatusUpdate(BaseModel):
+    status: UserStatus
+
+
+class UserRoleUpdate(BaseModel):
+    role: UserRole
+
+
 # ── What server RETURNS ──────────────────────────────────────
 class UserResponse(BaseModel):
     id: UUID
