@@ -1,19 +1,42 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import {
   User, ChevronRight, LogOut, Settings, Shield,
-  CalendarCheck, MapPin, Lock, FileText, HelpCircle, Star, Edit3,
-  Package, MessageSquare, Award,
+  CalendarCheck, FileText, HelpCircle, Star,
+  Package, MessageSquare, Camera,
 } from "lucide-react";
 import Avatar from "@/components/Avatar";
+import api from "@/lib/api";
+import toast from "react-hot-toast";
 
 export default function Profile() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    setAvatarUploading(true);
+    try {
+      const { data } = await api.post("/users/me/avatar", formData);
+      updateUser(data);
+      toast.success("Profile picture updated");
+    } catch {
+      toast.error("Failed to upload image");
+    } finally {
+      setAvatarUploading(false);
+      e.target.value = "";
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -87,7 +110,24 @@ export default function Profile() {
               textSize="text-2xl md:text-3xl"
               className="shadow-2xl shadow-blue-200 ring-4 ring-white"
             />
-            <div className="absolute -bottom-0.5 -right-0.5 md:bottom-0.5 md:right-0.5 w-5 h-5 md:w-6 md:h-6 bg-green-400 rounded-full border-4 border-white shadow-lg animate-pulse" />
+            <motion.div
+              whileTap={{ scale: 0.9 }}
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute -bottom-1 -right-1 w-7 h-7 md:w-8 md:h-8 bg-blue-600 rounded-xl flex items-center justify-center border-2 border-white shadow-md cursor-pointer"
+            >
+              {avatarUploading ? (
+                <span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+              ) : (
+                <Camera size={13} className="text-white" />
+              )}
+            </motion.div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
           </div>
           <div className="flex-1 text-center md:text-left">
             <h2 className="font-black text-slate-800 text-lg md:text-xl lg:text-2xl tracking-tight leading-tight mb-1.5 md:mb-1.5">

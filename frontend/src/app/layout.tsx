@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     "service booking",
   ],
   authors: [{ name: "Helpet India" }],
-  metadataBase: new URL("https://helpet.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://helpet-frontend.vercel.app"),
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://helpet.com",
+    url: process.env.NEXT_PUBLIC_APP_URL ?? "https://helpet-frontend.vercel.app",
     title: "Helpet — Trusted Home Services at Your Doorstep",
     description:
       "Expert professionals for all your home needs. Safe, reliable, and affordable services in India.",
