@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
-import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Phone, Lock, Mail, KeyRound } from "lucide-react";
 import Image from "next/image";
 
 type Mode = "password" | "otp" | "forgot";
@@ -225,7 +225,7 @@ function LoginInner() {
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Email Address</label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base">✉️</span>
+                      <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input type="email" placeholder="Enter your email address"
                         value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)}
                         className="input-premium" />
@@ -282,7 +282,7 @@ function LoginInner() {
                     <div key={label}>
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{label}</label>
                       <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base">🔐</span>
+                        <KeyRound size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                         <input type={show ? "text" : "password"} placeholder="••••••••"
                           value={val} onChange={(e) => set(e.target.value)} className="input-premium pr-12" />
                         <button type="button" onClick={toggle}
@@ -298,7 +298,7 @@ function LoginInner() {
                         <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         Resetting...
                       </span>
-                    ) : "Reset Password ✓"}
+                    ) : "Reset Password"}
                   </motion.button>
                 </form>
               )}
@@ -311,7 +311,7 @@ function LoginInner() {
               initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }}
               transition={{ duration: 0.25 }}
             >
-              <h1 className="text-2xl font-extrabold text-slate-800 mb-1">Welcome Back 👋</h1>
+              <h1 className="text-2xl font-extrabold text-slate-800 mb-1">Welcome Back</h1>
               <p className="text-slate-400 text-sm mb-6">Sign in to book your next service</p>
 
               {/* Tab switcher */}
@@ -319,10 +319,10 @@ function LoginInner() {
                 {(["password", "otp"] as Mode[]).map((m) => (
                   <button key={m} type="button"
                     onClick={() => { setMode(m); setOtpSent(false); setOtpCode(""); }}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
                       mode === m ? "bg-white text-blue-600 shadow-sm" : "text-slate-500"
                     }`}>
-                    {m === "password" ? "🔒 Password" : "✉️ OTP"}
+                    {m === "password" ? <><Lock size={14} /> Password</> : <><Mail size={14} /> OTP</>}
                   </button>
                 ))}
               </div>
@@ -333,7 +333,7 @@ function LoginInner() {
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Phone Number</label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base">📱</span>
+                      <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input type="tel" placeholder="Enter your phone number"
                         value={phone} onChange={(e) => setPhone(e.target.value)} className="input-premium" />
                     </div>
@@ -342,7 +342,7 @@ function LoginInner() {
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Password</label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base">🔒</span>
+                      <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input type={showPassword ? "text" : "password"} placeholder="Enter your password"
                         value={password} onChange={(e) => setPassword(e.target.value)} className="input-premium pr-12" />
                       <button type="button" onClick={() => setShowPassword(!showPassword)}
@@ -380,7 +380,7 @@ function LoginInner() {
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Email Address</label>
                     <div className="flex gap-2">
                       <div className="relative flex-1">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base">✉️</span>
+                        <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                         <input type="email" placeholder="Enter your email address"
                           value={otpEmail} onChange={(e) => setOtpEmail(e.target.value)}
                           disabled={otpSent}
@@ -432,7 +432,7 @@ function LoginInner() {
                               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                               Verifying...
                             </span>
-                          ) : "Verify & Sign In ✓"}
+                          ) : "Verify & Sign In"}
                         </motion.button>
 
                         <button type="button" onClick={handleSendOtp}

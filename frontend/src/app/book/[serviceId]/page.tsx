@@ -9,6 +9,7 @@ import { Service } from "@/lib/types";
 import BackHeader from "@/components/BackHeader";
 import toast from "react-hot-toast";
 import { MapPin, Calendar, Clock, FileText, CheckCircle2, Sparkles, LocateFixed, ChevronRight } from "lucide-react";
+import { getServiceIcon } from "@/lib/icons";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
 
@@ -31,15 +32,6 @@ function getNext7Days() {
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-const ICONS: Record<string, string> = {
-  clean:"🧹",plumb:"🔧",electr:"⚡",carp:"🪚",paint:"🎨",ac:"❄️",salon:"✂️",pest:"🐛",repair:"🔩",
-};
-function getIcon(name: string) {
-  const n = name.toLowerCase();
-  for (const [k,v] of Object.entries(ICONS)) if (n.includes(k)) return v;
-  return "🏠";
-}
 
 const GRADIENTS = [
   "from-blue-500 to-indigo-600","from-violet-500 to-purple-600",
@@ -165,7 +157,7 @@ export default function BookService() {
   );
 
   const gradient = GRADIENTS[Math.abs((service.id.charCodeAt(0) - 48)) % GRADIENTS.length];
-  const icon = getIcon(service.name);
+  const ServiceIconComponent = getServiceIcon(service.name);
   const imgSrc = resolveImage(service.image);
 
   return (
@@ -186,7 +178,7 @@ export default function BookService() {
                 {imgSrc ? (
                   <img src={imgSrc} alt={service.name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-4xl md:text-5xl">{icon}</span>
+                  <ServiceIconComponent size={40} className="text-white md:w-12 md:h-12" strokeWidth={1.5} />
                 )}
               </div>
               <div className="flex-1 relative z-10 text-center md:text-left">
@@ -308,7 +300,7 @@ export default function BookService() {
                         active ? "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-200" : "bg-white border-slate-50 text-slate-500 hover:border-blue-100 hover:bg-blue-50/30"
                       }`}
                     >
-                      {t} {parseInt(t) < 12 ? "AM" : "PM"}
+                      {(() => { const [h, m] = t.split(":").map(Number); const ampm = h < 12 ? "AM" : "PM"; const h12 = h % 12 || 12; return `${h12}:${String(m).padStart(2, "0")} ${ampm}`; })()}
                     </motion.button>
                   );
                 })}

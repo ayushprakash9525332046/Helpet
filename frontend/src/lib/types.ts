@@ -31,6 +31,7 @@ export interface Service {
   is_active: boolean;
   image?: string;
   category: ServiceCategory;
+  discount_percentage?: number;
 }
 
 export interface Booking {

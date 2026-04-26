@@ -7,7 +7,7 @@ import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, User as UserIcon, Phone, Mail, Home as HomeIcon, Wrench, KeyRound, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 
 export default function Register() {
@@ -92,7 +92,7 @@ export default function Register() {
     setLoading(true);
     try {
       const { data } = await api.post("/auth/otp/verify-email", { email: form.email, code: otpCode });
-      toast.success("Welcome to Helpet! 🎉");
+      toast.success("Welcome to Helpet!");
       if (data.access_token) {
         loginWithToken(data.access_token, data.user);
         router.push("/home");
@@ -147,17 +147,17 @@ export default function Register() {
             </div>
 
             {[
-              { key: "full_name", label: "Full Name", placeholder: "John Smith", icon: "👤", type: "text" },
-              { key: "phone", label: "Mobile Number", placeholder: "9876543210", icon: "📱", type: "tel" },
-              { key: "email", label: "Email Address", placeholder: "john@example.com", icon: "✉️", type: "email" },
-            ].map(({ key, label, placeholder, icon, type }, i) => (
+              { key: "full_name", label: "Full Name", placeholder: "John Smith", Icon: UserIcon, type: "text" },
+              { key: "phone", label: "Mobile Number", placeholder: "9876543210", Icon: Phone, type: "tel" },
+              { key: "email", label: "Email Address", placeholder: "john@example.com", Icon: Mail, type: "email" },
+            ].map(({ key, label, placeholder, Icon, type }, i) => (
               <motion.div key={key}
                 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.08 }}
               >
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{label}</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base">{icon}</span>
+                  <Icon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input type={type} placeholder={placeholder}
                     value={form[key as keyof typeof form]}
                     onChange={(e) => update(key, e.target.value)}
@@ -173,13 +173,17 @@ export default function Register() {
                 <motion.button type="button" whileTap={{ scale: 0.96 }}
                   onClick={() => update("role", "customer")}
                   className="p-4 rounded-2xl border-2 text-left transition-all border-blue-500 bg-blue-50 shadow-md shadow-blue-100">
-                  <span className="text-2xl block mb-1">🏠</span>
+                  <div className="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center mb-2">
+                    <HomeIcon size={18} className="text-blue-600" />
+                  </div>
                   <p className="text-sm font-bold text-blue-700">Book Services</p>
                   <p className="text-xs text-slate-400 mt-0.5">Find &amp; hire professionals</p>
                 </motion.button>
 
                 <div className="p-4 rounded-2xl border-2 text-left border-slate-200 bg-slate-50 opacity-50 cursor-not-allowed relative">
-                  <span className="text-2xl block mb-1">🔧</span>
+                  <div className="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center mb-2">
+                    <Wrench size={18} className="text-slate-400" />
+                  </div>
                   <p className="text-sm font-bold text-slate-400">Offer Services</p>
                   <p className="text-xs text-slate-400 mt-0.5">Coming soon</p>
                   <span className="absolute top-2 right-2 text-[10px] font-bold bg-slate-200 text-slate-500 px-2 py-0.5 rounded-full">
@@ -233,7 +237,7 @@ export default function Register() {
               >
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{label}</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base">🔐</span>
+                  <KeyRound size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input type={show ? "text" : "password"} placeholder={placeholder}
                     value={form[key as keyof typeof form]}
                     onChange={(e) => update(key, e.target.value)}
@@ -269,7 +273,7 @@ export default function Register() {
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Creating Account...
                 </span>
-              ) : "Create Account 🎉"}
+              ) : "Create Account"}
             </motion.button>
           </form>
         )}
@@ -278,7 +282,7 @@ export default function Register() {
         {step === 3 && (
           <form onSubmit={handleVerifyEmail} className="flex flex-col gap-5">
             <div className="flex items-center gap-3 mb-1 mt-8">
-              <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center text-2xl">✉️</div>
+              <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center"><Mail size={22} className="text-green-600" /></div>
               <div>
                 <h2 className="text-xl font-extrabold text-slate-800">Verify Your Email</h2>
                 <p className="text-slate-400 text-sm">OTP sent to <span className="font-semibold text-slate-600">{form.email}</span></p>
@@ -307,7 +311,7 @@ export default function Register() {
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Verifying...
                 </span>
-              ) : "Verify & Finish ✓"}
+              ) : <span className="flex items-center justify-center gap-2"><CheckCircle2 size={16} /> Verify & Finish</span>}
             </motion.button>
 
             <button type="button" onClick={handleResendOtp}

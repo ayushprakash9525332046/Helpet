@@ -59,7 +59,7 @@ export default function WriteReview() {
           transition={{ duration: 1.2, delay: 0.3 }}
           className="w-24 h-24 bg-linear-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mb-5 shadow-xl shadow-amber-200"
         >
-          <span className="text-5xl">⭐</span>
+          <Star size={44} className="text-white fill-white" />
         </motion.div>
         <h2 className="text-2xl font-extrabold text-slate-800 text-center">How was your experience?</h2>
         <p className="text-slate-500 text-sm mt-2 text-center max-w-xs leading-relaxed">

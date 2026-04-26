@@ -6,6 +6,7 @@ import api from "@/lib/api";
 import { Service } from "@/lib/types";
 import BackHeader from "@/components/BackHeader";
 import ServiceCard from "@/components/ServiceCard";
+import { SearchX } from "lucide-react";
 
 export default function CategoryServices() {
   const { id } = useParams<{ id: string }>();
@@ -33,7 +34,9 @@ export default function CategoryServices() {
           </div>
         ) : services.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <span className="text-5xl mb-3">😕</span>
+            <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
+              <SearchX size={28} className="text-slate-300" />
+            </div>
             <p className="text-slate-600 font-semibold">No services available</p>
             <p className="text-slate-400 text-sm mt-1">Check back soon for new listings</p>
           </div>

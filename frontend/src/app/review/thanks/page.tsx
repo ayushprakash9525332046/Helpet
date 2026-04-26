@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Home, CalendarCheck, Star } from "lucide-react";
+import { Home, CalendarCheck, Star, Heart } from "lucide-react";
 
 const FLOATING_STARS = [
   { top: "15%", left: "10%", size: 20, delay: 0 },
@@ -37,7 +37,7 @@ export default function ReviewThanks() {
         transition={{ type: "spring", bounce: 0.5, duration: 0.8 }}
         className="w-32 h-32 bg-linear-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mb-8 shadow-2xl shadow-amber-200 relative z-10"
       >
-        <span className="text-6xl">🙏</span>
+        <Heart size={52} className="text-white fill-white" strokeWidth={1.5} />
       </motion.div>
 
       <motion.div

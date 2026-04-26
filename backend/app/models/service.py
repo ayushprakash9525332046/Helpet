@@ -50,6 +50,8 @@ class Service(Base):
     description = Column(Text, nullable=True)
     image = Column(Text, nullable=True)
     price = Column(Numeric(10, 2), nullable=False)  # 499.00
+    discount_percentage = Column(Numeric(5, 2), default=15, nullable=False)
+    platform_fee_percentage = Column(Numeric(5, 2), default=10, nullable=False)
     duration_minutes = Column(Integer, default=60)  # 60 mins
     order = Column(Integer, default=0, nullable=False)
     is_active = Column(Boolean, default=True)

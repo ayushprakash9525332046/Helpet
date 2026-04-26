@@ -37,6 +37,8 @@ class ServiceCreate(BaseModel):
     name: str
     description: Optional[str] = None
     price: float
+    discount_percentage: float = 15.0
+    platform_fee_percentage: float = 10.0
     duration_minutes: int = 60
     image: Optional[str] = None
 
@@ -45,6 +47,8 @@ class ServiceUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     price: Optional[float] = None
+    discount_percentage: Optional[float] = None
+    platform_fee_percentage: Optional[float] = None
     duration_minutes: Optional[int] = None
     image: Optional[str] = None
     is_active: Optional[bool] = None
@@ -55,6 +59,8 @@ class ServiceResponse(BaseModel):
     name: str
     description: Optional[str] = None
     price: float
+    discount_percentage: float = 15.0
+    platform_fee_percentage: float = 10.0
     duration_minutes: int
     is_active: bool
     image: Optional[str] = None

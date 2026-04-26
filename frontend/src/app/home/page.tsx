@@ -6,18 +6,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 import { Service, ServiceCategory } from "@/lib/types";
-import { getServiceIcon } from "@/lib/icons";
 import ServiceCard from "@/components/ServiceCard";
-import { Bell, Search, ChevronRight, Sparkles, Shield, Clock, LocateFixed, Grid2X2, Users, CheckCircle2, Star, Home as HomeIcon } from "lucide-react";
+import ServiceCategoriesGrid from "@/components/ServiceCategoriesGrid";
+import { Bell, Search, ChevronRight, Sparkles, Shield, Clock, LocateFixed, Users, CheckCircle2, Star, Gift } from "lucide-react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
-
-function resolveCategoryImage(url?: string) {
-  if (!url) return null;
-  if (url.startsWith("http") || url.startsWith("data:")) return url;
-  if (url.startsWith("/")) return `${API_BASE}${url}`;
-  return null; // emoji or unknown — use fallback
-}
 
 const STATS = [
   { icon: Users, value: "40+", label: "Professionals", color: "text-blue-600", bg: "bg-blue-50" },
@@ -26,9 +18,9 @@ const STATS = [
 ];
 
 const PROMO_CARDS = [
-  { gradient: "from-rose-500 to-orange-500",   emoji: "🎁", label: "SPECIAL OFFER",   title: "Flat 20% off on first cleaning",  cta: "Claim Now" },
-  { gradient: "from-emerald-500 to-teal-600",  emoji: "✨", label: "TOP RATED",      title: "Trusted by 200+ households",    cta: "Explore" },
-  { gradient: "from-blue-500 to-cyan-500",     emoji: "🛡️", label: "SECURE BOOKING", title: "100% Satisfaction Guaranteed",     cta: "Book Safe" },
+  { gradient: "from-rose-500 to-orange-500",  icon: Gift,     label: "SPECIAL OFFER",   title: "Flat 20% off on first cleaning", cta: "Claim Now" },
+  { gradient: "from-emerald-500 to-teal-600", icon: Sparkles, label: "TOP RATED",        title: "Trusted by 200+ households",     cta: "Explore" },
+  { gradient: "from-blue-500 to-cyan-500",    icon: Shield,   label: "SECURE BOOKING",   title: "100% Satisfaction Guaranteed",   cta: "Book Safe" },
 ];
 
 export default function Home() {
@@ -75,7 +67,7 @@ export default function Home() {
 
   useEffect(() => {
     Promise.all([api.get("/services/categories"), api.get("/services/")])
-      .then(([cat, svc]) => { setCategories(cat.data.slice(0, 8)); setServices(svc.data.slice(0, 4)); })
+      .then(([cat, svc]) => { setCategories(cat.data); setServices(svc.data.slice(0, 4)); })
       .finally(() => setLoading(false));
 
     const t = setInterval(() => setPromoIdx((p) => (p + 1) % PROMO_CARDS.length), 6000);
@@ -102,7 +94,7 @@ export default function Home() {
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               <p className="text-blue-200 text-xs font-semibold mb-0.5">{greeting()},</p>
               <h1 className="text-white text-xl md:text-2xl lg:text-3xl font-extrabold leading-tight">
-                {user?.full_name?.split(" ")[0] ?? "there"} 👋
+                {user?.full_name?.split(" ")[0] ?? "there"}
               </h1>
               <button
                 onClick={fetchLocation}
@@ -143,7 +135,7 @@ export default function Home() {
               className="flex items-center gap-3 bg-white rounded-2xl px-5 py-4 shadow-xl shadow-blue-900/20 relative z-10">
               <Search size={18} className="text-blue-400" />
               <span className="text-slate-400 text-sm flex-1">Search for a service...</span>
-              <span className="text-[10px] bg-blue-50 text-blue-600 font-black px-3 py-1 rounded-full uppercase tracking-wider">200+ Services</span>
+              <span className="text-[10px] bg-blue-50 text-blue-600 font-black px-3 py-1 rounded-full uppercase tracking-wider">120+ Services</span>
             </Link>
           </motion.div>
         </div>
@@ -212,13 +204,13 @@ export default function Home() {
                         className="relative z-10 flex items-center justify-center"
                       >
                         <div className="absolute inset-0 bg-white/20 blur-3xl rounded-full scale-150" />
-                        <motion.span
-                          animate={{ y: [0, -10, 0], rotate: [0, 5, -5, 0] }}
+                        <motion.div
+                          animate={{ y: [0, -10, 0] }}
                           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                          className="text-5xl md:text-7xl lg:text-9xl drop-shadow-2xl filter contrast-125"
+                          className="w-16 h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center border border-white/30 shadow-2xl"
                         >
-                          {card.emoji}
-                        </motion.span>
+                          <card.icon size={32} className="text-white md:w-12 md:h-12 lg:w-16 lg:h-16" strokeWidth={1.5} />
+                        </motion.div>
                       </motion.div>
                     </motion.div>
                   ) : null
@@ -274,42 +266,7 @@ export default function Home() {
             </Link>
           </div>
 
-          {loading ? (
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3 md:gap-4 lg:gap-6">
-              {[...Array(8)].map((_, i) => <div key={i} className="skeleton rounded-2xl md:rounded-[24px] h-24 md:h-32 lg:h-36" />)}
-            </div>
-          ) : (
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3 md:gap-4 lg:gap-6">
-              {categories.map((cat, i) => {
-                const imgSrc = resolveCategoryImage(cat.icon);
-                return (
-                  <motion.div
-                    key={cat.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.05 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <Link href={`/categories/${cat.id}`} className="flex flex-col items-center gap-2 group">
-                      <div className="w-full aspect-square rounded-2xl md:rounded-[24px] overflow-hidden bg-white shadow-sm border border-slate-100 group-hover:border-blue-200 group-hover:shadow-xl group-hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
-                        {imgSrc ? (
-                          <img src={imgSrc} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        ) : (
-                          (() => {
-                            const Icon = getServiceIcon(cat.name);
-                            return <Icon size={24} className="text-slate-300 md:w-8 md:h-8" />;
-                          })()
-                        )}
-                      </div>
-                      <span className="text-[10px] md:text-xs font-bold text-slate-600 text-center leading-tight group-hover:text-blue-600 transition-colors">
-                        {cat.name}
-                      </span>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
+          <ServiceCategoriesGrid categories={categories} loading={loading} />
         </div>
 
         {/* ── Trust badges ───────────────────────────────── */}

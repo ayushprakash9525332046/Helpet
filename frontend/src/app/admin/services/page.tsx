@@ -23,6 +23,7 @@ import {
   Plus, Pencil, Trash2, X, Check, Search,
   ChevronDown, Clock, IndianRupee, GripVertical,
 } from "lucide-react";
+import { getServiceIcon } from "@/lib/icons";
 import toast from "react-hot-toast";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
@@ -34,29 +35,17 @@ function resolveImage(url?: string | null) {
   return null;
 }
 
-const SERVICE_ICONS: Record<string, string> = {
-  clean: "🧹", plumb: "🔧", electr: "⚡", carp: "🪚",
-  paint: "🎨", ac: "❄️", salon: "✂️", pest: "🐛",
-  repair: "🔩", garden: "🌿",
-};
-function getIcon(name: string): string {
-  const n = name.toLowerCase();
-  for (const [k, v] of Object.entries(SERVICE_ICONS)) {
-    if (n.includes(k)) return v;
-  }
-  return "🏠";
-}
-
 interface FormState {
   name: string;
   description: string;
   price: string;
+  discount_percentage: string;
   duration_minutes: string;
   image: string;
   category_id: string;
 }
 const EMPTY_FORM: FormState = {
-  name: "", description: "", price: "", duration_minutes: "60", image: "", category_id: "",
+  name: "", description: "", price: "", discount_percentage: "0", duration_minutes: "60", image: "", category_id: "",
 };
 
 // ── Sortable service card ─────────────────────────────────────────
@@ -101,11 +90,11 @@ function SortableServiceCard({
 
       <div className="flex items-start gap-3 flex-1 min-w-0">
         {/* Image / icon thumbnail */}
-        <div className="w-12 h-12 rounded-xl overflow-hidden bg-blue-50 border border-slate-200 flex items-center justify-center text-xl shrink-0">
+        <div className="w-12 h-12 rounded-xl overflow-hidden bg-blue-50 border border-slate-200 flex items-center justify-center shrink-0">
           {imgSrc ? (
             <img src={imgSrc} alt={svc.name} className="w-full h-full object-cover" />
           ) : (
-            getIcon(svc.name)
+            (() => { const I = getServiceIcon(svc.name); return <I size={22} className="text-blue-400" />; })()
           )}
         </div>
 
@@ -223,6 +212,7 @@ export default function ServicesPage() {
       name: svc.name,
       description: svc.description ?? "",
       price: String(svc.price),
+      discount_percentage: String(svc.discount_percentage ?? 0),
       duration_minutes: String(svc.duration_minutes),
       image: svc.image ?? "",
       category_id: svc.category.id,
@@ -248,6 +238,7 @@ export default function ServicesPage() {
           name: form.name.trim(),
           description: form.description.trim() || null,
           price: Number(form.price),
+          discount_percentage: Number(form.discount_percentage) || 0,
           duration_minutes: Number(form.duration_minutes) || 60,
           image: form.image.trim() || null,
           category_id: form.category_id,
@@ -260,6 +251,7 @@ export default function ServicesPage() {
           name: form.name.trim(),
           description: form.description.trim() || null,
           price: Number(form.price),
+          discount_percentage: Number(form.discount_percentage) || 0,
           duration_minutes: Number(form.duration_minutes) || 60,
           image: form.image.trim() || null,
         };
@@ -467,6 +459,27 @@ export default function ServicesPage() {
                       className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">Discount (%)</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={form.discount_percentage}
+                      onChange={(e) => setForm({ ...form, discount_percentage: e.target.value })}
+                      placeholder="0"
+                      min="0"
+                      max="90"
+                      className="w-full px-4 py-2.5 pr-10 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-semibold">%</span>
+                  </div>
+                  {Number(form.discount_percentage) > 0 && form.price && (
+                    <p className="text-[10px] text-emerald-600 mt-1.5 font-semibold">
+                      Customer pays ₹{Number(form.price)} — original shown as ₹{Math.round(Number(form.price) / (1 - Number(form.discount_percentage) / 100))}
+                    </p>
+                  )}
                 </div>
 
                 {/* Image */}

@@ -8,33 +8,56 @@ import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 import { Service, ServiceCategory } from "@/lib/types";
-import { getServiceIcon } from "@/lib/icons";
 import ServiceCard from "@/components/ServiceCard";
+import ServiceCategoriesGrid from "@/components/ServiceCategoriesGrid";
 import Footer from "@/components/Footer";
 import {
-  Search, ChevronRight,CalendarDays, Sparkles, Shield, Clock,
-  Users, CheckCircle2, Star, ArrowRight,
+  Search, ChevronRight, CalendarDays, Sparkles, Shield, Clock,
+  Users, CheckCircle2, Star, ArrowRight, Gift, ChevronDown,
 } from "lucide-react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
-
-function resolveCategoryImage(url?: string) {
-  if (!url) return null;
-  if (url.startsWith("http") || url.startsWith("data:")) return url;
-  if (url.startsWith("/")) return `${API_BASE}${url}`;
-  return null;
-}
 
 const STATS = [
-  { icon: Users,         value: "40+", label: "Professionals", color: "text-blue-600",   bg: "bg-blue-50"   },
-  { icon: CheckCircle2,  value: "380+",   label: "Jobs Done",     color: "text-emerald-600", bg: "bg-emerald-50" },
-  { icon: Star,          value: "4.9",    label: "Avg Rating",    color: "text-amber-500",  bg: "bg-amber-50"  },
+  { icon: Users,         value: "40+",  label: "Professionals", color: "text-blue-600",   bg: "bg-blue-50"   },
+  { icon: CheckCircle2,  value: "380+", label: "Jobs Done",     color: "text-emerald-600", bg: "bg-emerald-50" },
+  { icon: Star,          value: "4.9",  label: "Avg Rating",    color: "text-amber-500",  bg: "bg-amber-50"  },
 ];
 
 const PROMO_CARDS = [
-  { gradient: "from-rose-500 to-orange-500",  emoji: "🎁", label: "SPECIAL OFFER",   title: "Flat ₹200 off on first booking",     cta: "Claim Now"  },
-  { gradient: "from-emerald-500 to-teal-600", emoji: "✨", label: "TOP RATED",       title: "Trusted by 10,000+ households",      cta: "Explore"    },
-  { gradient: "from-blue-500 to-cyan-500",    emoji: "🛡️", label: "SECURE BOOKING", title: "100% Satisfaction Guaranteed",       cta: "Book Safe"  },
+  { gradient: "from-rose-500 to-orange-500",  icon: Gift,     label: "SPECIAL OFFER",   title: "Flat ₹200 off on first booking",   cta: "Claim Now"  },
+  { gradient: "from-emerald-500 to-teal-600", icon: Sparkles, label: "TOP RATED",        title: "Trusted by Dehradun households",   cta: "Explore"    },
+  { gradient: "from-blue-500 to-cyan-500",    icon: Shield,   label: "SECURE BOOKING",   title: "100% Satisfaction Guaranteed",     cta: "Book Safe"  },
+];
+
+const FAQS = [
+  {
+    q: "Where does Helpet currently operate?",
+    a: "Helpet is currently live in Dehradun, Uttarakhand. We cover all major localities including Rajpur Road, Clement Town, Prem Nagar, Dalanwala, Ballupur, Saharanpur Road, Raipur, Jakhan, and surrounding areas. We are actively expanding to other cities — sign up to get notified when we launch near you.",
+  },
+  {
+    q: "What home services can I book in Dehradun?",
+    a: "Helpet offers 120+ home services in Dehradun across categories including deep cleaning, sofa & carpet cleaning, bathroom cleaning, plumbing, electrical repairs, AC service & repair, inverter/geyser repair, wall painting, pest control, carpentry, CCTV installation, and more. New services are added regularly.",
+  },
+  {
+    q: "How do I book a home service in Dehradun?",
+    a: "Booking takes under 2 minutes. Open Helpet, search or browse for your service, pick a date and time slot that works for you, enter your Dehradun address, and confirm. A verified local professional will arrive at your doorstep. You can track your booking in real time.",
+  },
+  {
+    q: "Are Helpet's professionals in Dehradun verified?",
+    a: "Yes. Every professional on Helpet undergoes a multi-step verification including Aadhaar-based identity check, address verification, skill assessment, and a background check. Only professionals who pass all checks are onboarded. You can also see ratings and reviews before booking.",
+  },
+  {
+    q: "How much does a home service cost in Dehradun?",
+    a: "All prices are shown upfront — no hidden charges, no last-minute surprises. In Dehradun, home cleaning starts at ₹299, AC servicing at ₹349, plumbing fixes at ₹199, and electrical work at ₹199. Prices vary by service complexity and duration.",
+  },
+  {
+    q: "Is same-day or emergency home service available in Dehradun?",
+    a: "Yes! Same-day booking is available for most services in Dehradun, subject to professional availability in your locality. For urgent needs like a plumbing leak, electrical fault, or AC breakdown, choose the earliest slot and we will dispatch the nearest available professional.",
+  },
+  {
+    q: "What is Helpet's satisfaction guarantee?",
+    a: "Your satisfaction is 100% guaranteed. If you're not happy with the quality of service, raise a concern within 24 hours of job completion and we'll arrange a free redo or process a full refund — no questions asked. Our support team is available 7 days a week.",
+  },
 ];
 
 const HOW_IT_WORKS = [
@@ -42,7 +65,7 @@ const HOW_IT_WORKS = [
     step: "01",
     icon: Search,
     title: "Browse Services",
-    desc: "Explore 200+ services across categories. See pricing upfront — no surprises.",
+    desc: "Explore 120+ services across categories in Dehradun. See pricing upfront — no surprises.",
   },
   {
     step: "02",
@@ -66,6 +89,7 @@ export default function LandingPage() {
   const [dataLoading, setDataLoading] = useState(true);
   const [promoIdx, setPromoIdx]     = useState(0);
   const [searchValue, setSearchValue] = useState("");
+  const [openFaq, setOpenFaq]       = useState<number | null>(null);
 
   // Logged-in users go straight to their dashboard
   useEffect(() => {
@@ -170,16 +194,16 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             <span className="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em] bg-white/10 px-4 py-1.5 rounded-full border border-white/10 inline-block mb-4 md:mb-5">
-              India&apos;s Trusted Home Service Platform
+              Dehradun&apos;s Trusted Home Service App
             </span>
             <h1 className="text-white text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4 md:mb-5">
-              Professional Home Services
+              Home Services in Dehradun
               <br />
               <span className="text-blue-200">at Your Doorstep</span>
             </h1>
             <p className="text-white/80 text-base md:text-lg font-medium mb-8 max-w-xl leading-relaxed">
-              Book verified professionals for cleaning, plumbing, AC repair, and
-              200+ services. Same-day booking, guaranteed quality.
+              Book verified local professionals for cleaning, plumbing, AC repair, and
+              120+ services in Dehradun. Same-day booking, transparent pricing.
             </p>
 
             {/* Search bar */}
@@ -196,7 +220,7 @@ export default function LandingPage() {
                         `/categories?q=${encodeURIComponent(searchValue)}`,
                       );
                   }}
-                  placeholder="What service do you need?"
+                  placeholder="Search home services in Dehradun..."
                   className="text-sm font-medium text-slate-700 placeholder:text-slate-400 outline-none bg-transparent w-full"
                 />
               </div>
@@ -302,13 +326,13 @@ export default function LandingPage() {
                         {card.cta} <ChevronRight size={14} />
                       </Link>
                     </div>
-                    <motion.span
+                    <motion.div
                       animate={{ y: [0, -8, 0] }}
                       transition={{ duration: 3, repeat: Infinity }}
-                      className="text-6xl md:text-8xl drop-shadow-xl shrink-0"
+                      className="w-16 h-16 md:w-24 md:h-24 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center border border-white/30 shadow-xl shrink-0"
                     >
-                      {card.emoji}
-                    </motion.span>
+                      <card.icon size={32} className="text-white md:w-12 md:h-12" strokeWidth={1.5} />
+                    </motion.div>
                   </motion.div>
                 ) : null,
               )}
@@ -344,56 +368,7 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          {dataLoading ? (
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 gap-3 md:gap-4">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="skeleton rounded-2xl h-24 md:h-32" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 gap-3 md:gap-4">
-              {categories.slice(0, 8).map((cat, i) => {
-                const imgSrc = resolveCategoryImage(cat.icon);
-                return (
-                  <motion.div
-                    key={cat.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.05 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <Link
-                      href={`/categories/${cat.id}`}
-                      className="flex flex-col items-center gap-2 group"
-                    >
-                      <div className="w-full aspect-square rounded-2xl overflow-hidden bg-white shadow-sm border border-slate-100 group-hover:border-blue-200 group-hover:shadow-xl group-hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
-                        {imgSrc ? (
-                          <img
-                            src={imgSrc}
-                            alt={cat.name}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
-                        ) : (
-                          (() => {
-                            const Icon = getServiceIcon(cat.name);
-                            return (
-                              <Icon
-                                size={24}
-                                className="text-slate-300 md:w-8 md:h-8"
-                              />
-                            );
-                          })()
-                        )}
-                      </div>
-                      <span className="text-[10px] md:text-xs font-bold text-slate-600 text-center leading-tight group-hover:text-blue-600 transition-colors">
-                        {cat.name}
-                      </span>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
+          <ServiceCategoriesGrid categories={categories} loading={dataLoading} />
         </div>
 
         {/* ── How It Works ──────────────────────────────── */}
@@ -406,22 +381,21 @@ export default function LandingPage() {
               Book a service in 3 simple steps
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8">
+
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
             {HOW_IT_WORKS.map(({ step, icon: Icon, title, desc }) => (
-              <div
-                key={step}
-                className="bg-white rounded-2xl p-6 md:p-8 border border-slate-100 shadow-sm text-center hover:shadow-lg transition-all group"
-              >
-                <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 group-hover:scale-110 transition-transform">
+              <div key={step} className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 flex flex-col items-center text-center shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mb-5 group-hover:bg-blue-100 transition-colors duration-300">
                   <Icon className="w-7 h-7 text-blue-600" />
                 </div>
-                <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest block mb-1">
+
+                <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">
                   Step {step}
                 </span>
                 <h3 className="text-slate-800 font-black text-base md:text-lg mb-2">
                   {title}
                 </h3>
-                <p className="text-slate-400 text-sm font-medium leading-relaxed">
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">
                   {desc}
                 </p>
               </div>
@@ -482,6 +456,79 @@ export default function LandingPage() {
           )}
         </div>
 
+        {/* ── FAQ ───────────────────────────────────────── */}
+        <div className="mt-16 md:mt-20 mb-8 md:mb-16">
+          {/* JSON-LD FAQ Schema for Google rich results */}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                mainEntity: FAQS.map((f) => ({
+                  "@type": "Question",
+                  name: f.q,
+                  acceptedAnswer: { "@type": "Answer", text: f.a },
+                })),
+              }),
+            }}
+          />
+
+          <div className="text-center mb-8 md:mb-10">
+            <h2 className="text-slate-800 font-black text-xl md:text-2xl lg:text-3xl tracking-tight">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-slate-400 text-sm md:text-base mt-1">
+              Everything you need to know before booking
+            </p>
+          </div>
+
+          <div className="max-w-3xl mx-auto space-y-3">
+            {FAQS.map((faq, i) => {
+              const isOpen = openFaq === i;
+              return (
+                <div
+                  key={i}
+                  className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden"
+                >
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : i)}
+                    className="w-full flex items-center justify-between gap-4 px-5 py-4 md:py-5 text-left hover:bg-slate-50 transition-colors"
+                    aria-expanded={isOpen}
+                  >
+                    <span className="font-bold text-slate-800 text-sm md:text-base leading-snug">
+                      {faq.q}
+                    </span>
+                    <motion.div
+                      animate={{ rotate: isOpen ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="shrink-0 w-7 h-7 bg-blue-50 rounded-lg flex items-center justify-center"
+                    >
+                      <ChevronDown size={14} className="text-blue-600" />
+                    </motion.div>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.22, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <p className="px-5 pb-5 text-slate-500 text-sm leading-relaxed border-t border-slate-50 pt-3">
+                          {faq.a}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* ── CTA Banner ────────────────────────────────── */}
         <div className="mb-16 md:mb-20">
           <div className="gradient-animated rounded-2xl md:rounded-3xl p-8 md:p-14 text-center relative overflow-hidden">
@@ -489,11 +536,11 @@ export default function LandingPage() {
             <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-white/5 rounded-full" />
             <div className="relative z-10">
               <h2 className="text-white font-black text-2xl md:text-3xl lg:text-4xl mb-3 tracking-tight">
-                Ready to get started?
+                Book a Home Service in Dehradun Today
               </h2>
               <p className="text-white/80 text-sm md:text-base font-medium mb-8 max-w-md mx-auto">
-                Join thousands of happy customers. Book your first service today
-                and get ₹200 off.
+                Join hundreds of happy Dehradun households. Book your first service
+                and get ₹200 off — no coupon needed.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link

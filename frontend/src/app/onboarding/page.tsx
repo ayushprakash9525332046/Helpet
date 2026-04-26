@@ -7,14 +7,24 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { Home, Star, Shield, Zap, Award, CheckCircle2, IndianRupee, LucideIcon } from "lucide-react";
 
-const slides = [
+const slides: {
+  gradient: string;
+  lightBg: string;
+  accent: string;
+  icon: LucideIcon;
+  floatIcons: LucideIcon[];
+  title: string;
+  subtitle: string;
+  badge: string;
+}[] = [
   {
     gradient: "from-blue-600 via-blue-500 to-indigo-600",
     lightBg: "from-blue-50 to-indigo-50",
     accent: "#2563EB",
-    emoji: "🏠",
-    floats: ["🔧", "⚡", "🪣"],
+    icon: Home,
+    floatIcons: [Zap, Star, Shield],
     title: "Find the Best Service\nfor Your Home",
     subtitle: "Browse 200+ verified professionals for every home need — plumbing, cleaning, electrical and more.",
     badge: "Trusted by 50,000+ families",
@@ -23,8 +33,8 @@ const slides = [
     gradient: "from-violet-600 via-purple-500 to-fuchsia-600",
     lightBg: "from-violet-50 to-fuchsia-50",
     accent: "#7C3AED",
-    emoji: "💰",
-    floats: ["⭐", "🏆", "✅"],
+    icon: IndianRupee,
+    floatIcons: [Star, Award, CheckCircle2],
     title: "Quality Service That\nFits Your Budget",
     subtitle: "Compare prices, read real reviews, and book the right professional without ever overpaying.",
     badge: "Save up to 30% vs market rate",
@@ -33,8 +43,8 @@ const slides = [
     gradient: "from-emerald-500 via-teal-500 to-cyan-600",
     lightBg: "from-emerald-50 to-cyan-50",
     accent: "#059669",
-    emoji: "🌟",
-    floats: ["🛡️", "✨", "🎯"],
+    icon: Shield,
+    floatIcons: [Shield, Zap, CheckCircle2],
     title: "Trusted Pros,\nGuaranteed Results",
     subtitle: "Every professional is background-verified. Not satisfied? We'll make it right — full refund guaranteed.",
     badge: "100% satisfaction guarantee",
@@ -65,6 +75,7 @@ export default function Onboarding() {
   };
 
   const slide = slides[current];
+  const MainIcon = slide.icon;
 
   return (
     <div className="flex flex-col min-h-screen bg-white overflow-hidden">
@@ -100,30 +111,30 @@ export default function Onboarding() {
               <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full opacity-10"
                 style={{ background: slide.accent }} />
 
-              {/* Floating emojis */}
-              {slide.floats.map((f, i) => (
-                <motion.span
-                  key={f}
-                  className="absolute text-2xl select-none"
+              {/* Floating icons */}
+              {slide.floatIcons.map((FloatIcon, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-9 h-9 rounded-xl flex items-center justify-center bg-white/60 backdrop-blur-sm border border-white/40 shadow-sm"
                   style={{
-                    top: `${[20, 50, 75][i]}%`,
-                    right: `${[10, 5, 15][i]}%`,
+                    top: `${[18, 48, 72][i]}%`,
+                    right: `${[8, 4, 12][i]}%`,
                   }}
                   animate={{ y: [0, -8, 0] }}
                   transition={{ duration: 2.5 + i * 0.5, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  {f}
-                </motion.span>
+                  <FloatIcon size={16} style={{ color: slide.accent }} />
+                </motion.div>
               ))}
 
-              {/* Main emoji */}
+              {/* Main icon */}
               <motion.div
                 className="flex items-center justify-center"
                 animate={{ y: [0, -12, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
-                <div className={`w-32 h-32 rounded-3xl bg-gradient-to-br ${slide.gradient} flex items-center justify-center text-6xl shadow-2xl`}>
-                  {slide.emoji}
+                <div className={`w-32 h-32 rounded-3xl bg-gradient-to-br ${slide.gradient} flex items-center justify-center shadow-2xl`}>
+                  <MainIcon size={56} className="text-white" strokeWidth={1.5} />
                 </div>
               </motion.div>
 
@@ -136,7 +147,7 @@ export default function Onboarding() {
               >
                 <span className="text-xs font-bold px-4 py-2 rounded-full text-white shadow-lg"
                   style={{ background: slide.accent }}>
-                  ✦ {slide.badge}
+                  {slide.badge}
                 </span>
               </motion.div>
             </div>
@@ -183,7 +194,7 @@ export default function Onboarding() {
           className="btn-primary"
           style={{ background: `linear-gradient(135deg, ${slide.accent}, ${slide.accent}dd)` }}
         >
-          {current === slides.length - 1 ? "Get Started →" : "Next →"}
+          {current === slides.length - 1 ? "Get Started" : "Next"}
         </motion.button>
       </div>
     </div>
