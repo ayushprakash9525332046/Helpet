@@ -33,7 +33,9 @@ export default function ServiceCard({ service, index = 0 }: Props) {
   const IconComponent = getServiceIcon(service.name);
   const imgSrc = resolveImage(service.image);
   const discount = service.discount_percentage ?? 0;
-  const originalPrice = discount > 0 ? Math.round(service.price / (1 - discount / 100)) : Math.round(service.price * 1.2);
+  const originalPrice = discount > 0
+    ? Math.round(service.price / (1 - discount / 100))
+    : null;
 
   return (
     <motion.div
@@ -45,7 +47,7 @@ export default function ServiceCard({ service, index = 0 }: Props) {
       <Link href={`/services/${service.id}`}>
         <div className="group bg-white rounded-xl md:rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:border-blue-100 transition-all duration-500 hover:-translate-y-1 h-full flex flex-col">
           {/* Image area */}
-          <div className={`relative h-28 md:h-32 lg:h-36 xl:h-40 bg-gradient-to-br ${gradient} flex items-center justify-center overflow-hidden`}>
+          <div className={`relative h-28 md:h-32 lg:h-36 xl:h-40 bg-linear-to-br ${gradient} flex items-center justify-center overflow-hidden`}>
             {imgSrc ? (
               <img src={imgSrc} alt={service.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
             ) : (
@@ -68,7 +70,7 @@ export default function ServiceCard({ service, index = 0 }: Props) {
 
             {/* Discount badge */}
             {discount > 0 && (
-              <div className="absolute top-2.5 left-2.5 z-20 bg-white/95 backdrop-blur-md text-blue-600 px-2 py-1 rounded-lg shadow-lg flex flex-row items-center gap-1 border border-white/20">
+              <div className="absolute top-2.5 left-2.5 z-20 bg-white/95 backdrop-blur-md text-emerald-600 px-2 py-1 rounded-lg shadow-lg flex flex-row items-center gap-1 border border-emerald-100">
                 <Tag size={9} />
                 <span className="text-[10px] font-black uppercase tracking-wider">{discount}% OFF</span>
               </div>
@@ -93,9 +95,9 @@ export default function ServiceCard({ service, index = 0 }: Props) {
             <h3 className="font-bold text-slate-800 text-sm md:text-[15px] line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug flex-1">{service.name}</h3>
 
             <div className="flex items-center justify-between mt-2 md:mt-3">
-              <div className="flex items-baseline gap-1">
+              <div className="flex items-baseline gap-1.5">
                 <span className="text-blue-600 font-black text-base md:text-lg">₹{service.price}</span>
-                {discount > 0 && (
+                {originalPrice && (
                   <span className="text-slate-300 text-xs font-medium line-through">₹{originalPrice}</span>
                 )}
               </div>

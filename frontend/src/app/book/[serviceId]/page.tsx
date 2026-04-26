@@ -136,6 +136,7 @@ export default function BookService() {
         service: service!.name,
         amount: String(res.data.total_amount),
         date: date.toISOString(),
+        platform_fee_pct: String(service!.platform_fee_percentage ?? 10),
       });
       router.push(`/payment/${res.data.id}?${params.toString()}`);
     } catch (err: any) {
@@ -171,10 +172,10 @@ export default function BookService() {
           <div className="lg:col-span-5 flex flex-col gap-5">
             <motion.div
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 }}
-              className={`rounded-[24px] bg-linear-to-br ${gradient} p-6 md:p-10 flex flex-col md:flex-row lg:flex-col items-center md:items-start gap-6 md:gap-8 shadow-2xl relative overflow-hidden group`}
+              className={`rounded-3xl bg-linear-to-br ${gradient} p-6 md:p-10 flex flex-col md:flex-row lg:flex-col items-center md:items-start gap-6 md:gap-8 shadow-2xl relative overflow-hidden group`}
             >
               <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full group-hover:scale-150 transition-transform duration-1000" />
-              <div className="w-20 h-20 md:w-28 md:h-28 bg-white/20 backdrop-blur-md rounded-[24px] flex items-center justify-center shadow-xl relative z-10 overflow-hidden shrink-0">
+              <div className="w-20 h-20 md:w-28 md:h-28 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center shadow-xl relative z-10 overflow-hidden shrink-0">
                 {imgSrc ? (
                   <img src={imgSrc} alt={service.name} className="w-full h-full object-cover" />
                 ) : (
@@ -199,7 +200,7 @@ export default function BookService() {
 
             <motion.div
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
-              className="hidden lg:flex flex-col gap-3 bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm"
+              className="hidden lg:flex flex-col gap-3 bg-white rounded-3xl p-6 border border-slate-100 shadow-sm"
             >
               <h3 className="text-slate-800 font-black text-lg mb-1">Booking Benefits</h3>
               {[
@@ -242,7 +243,7 @@ export default function BookService() {
                 placeholder="Enter complete address where service is needed (house no, street, area, city)..."
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full bg-white rounded-xl md:rounded-[24px] px-5 py-4 md:px-7 md:py-6 text-sm md:text-lg font-bold text-slate-700 border-2 border-slate-50 focus:border-blue-100 focus:bg-blue-50/10 outline-none transition-all min-h-[100px] md:min-h-[140px] shadow-sm hover:shadow-md resize-none"
+                className="w-full bg-white rounded-xl md:rounded-3xl px-5 py-4 md:px-7 md:py-6 text-sm md:text-lg font-bold text-slate-700 border-2 border-slate-50 focus:border-blue-100 focus:bg-blue-50/10 outline-none transition-all min-h-25 md:min-h-35 shadow-sm hover:shadow-md resize-none"
               />
             </motion.div>
 
@@ -265,7 +266,7 @@ export default function BookService() {
                       whileTap={disabled ? {} : { scale: 0.95 }}
                       onClick={() => { if (!disabled) { setSelectedDate(i); setSelectedTime(""); } }}
                       disabled={disabled}
-                      className={`flex flex-col items-center min-w-[64px] md:min-w-[90px] py-4 md:py-6 rounded-xl md:rounded-[24px] border-2 transition-all duration-300 ${
+                      className={`flex flex-col items-center min-w-16 md:min-w-22.5 py-4 md:py-6 rounded-xl md:rounded-3xl border-2 transition-all duration-300 ${
                         disabled ? "opacity-40 grayscale cursor-not-allowed border-slate-50" :
                         active ? "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-200" : "bg-white border-slate-50 text-slate-500 hover:border-blue-100 hover:bg-blue-50/30"
                       }`}
@@ -319,30 +320,29 @@ export default function BookService() {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Any specific instructions for the professional? (e.g. Landmark, pet info...)"
-                className="w-full bg-white rounded-xl md:rounded-[24px] px-5 py-4 md:px-7 md:py-6 text-sm md:text-lg font-bold text-slate-700 border-2 border-slate-50 focus:border-blue-100 focus:bg-blue-50/10 outline-none transition-all min-h-[80px] md:min-h-[120px] shadow-sm hover:shadow-md resize-none"
+                className="w-full bg-white rounded-xl md:rounded-3xl px-5 py-4 md:px-7 md:py-6 text-sm md:text-lg font-bold text-slate-700 border-2 border-slate-50 focus:border-blue-100 focus:bg-blue-50/10 outline-none transition-all min-h-20 md:min-h-30 shadow-sm hover:shadow-md resize-none"
               />
             </motion.div>
           </div>
         </div>
       </div>
 
-      {/* Fixed bottom bar for desktop / Floating for mobile */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-100 px-5 py-4 md:px-8 md:py-6 z-[100] shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-10">
+      {/* Fixed bottom bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-100 z-100 shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
+        <div className="max-w-7xl mx-auto px-5 py-4 md:px-8 md:py-6 flex items-center justify-between gap-4 md:gap-10">
           <div className="flex flex-col shrink-0">
             <p className="text-[10px] md:text-xs text-slate-400 font-black uppercase tracking-[0.15em] mb-0.5 md:mb-1">Final Amount</p>
             <div className="flex items-baseline gap-2 md:gap-3">
               <span className="text-xl md:text-4xl font-black text-slate-900 tracking-tight">₹{service.price}</span>
-              <span className="hidden md:inline text-slate-300 text-lg font-bold line-through decoration-slate-300/50">₹{Math.round(service.price * 1.2)}</span>
             </div>
           </div>
-          
+
           <motion.button
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleBook}
             disabled={loading}
-            className="flex-1 md:flex-none md:min-w-[340px] bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-black py-4 md:py-5 rounded-2xl md:rounded-[24px] shadow-xl shadow-blue-600/20 transition-all flex items-center justify-center gap-3 text-sm md:text-xl"
+            className="flex-1 md:flex-none md:min-w-75 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-black py-4 md:py-5 rounded-2xl md:rounded-3xl shadow-xl shadow-blue-600/20 transition-all flex items-center justify-center gap-3 text-sm md:text-xl"
           >
             {loading ? (
               <span className="w-5 h-5 md:w-6 md:h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />

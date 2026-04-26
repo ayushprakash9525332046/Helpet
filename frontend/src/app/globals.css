@@ -28,6 +28,13 @@
   scrollbar-width: none;  /* Firefox */
 }
 
+@media (pointer: fine) {
+  a, button, [role="button"], select, label[for],
+  [onClick], .cursor-pointer {
+    cursor: pointer;
+  }
+}
+
 *::-webkit-scrollbar {
   display: none; /* Hide scrollbar for Chrome, Safari and Opera */
 }

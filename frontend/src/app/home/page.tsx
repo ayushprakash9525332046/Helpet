@@ -66,12 +66,23 @@ export default function Home() {
   };
 
   useEffect(() => {
-    Promise.all([api.get("/services/categories"), api.get("/services/")])
-      .then(([cat, svc]) => { setCategories(cat.data); setServices(svc.data.slice(0, 4)); })
-      .finally(() => setLoading(false));
+    const fetchServices = () => {
+      Promise.all([api.get("/services/categories"), api.get("/services/")])
+        .then(([cat, svc]) => { setCategories(cat.data); setServices(svc.data.slice(0, 4)); })
+        .finally(() => setLoading(false));
+    };
+
+    fetchServices();
+
+    // Re-fetch when tab becomes visible (handles back-navigation router cache)
+    const onVisible = () => { if (!document.hidden) fetchServices(); };
+    document.addEventListener("visibilitychange", onVisible);
 
     const t = setInterval(() => setPromoIdx((p) => (p + 1) % PROMO_CARDS.length), 6000);
-    return () => clearInterval(t);
+    return () => {
+      clearInterval(t);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, []);
 
   const greeting = () => {

@@ -21,7 +21,7 @@ import api from "@/lib/api";
 import { Service, ServiceCategory } from "@/lib/types";
 import {
   Plus, Pencil, Trash2, X, Check, Search,
-  ChevronDown, Clock, IndianRupee, GripVertical,
+  ChevronDown, Clock, IndianRupee, GripVertical, Settings2, ChevronUp,
 } from "lucide-react";
 import { getServiceIcon } from "@/lib/icons";
 import toast from "react-hot-toast";
@@ -40,12 +40,13 @@ interface FormState {
   description: string;
   price: string;
   discount_percentage: string;
+  platform_fee_percentage: string;
   duration_minutes: string;
   image: string;
   category_id: string;
 }
 const EMPTY_FORM: FormState = {
-  name: "", description: "", price: "", discount_percentage: "0", duration_minutes: "60", image: "", category_id: "",
+  name: "", description: "", price: "", discount_percentage: "15", platform_fee_percentage: "10", duration_minutes: "60", image: "", category_id: "",
 };
 
 // ── Sortable service card ─────────────────────────────────────────
@@ -108,7 +109,7 @@ function SortableServiceCard({
           {svc.description && (
             <p className="text-slate-400 text-xs mt-0.5 line-clamp-1">{svc.description}</p>
           )}
-          <div className="flex items-center gap-3 mt-2">
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
             <span className="flex items-center gap-0.5 text-sm font-bold text-slate-700">
               <IndianRupee size={11} className="text-blue-500" />
               {Number(svc.price).toLocaleString("en-IN")}
@@ -117,6 +118,16 @@ function SortableServiceCard({
               <Clock size={11} />
               {svc.duration_minutes} min
             </span>
+            {(svc.discount_percentage ?? 0) > 0 && (
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded-full">
+                {svc.discount_percentage}% off
+              </span>
+            )}
+            {(svc.platform_fee_percentage ?? 0) > 0 && (
+              <span className="text-[10px] font-bold text-violet-700 bg-violet-50 border border-violet-100 px-1.5 py-0.5 rounded-full">
+                {svc.platform_fee_percentage}% fee
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -151,6 +162,9 @@ export default function ServicesPage() {
   const [editTarget, setEditTarget] = useState<Service | null>(null);
   const [form, setForm]             = useState<FormState>(EMPTY_FORM);
   const [saving, setSaving]         = useState(false);
+  const [defaultDiscount, setDefaultDiscount]       = useState("15");
+  const [defaultPlatformFee, setDefaultPlatformFee] = useState("10");
+  const [settingsOpen, setSettingsOpen]             = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -202,7 +216,12 @@ export default function ServicesPage() {
 
   // ── Modal helpers ────────────────────────────────────────────────
   function openCreate() {
-    setForm({ ...EMPTY_FORM, category_id: categories[0]?.id ?? "" });
+    setForm({
+      ...EMPTY_FORM,
+      category_id: categories[0]?.id ?? "",
+      discount_percentage: defaultDiscount,
+      platform_fee_percentage: defaultPlatformFee,
+    });
     setEditTarget(null);
     setModal("create");
   }
@@ -213,6 +232,7 @@ export default function ServicesPage() {
       description: svc.description ?? "",
       price: String(svc.price),
       discount_percentage: String(svc.discount_percentage ?? 0),
+      platform_fee_percentage: String(svc.platform_fee_percentage ?? 10),
       duration_minutes: String(svc.duration_minutes),
       image: svc.image ?? "",
       category_id: svc.category.id,
@@ -239,6 +259,7 @@ export default function ServicesPage() {
           description: form.description.trim() || null,
           price: Number(form.price),
           discount_percentage: Number(form.discount_percentage) || 0,
+          platform_fee_percentage: Number(form.platform_fee_percentage) || 0,
           duration_minutes: Number(form.duration_minutes) || 60,
           image: form.image.trim() || null,
           category_id: form.category_id,
@@ -252,6 +273,7 @@ export default function ServicesPage() {
           description: form.description.trim() || null,
           price: Number(form.price),
           discount_percentage: Number(form.discount_percentage) || 0,
+          platform_fee_percentage: Number(form.platform_fee_percentage) || 0,
           duration_minutes: Number(form.duration_minutes) || 60,
           image: form.image.trim() || null,
         };
@@ -306,6 +328,73 @@ export default function ServicesPage() {
           <Plus size={15} />
           Add Service
         </motion.button>
+      </div>
+
+      {/* Default pricing settings */}
+      <div className="mb-4 border border-slate-200 rounded-2xl bg-white overflow-hidden">
+        <button
+          onClick={() => setSettingsOpen((v) => !v)}
+          className="w-full flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            <Settings2 size={15} className="text-slate-400" />
+            Default Pricing Defaults
+            <span className="text-[11px] font-normal text-slate-400">
+              (applied to every new service you create)
+            </span>
+          </span>
+          {settingsOpen ? <ChevronUp size={14} className="text-slate-400" /> : <ChevronDown size={14} className="text-slate-400" />}
+        </button>
+
+        {settingsOpen && (
+          <div className="px-4 pb-4 pt-1 border-t border-slate-100">
+            <div className="grid grid-cols-2 gap-4 mt-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                  Default Discount (%)
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={defaultDiscount}
+                    onChange={(e) => setDefaultDiscount(e.target.value)}
+                    min="0"
+                    max="90"
+                    className="w-full px-4 py-2.5 pr-8 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">%</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  New services will default to {defaultDiscount || 0}% off
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                  Default Platform Fee (%)
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={defaultPlatformFee}
+                    onChange={(e) => setDefaultPlatformFee(e.target.value)}
+                    min="0"
+                    max="50"
+                    className="w-full px-4 py-2.5 pr-8 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">%</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Platform keeps {defaultPlatformFee || 0}% of each booking
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-3 p-3 bg-blue-50 rounded-xl text-xs text-blue-700">
+              These are session defaults — each service can still be overridden individually when you add or edit it.
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Filters */}
@@ -461,26 +550,79 @@ export default function ServicesPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">Discount (%)</label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      value={form.discount_percentage}
-                      onChange={(e) => setForm({ ...form, discount_percentage: e.target.value })}
-                      placeholder="0"
-                      min="0"
-                      max="90"
-                      className="w-full px-4 py-2.5 pr-10 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-semibold">%</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 mb-1.5">Discount (%)</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        value={form.discount_percentage}
+                        onChange={(e) => setForm({ ...form, discount_percentage: e.target.value })}
+                        placeholder="0"
+                        min="0"
+                        max="90"
+                        className="w-full px-4 py-2.5 pr-8 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">%</span>
+                    </div>
                   </div>
-                  {Number(form.discount_percentage) > 0 && form.price && (
-                    <p className="text-[10px] text-emerald-600 mt-1.5 font-semibold">
-                      Customer pays ₹{Number(form.price)} — original shown as ₹{Math.round(Number(form.price) / (1 - Number(form.discount_percentage) / 100))}
-                    </p>
-                  )}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 mb-1.5">Platform Fee (%)</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        value={form.platform_fee_percentage}
+                        onChange={(e) => setForm({ ...form, platform_fee_percentage: e.target.value })}
+                        placeholder="10"
+                        min="0"
+                        max="50"
+                        className="w-full px-4 py-2.5 pr-8 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">%</span>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Price breakdown preview */}
+                {form.price && Number(form.price) > 0 && (
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2">
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Price Breakdown</p>
+                    {Number(form.discount_percentage) > 0 ? (
+                      <div className="flex justify-between text-xs">
+                        <span className="text-slate-500">Original price</span>
+                        <span className="text-slate-400 line-through">
+                          ₹{Math.round(Number(form.price) / (1 - Number(form.discount_percentage) / 100)).toLocaleString("en-IN")}
+                        </span>
+                      </div>
+                    ) : null}
+                    <div className="flex justify-between text-xs font-semibold">
+                      <span className="text-slate-700">Customer pays</span>
+                      <span className="text-blue-600">₹{Number(form.price).toLocaleString("en-IN")}</span>
+                    </div>
+                    {Number(form.discount_percentage) > 0 && (
+                      <div className="flex justify-between text-xs">
+                        <span className="text-emerald-600">Discount ({form.discount_percentage}% off)</span>
+                        <span className="text-emerald-600">
+                          −₹{(Math.round(Number(form.price) / (1 - Number(form.discount_percentage) / 100)) - Number(form.price)).toLocaleString("en-IN")}
+                        </span>
+                      </div>
+                    )}
+                    {Number(form.platform_fee_percentage) > 0 && (
+                      <div className="flex justify-between text-xs">
+                        <span className="text-violet-600">Platform fee ({form.platform_fee_percentage}%)</span>
+                        <span className="text-violet-600">
+                          ₹{Math.round(Number(form.price) * Number(form.platform_fee_percentage) / 100).toLocaleString("en-IN")}
+                        </span>
+                      </div>
+                    )}
+                    <div className="border-t border-slate-200 pt-2 flex justify-between text-xs font-bold">
+                      <span className="text-slate-700">Provider receives</span>
+                      <span className="text-slate-800">
+                        ₹{Math.round(Number(form.price) * (1 - Number(form.platform_fee_percentage) / 100)).toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Image */}
                 <div>

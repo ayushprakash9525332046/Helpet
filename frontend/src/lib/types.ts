@@ -32,6 +32,7 @@ export interface Service {
   image?: string;
   category: ServiceCategory;
   discount_percentage?: number;
+  platform_fee_percentage?: number;
 }
 
 export interface Booking {

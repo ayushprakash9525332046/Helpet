@@ -12,12 +12,14 @@ import { Lock, IndianRupee, Shield, CheckCircle2, Banknote } from "lucide-react"
 function PaymentContent() {
   const { bookingId } = useParams<{ bookingId: string }>();
   const searchParams  = useSearchParams();
-  const serviceName   = searchParams.get("service") ?? "Home Service";
-  const amount        = searchParams.get("amount")  ?? "0";
-  const router        = useRouter();
-  
+  const serviceName      = searchParams.get("service")          ?? "Home Service";
+  const amount           = searchParams.get("amount")           ?? "0";
+  const platformFeePct   = Number(searchParams.get("platform_fee_pct") ?? 10);
+  const router           = useRouter();
+
   const [codLoading, setCodLoading] = useState(false);
-  const total = Number(amount) + 29;
+  const platformFeeAmount = Math.round(Number(amount) * platformFeePct / 100);
+  const total = Number(amount) + platformFeeAmount;
 
   const handleCOD = async () => {
     if (codLoading) return;
@@ -71,7 +73,7 @@ function PaymentContent() {
             <span className="font-bold text-slate-800">₹{amount}</span>
           </div>
           <div className="flex justify-between items-center text-slate-400 text-xs">
-            <span>Platform fee</span><span>₹29</span>
+            <span>Platform fee ({platformFeePct}%)</span><span>₹{platformFeeAmount}</span>
           </div>
           <div className="border-t border-slate-100 pt-2.5 mt-2.5 flex justify-between items-center">
             <span className="font-bold text-slate-800 text-sm">Total Payable</span>
