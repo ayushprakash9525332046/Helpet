@@ -145,7 +145,7 @@ export default function Home() {
             <Link href="/categories"
               className="flex items-center gap-3 bg-white rounded-2xl px-5 py-4 shadow-xl shadow-blue-900/20 relative z-10">
               <Search size={18} className="text-blue-400" />
-              <span className="text-slate-400 text-sm flex-1">Search for a service...</span>
+              <span className="text-slate-400 text-sm flex-1">Search for service...</span>
               <span className="text-[10px] bg-blue-50 text-blue-600 font-black px-3 py-1 rounded-full uppercase tracking-wider">120+ Services</span>
             </Link>
           </motion.div>
