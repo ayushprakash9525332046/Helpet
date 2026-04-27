@@ -172,9 +172,15 @@ export default function BookService() {
           <div className="lg:col-span-5 flex flex-col gap-5">
             <motion.div
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 }}
-              className={`rounded-3xl bg-linear-to-br ${gradient} p-6 md:p-10 flex flex-col md:flex-row lg:flex-col items-center md:items-start gap-6 md:gap-8 shadow-2xl relative overflow-hidden group`}
+              className={`rounded-3xl p-6 md:p-10 flex flex-col md:flex-row lg:flex-col items-center md:items-start gap-6 md:gap-8 shadow-2xl relative overflow-hidden group ${!imgSrc ? `bg-linear-to-br ${gradient}` : ""}`}
             >
-              <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full group-hover:scale-150 transition-transform duration-1000" />
+              {imgSrc && (
+                <>
+                  <img src={imgSrc} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover scale-110 blur-sm" />
+                  <div className="absolute inset-0 bg-linear-to-br from-black/65 via-black/50 to-black/40" />
+                </>
+              )}
+              {!imgSrc && <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full group-hover:scale-150 transition-transform duration-1000" />}
               <div className="w-20 h-20 md:w-28 md:h-28 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center shadow-xl relative z-10 overflow-hidden shrink-0">
                 {imgSrc ? (
                   <img src={imgSrc} alt={service.name} className="w-full h-full object-cover" />
