@@ -1,9 +1,13 @@
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Service } from "@/lib/types";
 import StarRating from "./StarRating";
 import { Clock, Plus, Tag, ShieldCheck } from "lucide-react";
 import { getServiceIcon } from "@/lib/icons";
+import SubServiceModal from "./SubServiceModal";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
 
@@ -29,6 +33,9 @@ interface Props {
 }
 
 export default function ServiceCard({ service, index = 0 }: Props) {
+  const router = useRouter();
+  const [modalOpen, setModalOpen] = useState(false);
+
   const gradient = GRADIENTS[index % GRADIENTS.length];
   const IconComponent = getServiceIcon(service.name);
   const imgSrc = resolveImage(service.image);
@@ -37,14 +44,26 @@ export default function ServiceCard({ service, index = 0 }: Props) {
     ? Math.round(service.price / (1 - discount / 100))
     : null;
 
+  const hasSubServices = service.sub_services && service.sub_services.length > 0;
+
+  const handleClick = () => {
+    if (hasSubServices) {
+      setModalOpen(true);
+    } else {
+      router.push(`/services/${service.id}`);
+    }
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.06 }}
-      whileTap={{ scale: 0.97 }}
-    >
-      <Link href={`/services/${service.id}`}>
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.06 }}
+        whileTap={{ scale: 0.97 }}
+        onClick={handleClick}
+        className="cursor-pointer"
+      >
         <div className="group bg-white rounded-xl md:rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:border-blue-100 transition-all duration-500 hover:-translate-y-1 h-full flex flex-col">
           {/* Image area */}
           <div className={`relative h-28 md:h-32 lg:h-36 xl:h-40 bg-linear-to-br ${gradient} flex items-center justify-center overflow-hidden`}>
@@ -96,9 +115,17 @@ export default function ServiceCard({ service, index = 0 }: Props) {
 
             <div className="flex items-center justify-between mt-2 md:mt-3">
               <div className="flex items-baseline gap-1.5">
-                <span className="text-blue-600 font-black text-base md:text-lg">₹{service.price}</span>
-                {originalPrice && (
-                  <span className="text-slate-300 text-xs font-medium line-through">₹{originalPrice}</span>
+                {hasSubServices ? (
+                  <span className="text-blue-600 font-black text-base md:text-lg">
+                    From ₹{Math.min(...service.sub_services.map(s => s.price))}
+                  </span>
+                ) : (
+                  <>
+                    <span className="text-blue-600 font-black text-base md:text-lg">₹{service.price}</span>
+                    {originalPrice && (
+                      <span className="text-slate-300 text-xs font-medium line-through">₹{originalPrice}</span>
+                    )}
+                  </>
                 )}
               </div>
               <motion.div
@@ -111,7 +138,15 @@ export default function ServiceCard({ service, index = 0 }: Props) {
             </div>
           </div>
         </div>
-      </Link>
-    </motion.div>
+      </motion.div>
+
+      {hasSubServices && (
+        <SubServiceModal
+          service={service}
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
+    </>
   );
 }

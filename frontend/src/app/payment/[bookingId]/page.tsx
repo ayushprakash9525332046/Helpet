@@ -73,7 +73,7 @@ function PaymentContent() {
             <span className="font-bold text-slate-800">₹{amount}</span>
           </div>
           <div className="flex justify-between items-center text-slate-400 text-xs">
-            <span>Platform fee ({platformFeePct}%)</span><span>₹{platformFeeAmount}</span>
+            <span>Platform fee</span><span>₹{platformFeeAmount}</span>
           </div>
           <div className="border-t border-slate-100 pt-2.5 mt-2.5 flex justify-between items-center">
             <span className="font-bold text-slate-800 text-sm">Total Payable</span>

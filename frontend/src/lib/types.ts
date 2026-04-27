@@ -13,6 +13,16 @@ export interface User {
   pincode?: string;
 }
 
+export interface SubService {
+  id: string;
+  service_id: string;
+  name: string;
+  description?: string;
+  price: number;
+  order: number;
+  is_active: boolean;
+}
+
 export interface ServiceCategory {
   id: string;
   name: string;
@@ -33,6 +43,7 @@ export interface Service {
   category: ServiceCategory;
   discount_percentage?: number;
   platform_fee_percentage?: number;
+  sub_services: SubService[];
 }
 
 export interface Booking {
@@ -48,6 +59,8 @@ export interface Booking {
     duration_minutes: number;
     category: { id: string; name: string };
   };
+  sub_service_id?: string;
+  sub_service_name?: string;
   status: "pending" | "confirmed" | "ongoing" | "completed" | "cancelled";
   scheduled_at: string;
   address: string;

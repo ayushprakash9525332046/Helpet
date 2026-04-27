@@ -7,7 +7,7 @@ from uuid import UUID
 
 from app.db.session import get_db
 from app.models.booking import Booking, BookingStatus
-from app.models.service import Service
+from app.models.service import Service, SubService
 from app.models.user import User, UserRole
 from app.schemas.booking import BookingCreate, BookingUpdate, BookingResponse
 from app.core.dependencies import get_current_user, get_current_admin
@@ -32,13 +32,23 @@ def create_booking(
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
 
+    total_amount = service.price
+    sub_service_name = None
+    if data.sub_service_id:
+        sub = db.query(SubService).filter(SubService.id == data.sub_service_id).first()
+        if sub:
+            total_amount = sub.price
+            sub_service_name = sub.name
+
     booking = Booking(
         customer_id=current_user.id,
         service_id=data.service_id,
+        sub_service_id=data.sub_service_id,
+        sub_service_name=sub_service_name,
         scheduled_at=data.scheduled_at,
         address=data.address,
         notes=data.notes,
-        total_amount=service.price,
+        total_amount=total_amount,
     )
     db.add(booking)
     db.commit()

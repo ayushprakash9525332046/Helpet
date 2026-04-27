@@ -4,6 +4,35 @@ from uuid import UUID
 from datetime import datetime
 
 
+# ── Sub-Service Schemas ──────────────────────────────────────────
+class SubServiceCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    price: float
+    order: int = 0
+
+
+class SubServiceUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
+    order: Optional[int] = None
+    is_active: Optional[bool] = None
+
+
+class SubServiceResponse(BaseModel):
+    id: UUID
+    service_id: UUID
+    name: str
+    description: Optional[str] = None
+    price: float
+    order: int
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
 class ServiceCategoryCreate(BaseModel):
     name: str
     description: Optional[str] = None
@@ -66,6 +95,7 @@ class ServiceResponse(BaseModel):
     image: Optional[str] = None
     order: int = 0
     category: ServiceCategoryResponse
+    sub_services: List[SubServiceResponse] = []
 
     class Config:
         from_attributes = True

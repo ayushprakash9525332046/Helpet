@@ -18,10 +18,10 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import api from "@/lib/api";
-import { Service, ServiceCategory } from "@/lib/types";
+import { Service, ServiceCategory, SubService } from "@/lib/types";
 import {
   Plus, Pencil, Trash2, X, Check, Search,
-  ChevronDown, Clock, IndianRupee, GripVertical, Settings2, ChevronUp,
+  ChevronDown, Clock, IndianRupee, GripVertical, Settings2, ChevronUp, Layers,
 } from "lucide-react";
 import { getServiceIcon } from "@/lib/icons";
 import toast from "react-hot-toast";
@@ -49,15 +49,185 @@ const EMPTY_FORM: FormState = {
   name: "", description: "", price: "", discount_percentage: "15", platform_fee_percentage: "10", duration_minutes: "60", image: "", category_id: "",
 };
 
+// ── Sub-service inline form ───────────────────────────────────────
+interface SubForm { name: string; description: string; price: string; }
+const EMPTY_SUB: SubForm = { name: "", description: "", price: "" };
+
+function SubServicePanel({ svc, onUpdated }: { svc: Service; onUpdated: (updated: Service) => void }) {
+  const [open, setOpen]             = useState(false);
+  const [form, setForm]             = useState<SubForm>(EMPTY_SUB);
+  const [editTarget, setEditTarget] = useState<SubService | null>(null);
+  const [formOpen, setFormOpen]     = useState(false);
+  const [saving, setSaving]         = useState(false);
+
+  function openAdd() {
+    setForm(EMPTY_SUB);
+    setEditTarget(null);
+    setFormOpen(true);
+    setOpen(true);
+  }
+
+  function openEdit(sub: SubService) {
+    setForm({ name: sub.name, description: sub.description ?? "", price: String(sub.price) });
+    setEditTarget(sub);
+    setFormOpen(true);
+    setOpen(true);
+  }
+
+  function cancelForm() {
+    setFormOpen(false);
+    setEditTarget(null);
+    setForm(EMPTY_SUB);
+  }
+
+  async function refreshService() {
+    const { data } = await api.get(`/services/${svc.id}`);
+    onUpdated(data);
+  }
+
+  async function handleSave() {
+    if (!form.name.trim()) { toast.error("Name is required"); return; }
+    if (!form.price || isNaN(Number(form.price))) { toast.error("Valid price is required"); return; }
+    setSaving(true);
+    try {
+      if (editTarget) {
+        await api.put(`/services/${svc.id}/sub-services/${editTarget.id}`, {
+          name: form.name.trim(),
+          description: form.description.trim() || null,
+          price: Number(form.price),
+        });
+        toast.success("Option updated");
+      } else {
+        await api.post(`/services/${svc.id}/sub-services`, {
+          name: form.name.trim(),
+          description: form.description.trim() || null,
+          price: Number(form.price),
+        });
+        toast.success("Option added");
+      }
+      cancelForm();
+      await refreshService();
+    } catch {
+      toast.error("Failed to save option");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete(sub: SubService) {
+    if (!confirm(`Remove "${sub.name}"?`)) return;
+    try {
+      await api.delete(`/services/${svc.id}/sub-services/${sub.id}`);
+      toast.success("Option removed");
+      await refreshService();
+    } catch {
+      toast.error("Failed to remove option");
+    }
+  }
+
+  const count = svc.sub_services?.length ?? 0;
+
+  return (
+    <div className="border-t border-slate-100 mt-3 pt-3">
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => setOpen(v => !v)}
+          className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors"
+        >
+          <Layers size={12} />
+          Sub-options {count > 0 && <span className="bg-blue-100 text-blue-600 rounded-full px-1.5 py-0.5 text-[10px] font-bold">{count}</span>}
+          {open ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+        </button>
+        <button
+          onClick={openAdd}
+          className="flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2 py-1 rounded-lg transition-colors"
+        >
+          <Plus size={11} /> Add option
+        </button>
+      </div>
+
+      {open && (
+        <div className="mt-2 space-y-1.5">
+          {count === 0 && !formOpen && (
+            <p className="text-xs text-slate-400 text-center py-2">No options yet — add one above</p>
+          )}
+          {svc.sub_services?.map(sub => (
+            <div key={sub.id} className="flex items-center justify-between bg-slate-50 rounded-xl px-3 py-2 gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-slate-700 truncate">{sub.name}</p>
+                {sub.description && <p className="text-[10px] text-slate-400 truncate">{sub.description}</p>}
+              </div>
+              <span className="text-xs font-black text-blue-600 shrink-0">₹{Number(sub.price).toLocaleString("en-IN")}</span>
+              <div className="flex gap-0.5 shrink-0">
+                <button onClick={() => openEdit(sub)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                  <Pencil size={11} />
+                </button>
+                <button onClick={() => handleDelete(sub)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                  <Trash2 size={11} />
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {formOpen && (
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 space-y-2 mt-2">
+              <p className="text-[11px] font-bold text-blue-700 mb-1">{editTarget ? "Edit option" : "New option"}</p>
+              <input
+                type="text"
+                placeholder="Name (e.g. 1 BHK, Wall Mounted)"
+                value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })}
+                className="w-full px-3 py-2 text-xs border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/30 bg-white"
+              />
+              <input
+                type="text"
+                placeholder="Description (optional)"
+                value={form.description}
+                onChange={e => setForm({ ...form, description: e.target.value })}
+                className="w-full px-3 py-2 text-xs border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/30 bg-white"
+              />
+              <input
+                type="number"
+                placeholder="Price (₹)"
+                value={form.price}
+                onChange={e => setForm({ ...form, price: e.target.value })}
+                min="0"
+                className="w-full px-3 py-2 text-xs border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/30 bg-white"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={cancelForm}
+                  className="flex-1 py-1.5 text-xs font-semibold border border-slate-200 rounded-lg text-slate-500 hover:bg-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex-1 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-60 flex items-center justify-center gap-1"
+                >
+                  {saving ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><Check size={11} /> Save</>}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Sortable service card ─────────────────────────────────────────
 function SortableServiceCard({
   svc,
   onEdit,
   onDelete,
+  onSubUpdated,
 }: {
   svc: Service;
   onEdit: (svc: Service) => void;
   onDelete: (svc: Service) => void;
+  onSubUpdated: (updated: Service) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: svc.id });
@@ -75,77 +245,81 @@ function SortableServiceCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-start justify-between gap-3 ${
+      className={`bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col gap-0 ${
         isDragging ? "shadow-xl ring-2 ring-blue-400" : ""
       }`}
     >
-      {/* Drag handle */}
-      <button
-        {...attributes}
-        {...listeners}
-        className="mt-0.5 p-1 -ml-1 rounded-lg text-slate-300 hover:text-slate-500 hover:bg-slate-100 transition-colors cursor-grab active:cursor-grabbing touch-none"
-        title="Drag to reorder"
-      >
-        <GripVertical size={16} />
-      </button>
+      <div className="flex items-start justify-between gap-3">
+        {/* Drag handle */}
+        <button
+          {...attributes}
+          {...listeners}
+          className="mt-0.5 p-1 -ml-1 rounded-lg text-slate-300 hover:text-slate-500 hover:bg-slate-100 transition-colors cursor-grab active:cursor-grabbing touch-none"
+          title="Drag to reorder"
+        >
+          <GripVertical size={16} />
+        </button>
 
-      <div className="flex items-start gap-3 flex-1 min-w-0">
-        {/* Image / icon thumbnail */}
-        <div className="w-12 h-12 rounded-xl overflow-hidden bg-blue-50 border border-slate-200 flex items-center justify-center shrink-0">
-          {imgSrc ? (
-            <img src={imgSrc} alt={svc.name} className="w-full h-full object-cover" />
-          ) : (
-            (() => { const I = getServiceIcon(svc.name); return <I size={22} className="text-blue-400" />; })()
-          )}
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          {/* Image / icon thumbnail */}
+          <div className="w-12 h-12 rounded-xl overflow-hidden bg-blue-50 border border-slate-200 flex items-center justify-center shrink-0">
+            {imgSrc ? (
+              <img src={imgSrc} alt={svc.name} className="w-full h-full object-cover" />
+            ) : (
+              (() => { const I = getServiceIcon(svc.name); return <I size={22} className="text-blue-400" />; })()
+            )}
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="font-bold text-slate-800 text-sm truncate">{svc.name}</p>
+              <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full shrink-0">
+                {svc.category.name}
+              </span>
+            </div>
+            {svc.description && (
+              <p className="text-slate-400 text-xs mt-0.5 line-clamp-1">{svc.description}</p>
+            )}
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              <span className="flex items-center gap-0.5 text-sm font-bold text-slate-700">
+                <IndianRupee size={11} className="text-blue-500" />
+                {Number(svc.price).toLocaleString("en-IN")}
+              </span>
+              <span className="flex items-center gap-1 text-xs text-slate-400">
+                <Clock size={11} />
+                {svc.duration_minutes} min
+              </span>
+              {(svc.discount_percentage ?? 0) > 0 && (
+                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded-full">
+                  {svc.discount_percentage}% off
+                </span>
+              )}
+              {(svc.platform_fee_percentage ?? 0) > 0 && (
+                <span className="text-[10px] font-bold text-violet-700 bg-violet-50 border border-violet-100 px-1.5 py-0.5 rounded-full">
+                  {svc.platform_fee_percentage}% fee
+                </span>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="font-bold text-slate-800 text-sm truncate">{svc.name}</p>
-            <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full shrink-0">
-              {svc.category.name}
-            </span>
-          </div>
-          {svc.description && (
-            <p className="text-slate-400 text-xs mt-0.5 line-clamp-1">{svc.description}</p>
-          )}
-          <div className="flex items-center gap-2 mt-2 flex-wrap">
-            <span className="flex items-center gap-0.5 text-sm font-bold text-slate-700">
-              <IndianRupee size={11} className="text-blue-500" />
-              {Number(svc.price).toLocaleString("en-IN")}
-            </span>
-            <span className="flex items-center gap-1 text-xs text-slate-400">
-              <Clock size={11} />
-              {svc.duration_minutes} min
-            </span>
-            {(svc.discount_percentage ?? 0) > 0 && (
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded-full">
-                {svc.discount_percentage}% off
-              </span>
-            )}
-            {(svc.platform_fee_percentage ?? 0) > 0 && (
-              <span className="text-[10px] font-bold text-violet-700 bg-violet-50 border border-violet-100 px-1.5 py-0.5 rounded-full">
-                {svc.platform_fee_percentage}% fee
-              </span>
-            )}
-          </div>
+        <div className="flex gap-1 shrink-0">
+          <button
+            onClick={() => onEdit(svc)}
+            className="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+          >
+            <Pencil size={14} />
+          </button>
+          <button
+            onClick={() => onDelete(svc)}
+            className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+          >
+            <Trash2 size={14} />
+          </button>
         </div>
       </div>
 
-      <div className="flex gap-1 shrink-0">
-        <button
-          onClick={() => onEdit(svc)}
-          className="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-        >
-          <Pencil size={14} />
-        </button>
-        <button
-          onClick={() => onDelete(svc)}
-          className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-        >
-          <Trash2 size={14} />
-        </button>
-      </div>
+      <SubServicePanel svc={svc} onUpdated={onSubUpdated} />
     </div>
   );
 }
@@ -449,6 +623,9 @@ export default function ServicesPage() {
                     svc={svc}
                     onEdit={openEdit}
                     onDelete={handleDelete}
+                    onSubUpdated={(updated) =>
+                      setServices(prev => prev.map(s => s.id === updated.id ? updated : s))
+                    }
                   />
                 ))}
               </div>

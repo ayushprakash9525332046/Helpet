@@ -10,6 +10,7 @@ from app.schemas.user import UserResponse
 
 class BookingCreate(BaseModel):
     service_id: UUID
+    sub_service_id: Optional[UUID] = None
     scheduled_at: datetime
     address: str
     notes: Optional[str] = None
@@ -47,6 +48,8 @@ class BookingResponse(BaseModel):
     provider: Optional[UserResponse] = None
     service_id: UUID
     service: ServiceInBooking
+    sub_service_id: Optional[UUID] = None
+    sub_service_name: Optional[str] = None
     status: BookingStatus
     scheduled_at: datetime
     address: str

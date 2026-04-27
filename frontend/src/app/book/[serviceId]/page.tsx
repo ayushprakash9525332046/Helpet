@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
@@ -47,6 +47,11 @@ export default function BookService() {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const subServiceId = searchParams.get("sub_id") ?? undefined;
+  const subServiceName = searchParams.get("sub_name") ?? undefined;
+  const subServicePrice = searchParams.get("sub_price") ? Number(searchParams.get("sub_price")) : undefined;
   const days = getNext7Days();
   const now = new Date();
   const nowMins = now.getHours() * 60 + now.getMinutes();
@@ -128,12 +133,16 @@ export default function BookService() {
     try {
       const res = await api.post("/bookings/", {
         service_id: serviceId,
+        sub_service_id: subServiceId || undefined,
         scheduled_at: date.toISOString(),
         address,
         notes: notes || undefined,
       });
+      const displayName = subServiceName
+        ? `${service!.name} – ${subServiceName}`
+        : service!.name;
       const params = new URLSearchParams({
-        service: service!.name,
+        service: displayName,
         amount: String(res.data.total_amount),
         date: date.toISOString(),
         platform_fee_pct: String(service!.platform_fee_percentage ?? 10),
@@ -190,9 +199,12 @@ export default function BookService() {
               </div>
               <div className="flex-1 relative z-10 text-center md:text-left">
                 <h2 className="font-black text-white text-xl md:text-3xl lg:text-4xl leading-tight tracking-tight mb-2 md:mb-3">{service.name}</h2>
+                {subServiceName && (
+                  <p className="text-white/90 text-sm md:text-base font-bold mt-1 mb-1 bg-white/10 px-3 py-1 rounded-lg inline-block">{subServiceName}</p>
+                )}
                 <p className="text-white/80 text-[10px] md:text-lg font-bold uppercase tracking-widest">{service.category.name}</p>
                 <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 md:gap-4 mt-6 md:mt-8">
-                  <span className="bg-white/25 backdrop-blur-md text-white text-xs md:text-xl font-black px-4 py-1.5 md:px-8 md:py-3 rounded-xl shadow-lg border border-white/20">₹{service.price}</span>
+                  <span className="bg-white/25 backdrop-blur-md text-white text-xs md:text-xl font-black px-4 py-1.5 md:px-8 md:py-3 rounded-xl shadow-lg border border-white/20">₹{subServicePrice ?? service.price}</span>
                   <span className="bg-white/25 backdrop-blur-md text-white text-xs md:text-xl font-black px-4 py-1.5 md:px-8 md:py-3 rounded-xl shadow-lg border border-white/20 flex items-center gap-2">
                     <Clock size={16} className="md:w-5 md:h-5" />{service.duration_minutes} min
                   </span>
@@ -339,7 +351,7 @@ export default function BookService() {
           <div className="flex flex-col shrink-0">
             <p className="text-[10px] md:text-xs text-slate-400 font-black uppercase tracking-[0.15em] mb-0.5 md:mb-1">Final Amount</p>
             <div className="flex items-baseline gap-2 md:gap-3">
-              <span className="text-xl md:text-4xl font-black text-slate-900 tracking-tight">₹{service.price}</span>
+              <span className="text-xl md:text-4xl font-black text-slate-900 tracking-tight">₹{subServicePrice ?? service.price}</span>
             </div>
           </div>
 

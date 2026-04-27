@@ -62,3 +62,27 @@ class Service(Base):
     # Relationships
     category = relationship("ServiceCategory", back_populates="services")
     bookings = relationship("Booking", back_populates="service")
+    sub_services = relationship(
+        "SubService",
+        back_populates="service",
+        order_by="SubService.order",
+        primaryjoin="and_(SubService.service_id == Service.id, SubService.is_active == True)",
+    )
+
+
+# ── Sub-Service (e.g. 1BHK, 2BHK for Deep Cleaning) ─────────────
+class SubService(Base):
+    __tablename__ = "sub_services"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    service_id = Column(UUID(as_uuid=True), ForeignKey("services.id"), nullable=False)
+    name = Column(String(200), nullable=False)
+    description = Column(Text, nullable=True)
+    price = Column(Numeric(10, 2), nullable=False)
+    order = Column(Integer, default=0, nullable=False)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+
+    service = relationship("Service", back_populates="sub_services", foreign_keys=[service_id])

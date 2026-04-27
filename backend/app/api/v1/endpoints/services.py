@@ -6,7 +6,7 @@ from typing import List
 from uuid import UUID
 
 from app.db.session import get_db
-from app.models.service import Service, ServiceCategory
+from app.models.service import Service, ServiceCategory, SubService
 from app.models.user import User
 from app.schemas.service import (
     ServiceCreate,
@@ -16,6 +16,9 @@ from app.schemas.service import (
     ServiceCategoryResponse,
     CategoryReorderItem,
     ServiceReorderItem,
+    SubServiceCreate,
+    SubServiceUpdate,
+    SubServiceResponse,
 )
 from app.core.dependencies import get_current_user, get_current_admin
 
@@ -168,4 +171,59 @@ def delete_service(
     service.is_active = False
     db.commit()
 
+
+# ── Sub-Services ─────────────────────────────────────────────────
+
+
+@router.post("/{service_id}/sub-services", response_model=SubServiceResponse, status_code=201)
+def create_sub_service(
+    service_id: UUID,
+    data: SubServiceCreate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    service = db.query(Service).filter(Service.id == service_id).first()
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    sub = SubService(service_id=service_id, **data.model_dump())
+    db.add(sub)
+    db.commit()
+    db.refresh(sub)
+    return sub
+
+
+@router.put("/{service_id}/sub-services/{sub_id}", response_model=SubServiceResponse)
+def update_sub_service(
+    service_id: UUID,
+    sub_id: UUID,
+    data: SubServiceUpdate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    sub = db.query(SubService).filter(
+        SubService.id == sub_id, SubService.service_id == service_id
+    ).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Sub-service not found")
+    for key, value in data.model_dump(exclude_unset=True).items():
+        setattr(sub, key, value)
+    db.commit()
+    db.refresh(sub)
+    return sub
+
+
+@router.delete("/{service_id}/sub-services/{sub_id}", status_code=204)
+def delete_sub_service(
+    service_id: UUID,
+    sub_id: UUID,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    sub = db.query(SubService).filter(
+        SubService.id == sub_id, SubService.service_id == service_id
+    ).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Sub-service not found")
+    sub.is_active = False
+    db.commit()
 

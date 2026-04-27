@@ -26,6 +26,8 @@ class Booking(Base):
     customer_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     provider_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     service_id = Column(UUID(as_uuid=True), ForeignKey("services.id"), nullable=False)
+    sub_service_id = Column(UUID(as_uuid=True), ForeignKey("sub_services.id"), nullable=True)
+    sub_service_name = Column(String(200), nullable=True)  # snapshot at booking time
 
     # Booking Details
     status = Column(Enum(BookingStatus), default=BookingStatus.PENDING)
