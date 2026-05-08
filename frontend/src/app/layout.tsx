@@ -4,7 +4,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import AppShell from "@/components/AppShell";
 import "./globals.css";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://helpet-frontend.vercel.app";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://helpet.in";
 const LOGO_URL = `${APP_URL}/assets/helpet-logo.png`;
 
 // ── Structured Data ────────────────────────────────────────────────

@@ -33,13 +33,18 @@ class Settings(BaseSettings):
     @property
     def ALLOWED_ORIGINS(self) -> List[str]:
         origins = [
+            # Local development
             "http://localhost:3000",
             "http://127.0.0.1:3000",
             "http://localhost:3001",
             "http://127.0.0.1:3001",
             "http://192.168.1.40:3000",
+            # Dev tunnels
             "https://ggbl1mx8-3000.inc1.devtunnels.ms",
             "https://ggbl1mx8-8000.inc1.devtunnels.ms",
+            # Production
+            "https://helpet.in",
+            "https://www.helpet.in",
         ]
         if self.FRONTEND_URL:
             for url in self.FRONTEND_URL.split(","):

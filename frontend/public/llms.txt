@@ -1,0 +1,143 @@
+# Helpet — Home Services Platform
+
+> Helpet is Dehradun's trusted on-demand home services marketplace. Homeowners in Dehradun, Uttarakhand book verified local professionals for 120+ services — cleaning, plumbing, electrical, AC repair, painting, pest control, carpentry, and more.
+
+## About Helpet
+
+Helpet connects verified home service professionals with homeowners in Dehradun, India. Every professional is Aadhaar-verified, background-checked, and skill-assessed before being listed. Customers book online in under 2 minutes, pay after job completion, and are covered by a 100% satisfaction guarantee.
+
+- **Location served:** Dehradun, Uttarakhand, India (expanding to more cities)
+- **Services offered:** 120+ home services across 10+ categories
+- **Professionals:** 40+ verified local experts
+- **Average rating:** 4.9 / 5 (based on 380+ completed jobs)
+- **Booking:** Online via helpet.in — same-day slots available
+- **Payment:** After job completion — Cash, UPI, Credit/Debit card accepted
+- **Hours:** 7:00 AM – 9:00 PM, 7 days a week
+
+## Services Available in Dehradun
+
+### Cleaning Services
+- Home deep cleaning (1BHK / 2BHK / 3BHK / Villa)
+- Bathroom & kitchen deep cleaning
+- Sofa cleaning and dry cleaning
+- Carpet and mattress cleaning
+- Water tank cleaning
+
+### Plumbing
+- Tap/faucet repair and replacement
+- Pipe leak repair
+- Drainage unblocking
+- Geyser installation and repair
+- Bathroom fitting
+
+### Electrical
+- Wiring and rewiring
+- Fan installation and repair
+- Switch/socket replacement
+- MCB and fuse box work
+- Inverter/UPS repair
+
+### AC Services
+- AC servicing (split and window)
+- AC gas refilling
+- AC installation and uninstallation
+- AC repair
+
+### Painting
+- Interior wall painting
+- Exterior painting
+- Texture and wallpaper work
+- Waterproofing
+
+### Pest Control
+- Cockroach treatment
+- Termite treatment
+- Bed bug treatment
+- General pest control
+- Rodent control
+
+### Carpentry
+- Furniture repair
+- Door/window repair
+- Custom woodwork
+- Lock and key work
+
+### Other Services
+- CCTV camera installation
+- Chimney cleaning
+- RO water purifier service
+- Refrigerator repair
+
+## How Booking Works
+
+1. Browse services at helpet.in/categories
+2. Select a service and read upfront pricing
+3. Choose a date and available time slot
+4. Confirm booking with your Dehradun address
+5. Verified professional arrives on time
+6. Service completed, pay after job is done
+7. Rate and review the professional
+
+## Pricing (Starting Rates — Dehradun)
+
+| Service | Starting Price |
+|---|---|
+| Home cleaning | ₹299 |
+| AC servicing | ₹349 |
+| Plumbing fix | ₹199 |
+| Electrical work | ₹199 |
+| Sofa cleaning (2-seater) | ₹399 |
+| Pest control (1BHK) | ₹599 |
+| Wall painting (per sq ft) | ₹8 |
+
+All prices shown upfront. No hidden charges.
+
+## Trust & Safety
+
+- Every professional undergoes Aadhaar-based identity verification
+- Address verification and background check mandatory
+- Skill assessment before onboarding
+- Customer reviews visible before booking
+- 100% satisfaction guarantee — free redo or full refund within 24 hours
+- Support team available 7 days a week
+
+## Coverage in Dehradun
+
+Helpet currently serves all major localities in Dehradun including:
+Rajpur Road, Clement Town, Prem Nagar, Dalanwala, Ballupur, Saharanpur Road, Raipur, Jakhan, Vasant Vihar, GMS Road, Haridwar Road, Kanwali Road, Sewla Kalan, Dhoran Khas, and surrounding areas.
+
+## Company Information
+
+- **Brand:** Helpet
+- **Website:** https://helpet.in
+- **API:** https://api.helpet.in
+- **Location:** Dehradun, Uttarakhand 248001, India
+- **Founded:** 2024
+- **Category:** Home Services / On-Demand Services / Local Services Marketplace
+
+## Key Pages
+
+- Homepage: https://helpet.in
+- Browse all services: https://helpet.in/categories
+- Register / Sign up: https://helpet.in/register
+- Login: https://helpet.in/login
+- Support / Contact: https://helpet.in/support
+- Privacy Policy: https://helpet.in/privacy
+- Terms of Service: https://helpet.in/terms
+
+## Frequently Asked Questions
+
+**Where does Helpet operate?**
+Currently in Dehradun, Uttarakhand. Expanding to more Uttarakhand cities soon.
+
+**Are the professionals verified?**
+Yes — Aadhaar ID, address, skill test, and background check are all mandatory.
+
+**Can I book same-day service?**
+Yes, same-day slots are available for most services subject to professional availability.
+
+**What is the satisfaction guarantee?**
+If you're not satisfied, raise a concern within 24 hours of service completion for a free redo or full refund.
+
+**What payment methods are accepted?**
+Cash, UPI (GPay, PhonePe, Paytm), and Credit/Debit cards. Pay only after the job is done.
