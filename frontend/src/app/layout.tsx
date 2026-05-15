@@ -12,8 +12,8 @@ const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": ["LocalBusiness", "HomeAndConstructionBusiness"],
   "@id": `${APP_URL}/#business`,
-  name: "Helpet",
-  alternateName: "Helpet Home Services",
+  name: "Helpet India",
+  alternateName: "Helpet Home Services Dehradun",
   description:
     "Helpet is Dehradun's trusted home services platform. Book verified professionals for cleaning, plumbing, electrical work, AC repair, painting, and 120+ services. Same-day booking, transparent pricing, 100% satisfaction guaranteed.",
   url: APP_URL,
@@ -80,7 +80,7 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "@id": `${APP_URL}/#organization`,
-  name: "Helpet",
+  name: "Helpet India",
   url: APP_URL,
   logo: {
     "@type": "ImageObject",
@@ -98,7 +98,11 @@ const organizationSchema = {
     availableLanguage: ["English", "Hindi"],
     areaServed: "IN",
   },
-  sameAs: [],
+  sameAs: [
+    "https://www.instagram.com/helpetindia",
+    "https://www.facebook.com/helpetindia",
+    "https://twitter.com/helpetindia",
+  ],
 };
 
 const websiteSchema = {
@@ -160,10 +164,17 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  manifest: "/site.webmanifest",
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/assets/helpet-logo.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon-32x32.png",
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   openGraph: {
     type: "website",
@@ -217,6 +228,10 @@ export default function RootLayout({
   return (
     <html lang="en-IN" data-scroll-behavior="smooth">
       <head>
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
