@@ -14,10 +14,30 @@ from app.models import user, service, booking, payment, review, notification, ot
 
 
 # ── Startup & Shutdown ──────────────────────────────────────────
+import asyncio
+import httpx
+import os
+
+async def _keepalive():
+    """Ping /health every 10 min so Render free tier never cold-starts."""
+    url = os.getenv("RENDER_EXTERNAL_URL", "")
+    if not url:
+        return
+    await asyncio.sleep(60)  # wait for server to fully start
+    async with httpx.AsyncClient() as client:
+        while True:
+            try:
+                await client.get(f"{url}/health", timeout=10)
+            except Exception:
+                pass
+            await asyncio.sleep(600)  # 10 minutes
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print(f"🚀 {settings.APP_NAME} backend is starting...")
+    task = asyncio.create_task(_keepalive())
     yield
+    task.cancel()
     print(f"🛑 {settings.APP_NAME} backend is shutting down...")
 
 

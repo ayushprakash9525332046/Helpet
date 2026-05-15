@@ -17,7 +17,7 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import api from "@/lib/api";
+import api, { invalidateServiceCache } from "@/lib/api";
 import { Service, ServiceCategory, SubService } from "@/lib/types";
 import {
   Plus, Pencil, Trash2, X, Check, Search,
@@ -105,6 +105,7 @@ function SubServicePanel({ svc, onUpdated }: { svc: Service; onUpdated: (updated
         });
         toast.success("Option added");
       }
+      invalidateServiceCache();
       cancelForm();
       await refreshService();
     } catch {
@@ -118,6 +119,7 @@ function SubServicePanel({ svc, onUpdated }: { svc: Service; onUpdated: (updated
     if (!confirm(`Remove "${sub.name}"?`)) return;
     try {
       await api.delete(`/services/${svc.id}/sub-services/${sub.id}`);
+      invalidateServiceCache();
       toast.success("Option removed");
       await refreshService();
     } catch {
@@ -440,6 +442,7 @@ export default function ServicesPage() {
         };
         const { data } = await api.post("/services/", payload);
         setServices((prev) => [...prev, data]);
+        invalidateServiceCache();
         toast.success("Service created");
       } else if (editTarget) {
         const payload = {
@@ -453,6 +456,7 @@ export default function ServicesPage() {
         };
         const { data } = await api.put(`/services/${editTarget.id}`, payload);
         setServices((prev) => prev.map((s) => (s.id === editTarget.id ? data : s)));
+        invalidateServiceCache();
         toast.success("Service updated");
       }
       closeModal();
@@ -469,6 +473,7 @@ export default function ServicesPage() {
     try {
       await api.delete(`/services/${svc.id}`);
       setServices((prev) => prev.filter((s) => s.id !== svc.id));
+      invalidateServiceCache();
       toast.success("Service deactivated");
     } catch {
       toast.error("Failed to deactivate");

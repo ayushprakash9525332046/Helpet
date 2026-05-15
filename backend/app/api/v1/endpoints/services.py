@@ -1,6 +1,6 @@
 # /services/, /services/{id}
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 from typing import List
 from uuid import UUID
@@ -29,7 +29,8 @@ router = APIRouter()
 
 
 @router.get("/categories", response_model=List[ServiceCategoryResponse])
-def get_categories(db: Session = Depends(get_db)):
+def get_categories(response: Response, db: Session = Depends(get_db)):
+    response.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=120"
     return (
         db.query(ServiceCategory)
         .filter(ServiceCategory.is_active == True)
@@ -98,7 +99,8 @@ def delete_category(
 
 
 @router.get("/", response_model=List[ServiceResponse])
-def get_services(category_id: UUID = None, db: Session = Depends(get_db)):
+def get_services(response: Response, category_id: UUID = None, db: Session = Depends(get_db)):
+    response.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=120"
     query = db.query(Service).filter(Service.is_active == True)
     if category_id:
         query = query.filter(Service.category_id == category_id)

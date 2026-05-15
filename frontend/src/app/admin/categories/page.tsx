@@ -17,7 +17,7 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import api from "@/lib/api";
+import api, { invalidateServiceCache } from "@/lib/api";
 import { ServiceCategory } from "@/lib/types";
 import { Plus, Pencil, Trash2, X, Check, ImageOff, Link2, GripVertical } from "lucide-react";
 import toast from "react-hot-toast";
@@ -184,10 +184,12 @@ export default function CategoriesPage() {
       if (modal === "create") {
         const { data } = await api.post("/services/categories", payload);
         setCategories((prev) => [...prev, data]);
+        invalidateServiceCache();
         toast.success("Category created");
       } else if (editTarget) {
         const { data } = await api.put(`/services/categories/${editTarget.id}`, payload);
         setCategories((prev) => prev.map((c) => (c.id === editTarget.id ? data : c)));
+        invalidateServiceCache();
         toast.success("Category updated");
       }
       closeModal();
@@ -203,6 +205,7 @@ export default function CategoriesPage() {
     try {
       await api.delete(`/services/categories/${cat.id}`);
       setCategories((prev) => prev.filter((c) => c.id !== cat.id));
+      invalidateServiceCache();
       toast.success("Category deactivated");
     } catch {
       toast.error("Failed to deactivate");

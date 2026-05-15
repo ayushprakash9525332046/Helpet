@@ -5,21 +5,55 @@ const api = axios.create({
   timeout: 30000,
 });
 
-// Attach token + disable browser HTTP cache for GET requests
+// ── In-memory GET cache (60 s TTL) ───────────────────────────────
+const CACHE_TTL = 60_000;
+const PUBLIC_CACHE_PREFIXES = ["/services", "/services/categories"];
+
+interface CacheEntry { data: unknown; ts: number }
+const memCache = new Map<string, CacheEntry>();
+
+function isCacheable(url: string): boolean {
+  return PUBLIC_CACHE_PREFIXES.some((p) => url.startsWith(p));
+}
+
+// Attach token
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("token");
     if (token) config.headers.Authorization = `Bearer ${token}`;
   }
-  if (config.method?.toLowerCase() === "get") {
-    config.params = { ...config.params, _t: Date.now() };
+  return config;
+});
+
+// Serve from cache on GET for public endpoints; populate cache on response
+api.interceptors.request.use((config) => {
+  if (config.method?.toLowerCase() !== "get") return config;
+  const url = config.url ?? "";
+  if (!isCacheable(url)) return config;
+
+  const entry = memCache.get(url);
+  if (entry && Date.now() - entry.ts < CACHE_TTL) {
+    // Return a resolved promise that short-circuits the real request
+    config.adapter = () =>
+      Promise.resolve({
+        data: entry.data,
+        status: 200,
+        statusText: "OK (cached)",
+        headers: {},
+        config,
+      });
   }
   return config;
 });
 
-// Auto logout on 401 (but not for auth endpoints themselves)
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    const url = res.config.url ?? "";
+    if (res.config.method?.toLowerCase() === "get" && isCacheable(url)) {
+      memCache.set(url, { data: res.data, ts: Date.now() });
+    }
+    return res;
+  },
   (err) => {
     const url = err.config?.url ?? "";
     const isAuthEndpoint = url.includes("/auth/");
@@ -31,5 +65,12 @@ api.interceptors.response.use(
     return Promise.reject(err);
   }
 );
+
+// Call this after admin creates/updates/deletes a service or category
+export function invalidateServiceCache() {
+  for (const key of memCache.keys()) {
+    if (isCacheable(key)) memCache.delete(key);
+  }
+}
 
 export default api;
