@@ -1,8 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/context/AuthContext";
 import AppShell from "@/components/AppShell";
 import "./globals.css";
+
+const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://helpet.in";
 const LOGO_URL = `${APP_URL}/assets/helpet-logo.png`;
@@ -246,6 +249,15 @@ export default function RootLayout({
         />
       </head>
       <body>
+        {CLARITY_ID && (
+          <Script id="microsoft-clarity" strategy="afterInteractive">
+            {`(function(c,l,a,r,i,t,y){
+              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window,document,"clarity","script","${CLARITY_ID}");`}
+          </Script>
+        )}
         <AuthProvider>
           <AppShell>{children}</AppShell>
           <Toaster
