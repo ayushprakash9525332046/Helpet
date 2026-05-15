@@ -97,10 +97,10 @@ export default function LandingPage() {
   }, [user, isLoading, router]);
 
   useEffect(() => {
-    Promise.all([api.get("/services/categories"), api.get("/services/")])
+    Promise.all([api.get("/services/categories"), api.get("/services/?limit=4")])
       .then(([cat, svc]) => {
-        setCategories(cat.data);           // store all for tag lookup
-        setServices(svc.data.slice(0, 4));
+        setCategories(cat.data);
+        setServices(svc.data);
       })
       .finally(() => setDataLoading(false));
 

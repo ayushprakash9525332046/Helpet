@@ -99,12 +99,15 @@ def delete_category(
 
 
 @router.get("/", response_model=List[ServiceResponse])
-def get_services(response: Response, category_id: UUID = None, db: Session = Depends(get_db)):
+def get_services(response: Response, category_id: UUID = None, limit: int = None, db: Session = Depends(get_db)):
     response.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=120"
     query = db.query(Service).filter(Service.is_active == True)
     if category_id:
         query = query.filter(Service.category_id == category_id)
-    return query.order_by(Service.order, Service.created_at).all()
+    query = query.order_by(Service.order, Service.created_at)
+    if limit:
+        query = query.limit(limit)
+    return query.all()
 
 
 @router.put("/reorder", status_code=204)

@@ -67,8 +67,8 @@ export default function Home() {
 
   useEffect(() => {
     const fetchServices = () => {
-      Promise.all([api.get("/services/categories"), api.get("/services/")])
-        .then(([cat, svc]) => { setCategories(cat.data); setServices(svc.data.slice(0, 4)); })
+      Promise.all([api.get("/services/categories"), api.get("/services/?limit=4")])
+        .then(([cat, svc]) => { setCategories(cat.data); setServices(svc.data); })
         .finally(() => setLoading(false));
     };
 
