@@ -3,8 +3,12 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
-import { Payment } from "@/lib/types";
+import { Payment, PaginatedResponse } from "@/lib/types";
 import { Search, ChevronDown, IndianRupee } from "lucide-react";
+import Pagination from "@/components/admin/Pagination";
+import { useDebounce } from "@/hooks/useDebounce";
+
+const PAGE_SIZE = 25;
 
 const STATUS_CONFIG: Record<string, { label: string; badge: string }> = {
   pending:  { label: "Pending",  badge: "bg-amber-100 text-amber-700" },
@@ -18,18 +22,35 @@ export default function PaymentsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    fetchPayments();
-  }, []);
+  const debouncedSearch = useDebounce(search, 400);
 
   const fetchPayments = () => {
     setLoading(true);
-    api.get("/admin/payments").then((r) => {
-      const sorted = [...r.data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-      setPayments(sorted);
-    }).finally(() => setLoading(false));
+    api
+      .get<PaginatedResponse<Payment>>("/admin/payments", {
+        params: {
+          page,
+          page_size: PAGE_SIZE,
+          search: debouncedSearch || undefined,
+          status: statusFilter !== "all" ? statusFilter : undefined,
+        },
+      })
+      .then((r) => {
+        setPayments(r.data.items);
+        setTotal(r.data.total);
+        setTotalPages(r.data.total_pages);
+      })
+      .finally(() => setLoading(false));
   };
+
+  useEffect(() => {
+    fetchPayments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, statusFilter, page]);
 
   const handleUpdateStatus = async (id: string, status: string) => {
     try {
@@ -40,24 +61,11 @@ export default function PaymentsPage() {
     }
   };
 
-  const totalRevenue = payments
-    .filter((p) => p.status === "success")
-    .reduce((sum, p) => sum + p.amount, 0);
-
-  const filtered = payments.filter((p) => {
-    const matchSearch = p.id.includes(search) || p.booking_id.includes(search);
-    const matchStatus = statusFilter === "all" || p.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
-
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-extrabold text-slate-800">Payments</h1>
-        <p className="text-slate-500 text-sm mt-1">
-          {payments.length} total · Revenue:{" "}
-          <span className="font-bold text-green-600">₹{totalRevenue.toLocaleString("en-IN")}</span>
-        </p>
+        <p className="text-slate-500 text-sm mt-1">{total} total payments</p>
       </div>
 
       {/* Filters */}
@@ -68,14 +76,14 @@ export default function PaymentsPage() {
             type="text"
             placeholder="Search by payment or booking ID..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
           />
         </div>
         <div className="relative">
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
             className="appearance-none bg-white border border-slate-200 rounded-xl px-4 py-2.5 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
           >
             <option value="all">All Status</option>
@@ -93,7 +101,7 @@ export default function PaymentsPage() {
           <div className="p-8 flex justify-center">
             <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : filtered.length === 0 ? (
+        ) : payments.length === 0 ? (
           <div className="p-12 text-center text-slate-400 text-sm">No payments found</div>
         ) : (
           <div className="overflow-x-auto">
@@ -109,7 +117,7 @@ export default function PaymentsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((payment, i) => {
+                {payments.map((payment, i) => {
                   const sc = STATUS_CONFIG[payment.status] ?? { label: payment.status, badge: "bg-slate-100 text-slate-600" };
                   return (
                     <motion.tr
@@ -177,6 +185,15 @@ export default function PaymentsPage() {
               </tbody>
             </table>
           </div>
+        )}
+        {!loading && (
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={PAGE_SIZE}
+            onPageChange={setPage}
+          />
         )}
       </div>
     </div>

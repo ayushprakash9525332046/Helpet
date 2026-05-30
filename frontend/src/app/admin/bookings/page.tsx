@@ -3,9 +3,13 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
-import { Booking } from "@/lib/types";
+import { Booking, PaginatedResponse } from "@/lib/types";
 import { Search, ChevronDown, MapPin, Clock, IndianRupee } from "lucide-react";
 import toast from "react-hot-toast";
+import Pagination from "@/components/admin/Pagination";
+import { useDebounce } from "@/hooks/useDebounce";
+
+const PAGE_SIZE = 25;
 
 const STATUS_CONFIG: Record<string, { label: string; badge: string }> = {
   pending:   { label: "Pending",   badge: "bg-amber-100 text-amber-700" },
@@ -23,13 +27,30 @@ export default function BookingsPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const debouncedSearch = useDebounce(search, 400);
 
   useEffect(() => {
-    api.get("/admin/bookings").then((r) => {
-      const sorted = [...r.data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-      setBookings(sorted);
-    }).finally(() => setLoading(false));
-  }, []);
+    setLoading(true);
+    api
+      .get<PaginatedResponse<Booking>>("/admin/bookings", {
+        params: {
+          page,
+          page_size: PAGE_SIZE,
+          search: debouncedSearch || undefined,
+          status: statusFilter !== "all" ? statusFilter : undefined,
+        },
+      })
+      .then((r) => {
+        setBookings(r.data.items);
+        setTotal(r.data.total);
+        setTotalPages(r.data.total_pages);
+      })
+      .finally(() => setLoading(false));
+  }, [debouncedSearch, statusFilter, page]);
 
   async function updateStatus(bookingId: string, newStatus: string) {
     setUpdatingId(bookingId);
@@ -92,7 +113,7 @@ export default function BookingsPage() {
             type="text"
             placeholder="Search service, customer, phone or address..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-500/20 transition-all"
           />
         </div>
@@ -100,7 +121,7 @@ export default function BookingsPage() {
           <div className="relative min-w-[160px]">
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
               className="w-full appearance-none bg-slate-50 border-none rounded-xl px-4 py-3 pr-10 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
             >
               <option value="all">All Status</option>
@@ -119,7 +140,7 @@ export default function BookingsPage() {
             <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
             <p className="text-slate-400 font-bold text-sm">Fetching bookings...</p>
           </div>
-        ) : filtered.length === 0 ? (
+        ) : bookings.length === 0 ? (
           <div className="p-20 text-center">
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search size={32} className="text-slate-200" />
@@ -141,14 +162,14 @@ export default function BookingsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {filtered.map((booking, i) => {
+                {bookings.map((booking, i) => {
                   const sc = STATUS_CONFIG[booking.status];
                   return (
                     <motion.tr
                       key={booking.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.03 }}
+                      transition={{ delay: Math.min(i * 0.02, 0.2) }}
                       className="group hover:bg-blue-50/30 transition-all"
                     >
                       <td className="px-6 py-6">
@@ -231,6 +252,15 @@ export default function BookingsPage() {
               </tbody>
             </table>
           </div>
+        )}
+        {!loading && (
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={PAGE_SIZE}
+            onPageChange={setPage}
+          />
         )}
       </div>
     </div>

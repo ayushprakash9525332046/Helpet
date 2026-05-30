@@ -1,19 +1,20 @@
 # /admin/* (protected - admin only)
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import func
-from sqlalchemy.orm import Session
-from typing import List
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import String, func, or_
+from sqlalchemy.orm import Session, joinedload
+from typing import Optional
 from uuid import UUID
 
 from app.db.session import get_db
-from app.models.user import User, UserStatus
+from app.models.user import User, UserRole, UserStatus
 from app.models.booking import Booking, BookingStatus
 from app.models.service import Service
 from app.models.payment import Payment, PaymentStatus
 from app.schemas.user import UserResponse
 from app.schemas.booking import BookingResponse
 from app.schemas.payment import PaymentResponse
+from app.schemas.common import Page, paginate
 from app.core.dependencies import get_current_admin
 
 router = APIRouter()
@@ -43,12 +44,46 @@ def get_stats(
 
 # ── User Management ─────────────────────────────────────────────
 
-@router.get("/users", response_model=List[UserResponse])
+@router.get("/users", response_model=Page[UserResponse])
 def list_users(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(25, ge=1, le=100),
+    search: Optional[str] = None,
+    role: Optional[str] = None,
+    status: Optional[str] = None,
     db: Session = Depends(get_db),
     admin: User = Depends(get_current_admin),
 ):
-    return db.query(User).all()
+    query = db.query(User)
+
+    if search:
+        term = f"%{search}%"
+        query = query.filter(
+            or_(
+                User.full_name.ilike(term),
+                User.phone.ilike(term),
+                User.email.ilike(term),
+            )
+        )
+    if role and role != "all":
+        try:
+            query = query.filter(User.role == UserRole(role))
+        except ValueError:
+            pass
+    if status and status != "all":
+        try:
+            query = query.filter(User.status == UserStatus(status))
+        except ValueError:
+            pass
+
+    total = query.count()
+    items = (
+        query.order_by(User.created_at.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
+    return paginate(items, total, page, page_size)
 
 
 @router.put("/users/{user_id}/status")
@@ -83,12 +118,48 @@ def delete_user(
 
 # ── Booking Management ──────────────────────────────────────────
 
-@router.get("/bookings", response_model=List[BookingResponse])
+@router.get("/bookings", response_model=Page[BookingResponse])
 def list_bookings(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(25, ge=1, le=100),
+    search: Optional[str] = None,
+    status: Optional[str] = None,
     db: Session = Depends(get_db),
     admin: User = Depends(get_current_admin),
 ):
-    return db.query(Booking).all()
+    # Eager-load service/category/customer so serialization doesn't N+1
+    query = db.query(Booking).options(
+        joinedload(Booking.service).joinedload(Service.category),
+        joinedload(Booking.customer),
+    )
+
+    if status and status != "all":
+        try:
+            query = query.filter(Booking.status == BookingStatus(status))
+        except ValueError:
+            pass
+    if search:
+        term = f"%{search}%"
+        query = (
+            query.join(Service, Booking.service_id == Service.id)
+            .join(User, Booking.customer_id == User.id)
+            .filter(
+                or_(
+                    Service.name.ilike(term),
+                    User.full_name.ilike(term),
+                    Booking.address.ilike(term),
+                )
+            )
+        )
+
+    total = query.count()
+    items = (
+        query.order_by(Booking.scheduled_at.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
+    return paginate(items, total, page, page_size)
 
 
 @router.put("/bookings/{booking_id}/status")
@@ -108,12 +179,39 @@ def update_booking_status(
 
 # ── Payment Management ──────────────────────────────────────────
 
-@router.get("/payments", response_model=List[PaymentResponse])
+@router.get("/payments", response_model=Page[PaymentResponse])
 def list_payments(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(25, ge=1, le=100),
+    search: Optional[str] = None,
+    status: Optional[str] = None,
     db: Session = Depends(get_db),
     admin: User = Depends(get_current_admin),
 ):
-    return db.query(Payment).all()
+    query = db.query(Payment)
+
+    if status and status != "all":
+        try:
+            query = query.filter(Payment.status == PaymentStatus(status))
+        except ValueError:
+            pass
+    if search:
+        term = f"%{search}%"
+        query = query.filter(
+            or_(
+                func.cast(Payment.id, String).ilike(term),
+                func.cast(Payment.booking_id, String).ilike(term),
+            )
+        )
+
+    total = query.count()
+    items = (
+        query.order_by(Payment.created_at.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
+    return paginate(items, total, page, page_size)
 
 
 @router.put("/payments/{payment_id}/status")

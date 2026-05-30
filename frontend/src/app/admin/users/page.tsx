@@ -3,9 +3,13 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { User } from "@/lib/types";
+import { User, PaginatedResponse } from "@/lib/types";
 import { Search, ShieldCheck, UserX, UserCheck, Trash2, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
+import Pagination from "@/components/admin/Pagination";
+import { useDebounce } from "@/hooks/useDebounce";
+
+const PAGE_SIZE = 25;
 
 const STATUS_BADGE: Record<string, string> = {
   active:   "bg-green-100 text-green-700",
@@ -26,13 +30,31 @@ export default function UsersPage() {
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [actionUser, setActionUser] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const debouncedSearch = useDebounce(search, 400);
 
   useEffect(() => {
-    api.get("/admin/users").then((r) => {
-      const sorted = [...r.data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-      setUsers(sorted);
-    }).finally(() => setLoading(false));
-  }, []);
+    setLoading(true);
+    api
+      .get<PaginatedResponse<User>>("/admin/users", {
+        params: {
+          page,
+          page_size: PAGE_SIZE,
+          search: debouncedSearch || undefined,
+          role: roleFilter !== "all" ? roleFilter : undefined,
+          status: statusFilter !== "all" ? statusFilter : undefined,
+        },
+      })
+      .then((r) => {
+        setUsers(r.data.items);
+        setTotal(r.data.total);
+        setTotalPages(r.data.total_pages);
+      })
+      .finally(() => setLoading(false));
+  }, [debouncedSearch, roleFilter, statusFilter, page]);
 
   async function updateStatus(userId: string, newStatus: string) {
     setActionUser(userId);
@@ -61,21 +83,11 @@ export default function UsersPage() {
     }
   }
 
-  const filtered = users.filter((u) => {
-    const matchSearch =
-      u.full_name.toLowerCase().includes(search.toLowerCase()) ||
-      u.phone.includes(search) ||
-      (u.email ?? "").toLowerCase().includes(search.toLowerCase());
-    const matchRole = roleFilter === "all" || u.role === roleFilter;
-    const matchStatus = statusFilter === "all" || u.status === statusFilter;
-    return matchSearch && matchRole && matchStatus;
-  });
-
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-extrabold text-slate-800">Users</h1>
-        <p className="text-slate-500 text-sm mt-1">{users.length} total users</p>
+        <p className="text-slate-500 text-sm mt-1">{total} total users</p>
       </div>
 
       {/* Filters */}
@@ -86,14 +98,14 @@ export default function UsersPage() {
             type="text"
             placeholder="Search by name, phone or email..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
           />
         </div>
         <div className="relative">
           <select
             value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
+            onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
             className="appearance-none bg-white border border-slate-200 rounded-xl px-4 py-2.5 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
           >
             <option value="all">All Roles</option>
@@ -106,7 +118,7 @@ export default function UsersPage() {
         <div className="relative">
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
             className="appearance-none bg-white border border-slate-200 rounded-xl px-4 py-2.5 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
           >
             <option value="all">All Status</option>
@@ -124,7 +136,7 @@ export default function UsersPage() {
           <div className="p-8 flex justify-center">
             <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : filtered.length === 0 ? (
+        ) : users.length === 0 ? (
           <div className="p-12 text-center text-slate-400 text-sm">No users found</div>
         ) : (
           <div className="overflow-x-auto">
@@ -141,7 +153,7 @@ export default function UsersPage() {
               </thead>
               <tbody>
                 <AnimatePresence>
-                  {filtered.map((user, i) => (
+                  {users.map((user, i) => (
                     <motion.tr
                       key={user.id}
                       initial={{ opacity: 0 }}
@@ -213,6 +225,15 @@ export default function UsersPage() {
               </tbody>
             </table>
           </div>
+        )}
+        {!loading && (
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={PAGE_SIZE}
+            onPageChange={setPage}
+          />
         )}
       </div>
     </div>
