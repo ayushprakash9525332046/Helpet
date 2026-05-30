@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Service } from "@/lib/types";
+import { Service, SubService } from "@/lib/types";
 import { getServiceIcon } from "@/lib/icons";
 import BackHeader from "@/components/BackHeader";
 import StarRating from "@/components/StarRating";
@@ -37,6 +37,27 @@ const REVIEWS = [
 export default function ServiceDetailClient({ service }: { service: Service }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"about" | "reviews">("about");
+
+  const subServices = service.sub_services ?? [];
+  const hasSubServices = subServices.length > 0;
+  const [selectedSub, setSelectedSub] = useState<SubService | null>(
+    hasSubServices ? subServices[0] : null
+  );
+
+  const displayPrice = selectedSub ? selectedSub.price : service.price;
+
+  const goToBook = () => {
+    if (selectedSub) {
+      const params = new URLSearchParams({
+        sub_id: selectedSub.id,
+        sub_name: selectedSub.name,
+        sub_price: String(selectedSub.price),
+      });
+      router.push(`/book/${service.id}?${params.toString()}`);
+    } else {
+      router.push(`/book/${service.id}`);
+    }
+  };
 
   const gradient = GRADIENTS[Math.abs(service.id.charCodeAt(0) - 48) % GRADIENTS.length];
   const IconComponent = getServiceIcon(service.name);
@@ -83,7 +104,7 @@ export default function ServiceDetailClient({ service }: { service: Service }) {
               className="hidden md:grid grid-cols-3 gap-4 lg:gap-6 mt-6 md:mt-8"
             >
               {[
-                { icon: <IndianRupee size={18} className="text-blue-600" />, bg: "bg-blue-50", label: "Base Price", value: `₹${service.price}`, sub: `₹${Math.round(service.price * 1.2)}`, strikethrough: true },
+                { icon: <IndianRupee size={18} className="text-blue-600" />, bg: "bg-blue-50", label: hasSubServices ? "From" : "Base Price", value: `₹${displayPrice}`, sub: `₹${Math.round(Number(displayPrice) * 1.2)}`, strikethrough: true },
                 { icon: <Timer size={18} className="text-slate-600" />, bg: "bg-slate-50", label: "Est. Time", value: service.duration_minutes, sub: "minutes" },
                 { icon: <Star size={18} className="text-amber-500 fill-amber-500" />, bg: "bg-amber-50", label: "Avg Rating", value: "4.9", sub: "Verified", green: true },
               ].map(({ icon, bg, label, value, sub, strikethrough, green }) => (
@@ -106,10 +127,52 @@ export default function ServiceDetailClient({ service }: { service: Service }) {
               </div>
               <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-slate-800 leading-tight tracking-tight mb-6 md:mb-8">{service.name}</h1>
 
+              {hasSubServices && (
+                <div className="mb-8">
+                  <h2 className="font-black text-slate-800 text-lg md:text-xl mb-4 tracking-tight">Choose an option</h2>
+                  <div className="flex flex-col gap-3">
+                    {subServices.map((sub) => {
+                      const active = selectedSub?.id === sub.id;
+                      return (
+                        <button
+                          key={sub.id}
+                          onClick={() => setSelectedSub(sub)}
+                          className={`w-full flex items-center justify-between gap-3 rounded-2xl border-2 px-4 py-4 text-left transition-all ${
+                            active
+                              ? "border-blue-600 bg-blue-50/50 shadow-sm"
+                              : "border-slate-100 bg-white hover:border-blue-200"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`w-5 h-5 shrink-0 rounded-full border-2 flex items-center justify-center ${
+                                active ? "border-blue-600" : "border-slate-300"
+                              }`}
+                            >
+                              {active && <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />}
+                            </div>
+                            <div>
+                              <span className="block font-bold text-slate-800">{sub.name}</span>
+                              {sub.description && (
+                                <span className="block text-sm text-slate-500 mt-0.5">{sub.description}</span>
+                              )}
+                            </div>
+                          </div>
+                          <span className="flex items-center font-black text-blue-600 shrink-0">
+                            <IndianRupee size={14} strokeWidth={3} />
+                            {Number(sub.price).toLocaleString("en-IN")}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <div className="hidden md:block mb-8">
                 <motion.button
                   whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                  onClick={() => router.push(`/book/${service.id}`)}
+                  onClick={goToBook}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-[20px] shadow-2xl shadow-blue-200 text-base transition-all flex items-center justify-center gap-3"
                 >
                   Book this Service Now <ChevronRight size={20} />
@@ -123,7 +186,7 @@ export default function ServiceDetailClient({ service }: { service: Service }) {
               className="flex gap-4 md:hidden"
             >
               {[
-                { icon: <IndianRupee size={14} className="text-blue-600" />, bg: "bg-blue-50", label: "Price", value: `₹${service.price}` },
+                { icon: <IndianRupee size={14} className="text-blue-600" />, bg: "bg-blue-50", label: "Price", value: `₹${displayPrice}` },
                 { icon: <Timer size={14} className="text-slate-600" />, bg: "bg-slate-50", label: "Time", value: `${service.duration_minutes}m` },
                 { icon: <Star size={14} className="text-amber-500 fill-amber-500" />, bg: "bg-amber-50", label: "Rating", value: "4.9" },
               ].map(({ icon, bg, label, value }) => (
@@ -212,11 +275,11 @@ export default function ServiceDetailClient({ service }: { service: Service }) {
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="shrink-0">
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Total Price</p>
-            <span className="text-xl font-black text-slate-800">₹{service.price}</span>
+            <span className="text-xl font-black text-slate-800">₹{displayPrice}</span>
           </div>
           <motion.button
             whileTap={{ scale: 0.97 }}
-            onClick={() => router.push(`/book/${service.id}`)}
+            onClick={goToBook}
             className="flex-1 bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-blue-200 text-sm"
           >
             Book Now →

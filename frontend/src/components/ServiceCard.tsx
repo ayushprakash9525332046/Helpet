@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Service } from "@/lib/types";
 import StarRating from "./StarRating";
 import { Clock, Plus, Tag, ShieldCheck } from "lucide-react";
 import { getServiceIcon } from "@/lib/icons";
-import SubServiceModal from "./SubServiceModal";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
 
@@ -34,7 +32,6 @@ interface Props {
 
 export default function ServiceCard({ service, index = 0 }: Props) {
   const router = useRouter();
-  const [modalOpen, setModalOpen] = useState(false);
 
   const gradient = GRADIENTS[index % GRADIENTS.length];
   const IconComponent = getServiceIcon(service.name);
@@ -47,11 +44,7 @@ export default function ServiceCard({ service, index = 0 }: Props) {
   const hasSubServices = service.sub_services && service.sub_services.length > 0;
 
   const handleClick = () => {
-    if (hasSubServices) {
-      setModalOpen(true);
-    } else {
-      router.push(`/services/${service.id}`);
-    }
+    router.push(`/services/${service.id}`);
   };
 
   return (
@@ -139,14 +132,6 @@ export default function ServiceCard({ service, index = 0 }: Props) {
           </div>
         </div>
       </motion.div>
-
-      {hasSubServices && (
-        <SubServiceModal
-          service={service}
-          open={modalOpen}
-          onClose={() => setModalOpen(false)}
-        />
-      )}
     </>
   );
 }
