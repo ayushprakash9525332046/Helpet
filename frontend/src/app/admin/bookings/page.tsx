@@ -66,18 +66,6 @@ export default function BookingsPage() {
       setUpdatingId(null);
     }
   }
-
-  const filtered = bookings.filter((b) => {
-    const matchSearch =
-      b.service.name.toLowerCase().includes(search.toLowerCase()) ||
-      b.id.includes(search) ||
-      b.address.toLowerCase().includes(search.toLowerCase()) ||
-      b.customer?.full_name.toLowerCase().includes(search.toLowerCase()) ||
-      b.customer?.phone.includes(search);
-    const matchStatus = statusFilter === "all" || b.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
-
   return (
     <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-8">
