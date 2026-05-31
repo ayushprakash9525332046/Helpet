@@ -5,18 +5,10 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Service, SubService } from "@/lib/types";
 import { getServiceIcon } from "@/lib/icons";
+import { resolveImage } from "@/lib/image";
 import BackHeader from "@/components/BackHeader";
 import StarRating from "@/components/StarRating";
 import { Clock, Shield, CheckCircle2, Users, Zap, Award, ChevronRight, Star, Timer, IndianRupee } from "lucide-react";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
-
-function resolveImage(url?: string): string | null {
-  if (!url) return null;
-  if (url.startsWith("http") || url.startsWith("data:")) return url;
-  if (url.startsWith("/")) return `${API_BASE}${url}`;
-  return null;
-}
 
 const GRADIENTS = [
   "from-blue-500 to-indigo-600", "from-violet-500 to-purple-600",
@@ -61,7 +53,7 @@ export default function ServiceDetailClient({ service }: { service: Service }) {
 
   const gradient = GRADIENTS[Math.abs(service.id.charCodeAt(0) - 48) % GRADIENTS.length];
   const IconComponent = getServiceIcon(service.name);
-  const imgSrc = resolveImage(service.image);
+  const imgSrc = resolveImage(service.image, 800);
 
   return (
     <div className="flex flex-col min-h-screen bg-white pb-32 md:pb-16">
@@ -76,7 +68,7 @@ export default function ServiceDetailClient({ service }: { service: Service }) {
               className={`rounded-[24px] md:rounded-[32px] bg-linear-to-br ${gradient} h-64 md:h-[380px] lg:h-[420px] flex items-center justify-center relative overflow-hidden shadow-2xl shadow-blue-900/10 group`}
             >
               {imgSrc ? (
-                <img src={imgSrc} alt={service.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
+                <img src={imgSrc} alt={service.name} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
               ) : (
                 <>
                   <div className="absolute -top-12 -right-12 w-48 h-48 md:w-80 md:h-80 bg-white/10 rounded-full" />

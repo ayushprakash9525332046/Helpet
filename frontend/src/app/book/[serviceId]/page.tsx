@@ -10,15 +10,7 @@ import BackHeader from "@/components/BackHeader";
 import toast from "react-hot-toast";
 import { MapPin, Calendar, Clock, FileText, CheckCircle2, Sparkles, LocateFixed, ChevronRight } from "lucide-react";
 import { getServiceIcon } from "@/lib/icons";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
-
-function resolveImage(url?: string): string | null {
-  if (!url) return null;
-  if (url.startsWith("http") || url.startsWith("data:")) return url;
-  if (url.startsWith("/")) return `${API_BASE}${url}`;
-  return null;
-}
+import { resolveImage } from "@/lib/image";
 
 const TIME_SLOTS = ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
@@ -168,7 +160,7 @@ export default function BookService() {
 
   const gradient = GRADIENTS[Math.abs((service.id.charCodeAt(0) - 48)) % GRADIENTS.length];
   const ServiceIconComponent = getServiceIcon(service.name);
-  const imgSrc = resolveImage(service.image);
+  const imgSrc = resolveImage(service.image, 600);
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 pb-20 md:pb-24">
@@ -185,14 +177,14 @@ export default function BookService() {
             >
               {imgSrc && (
                 <>
-                  <img src={imgSrc} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover scale-110 blur-sm" />
+                  <img src={imgSrc} alt="" aria-hidden loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover scale-110 blur-sm" />
                   <div className="absolute inset-0 bg-linear-to-br from-black/65 via-black/50 to-black/40" />
                 </>
               )}
               {!imgSrc && <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full group-hover:scale-150 transition-transform duration-1000" />}
               <div className="w-20 h-20 md:w-28 md:h-28 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center shadow-xl relative z-10 overflow-hidden shrink-0">
                 {imgSrc ? (
-                  <img src={imgSrc} alt={service.name} className="w-full h-full object-cover" />
+                  <img src={imgSrc} alt={service.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 ) : (
                   <ServiceIconComponent size={40} className="text-white md:w-12 md:h-12" strokeWidth={1.5} />
                 )}

@@ -6,15 +6,7 @@ import { Service } from "@/lib/types";
 import StarRating from "./StarRating";
 import { Clock, Plus, Tag, ShieldCheck } from "lucide-react";
 import { getServiceIcon } from "@/lib/icons";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
-
-function resolveImage(url?: string): string | null {
-  if (!url) return null;
-  if (url.startsWith("http") || url.startsWith("data:")) return url;
-  if (url.startsWith("/")) return `${API_BASE}${url}`;
-  return null;
-}
+import { resolveImage } from "@/lib/image";
 
 const GRADIENTS = [
   "from-blue-400 to-indigo-500",
@@ -35,7 +27,7 @@ export default function ServiceCard({ service, index = 0 }: Props) {
 
   const gradient = GRADIENTS[index % GRADIENTS.length];
   const IconComponent = getServiceIcon(service.name);
-  const imgSrc = resolveImage(service.image);
+  const imgSrc = resolveImage(service.image, 400);
   const discount = service.discount_percentage ?? 0;
   const originalPrice = discount > 0
     ? Math.round(service.price / (1 - discount / 100))
@@ -61,7 +53,7 @@ export default function ServiceCard({ service, index = 0 }: Props) {
           {/* Image area */}
           <div className={`relative h-28 md:h-32 lg:h-36 xl:h-40 bg-linear-to-br ${gradient} flex items-center justify-center overflow-hidden`}>
             {imgSrc ? (
-              <img src={imgSrc} alt={service.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <img src={imgSrc} alt={service.name} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
             ) : (
               <>
                 <div className="absolute inset-0 opacity-10">
