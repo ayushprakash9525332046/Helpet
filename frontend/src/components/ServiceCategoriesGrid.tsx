@@ -4,15 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ServiceCategory } from "@/lib/types";
 import { getServiceIcon } from "@/lib/icons";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
-
-function resolveCategoryImage(url?: string) {
-  if (!url) return null;
-  if (url.startsWith("http") || url.startsWith("data:")) return url;
-  if (url.startsWith("/")) return `${API_BASE}${url}`;
-  return null;
-}
+import { resolveImage } from "@/lib/image";
 
 interface Props {
   categories: ServiceCategory[];
@@ -35,7 +27,7 @@ export default function ServiceCategoriesGrid({ categories, loading }: Props) {
   return (
     <div className={gridClass}>
       {categories.slice(0, 9).map((cat, i) => {
-        const imgSrc = resolveCategoryImage(cat.icon);
+        const imgSrc = resolveImage(cat.icon, 128);
         const Icon = getServiceIcon(cat.name);
         return (
           <motion.div
@@ -48,7 +40,7 @@ export default function ServiceCategoriesGrid({ categories, loading }: Props) {
             <Link href={`/categories/${cat.id}`} className="flex flex-col items-center gap-2 group">
               <div className="w-full aspect-square rounded-2xl md:rounded-[24px] overflow-hidden bg-white shadow-sm border border-slate-100 group-hover:border-blue-200 group-hover:shadow-xl group-hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
                 {imgSrc ? (
-                  <img src={imgSrc} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <img src={imgSrc} alt={cat.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 ) : (
                   <Icon size={24} className="text-slate-300 md:w-8 md:h-8" />
                 )}

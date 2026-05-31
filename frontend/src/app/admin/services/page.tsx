@@ -24,16 +24,8 @@ import {
   ChevronDown, Clock, IndianRupee, GripVertical, Settings2, ChevronUp, Layers,
 } from "lucide-react";
 import { getServiceIcon } from "@/lib/icons";
+import { resolveImage } from "@/lib/image";
 import toast from "react-hot-toast";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
-
-function resolveImage(url?: string | null) {
-  if (!url) return null;
-  if (url.startsWith("http") || url.startsWith("data:")) return url;
-  if (url.startsWith("/")) return `${API_BASE}${url}`;
-  return null;
-}
 
 interface FormState {
   name: string;
@@ -241,7 +233,7 @@ function SortableServiceCard({
     opacity: isDragging ? 0.85 : 1,
   };
 
-  const imgSrc = resolveImage(svc.image);
+  const imgSrc = resolveImage(svc.image, 96);
 
   return (
     <div
@@ -266,7 +258,7 @@ function SortableServiceCard({
           {/* Image / icon thumbnail */}
           <div className="w-12 h-12 rounded-xl overflow-hidden bg-blue-50 border border-slate-200 flex items-center justify-center shrink-0">
             {imgSrc ? (
-              <img src={imgSrc} alt={svc.name} className="w-full h-full object-cover" />
+              <img src={imgSrc} alt={svc.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
             ) : (
               (() => { const I = getServiceIcon(svc.name); return <I size={22} className="text-blue-400" />; })()
             )}
@@ -487,7 +479,7 @@ export default function ServicesPage() {
     return matchSearch && matchCat;
   });
 
-  const previewSrc = resolveImage(form.image || null);
+  const previewSrc = resolveImage(form.image || null, 400);
 
   return (
     <div>
@@ -811,7 +803,7 @@ export default function ServicesPage() {
                   <label className="block text-xs font-semibold text-slate-600 mb-1.5">Service Image</label>
                   {previewSrc && (
                     <div className="relative mb-2 w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                      <img src={previewSrc} alt="preview" className="w-full h-full object-cover" />
+                      <img src={previewSrc} alt="preview" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => setForm({ ...form, image: "" })}

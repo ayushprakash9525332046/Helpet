@@ -21,15 +21,7 @@ import api, { invalidateServiceCache } from "@/lib/api";
 import { ServiceCategory } from "@/lib/types";
 import { Plus, Pencil, Trash2, X, Check, ImageOff, Link2, GripVertical } from "lucide-react";
 import toast from "react-hot-toast";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
-
-function resolveImage(url?: string) {
-  if (!url) return null;
-  if (url.startsWith("http") || url.startsWith("data:")) return url;
-  if (url.startsWith("/")) return `${API_BASE}${url}`;
-  return null;
-}
+import { resolveImage } from "@/lib/image";
 
 interface FormState { name: string; description: string; icon: string; }
 const EMPTY_FORM: FormState = { name: "", description: "", icon: "" };
@@ -54,7 +46,7 @@ function SortableCard({
     opacity: isDragging ? 0.85 : 1,
   };
 
-  const imgSrc = resolveImage(cat.icon);
+  const imgSrc = resolveImage(cat.icon, 80);
 
   return (
     <div
@@ -77,7 +69,7 @@ function SortableCard({
       <div className="flex items-start gap-3 flex-1 min-w-0">
         <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
           {imgSrc ? (
-            <img src={imgSrc} alt={cat.name} className="w-full h-full object-cover" />
+            <img src={imgSrc} alt={cat.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           ) : (
             <ImageOff size={18} className="text-slate-400" />
           )}
@@ -212,7 +204,7 @@ export default function CategoriesPage() {
     }
   }
 
-  const previewSrc = resolveImage(form.icon);
+  const previewSrc = resolveImage(form.icon, 256);
 
   return (
     <div>
@@ -309,6 +301,8 @@ export default function CategoriesPage() {
                       <img
                         src={previewSrc}
                         alt="preview"
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover"
                         onError={() => setImgError(true)}
                       />

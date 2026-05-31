@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { resolveImage } from "@/lib/image";
 
 interface AvatarProps {
   src?: string | null;
@@ -25,8 +26,10 @@ export default function Avatar({
   if (src && !imgError) {
     return (
       <img
-        src={src}
+        src={resolveImage(src, 256) ?? src}
         alt={name ?? "Profile"}
+        loading="lazy"
+        decoding="async"
         onError={() => setImgError(true)}
         className={`${size} ${radius} object-cover ${className}`}
       />

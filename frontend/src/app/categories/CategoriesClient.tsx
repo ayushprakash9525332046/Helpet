@@ -6,15 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ServiceCategory } from "@/lib/types";
 import { Search, ImageOff, ChevronRight, Grid2X2, Sparkles } from "lucide-react";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8000";
-
-function resolveImage(url?: string) {
-  if (!url) return null;
-  if (url.startsWith("http") || url.startsWith("data:")) return url;
-  if (url.startsWith("/")) return `${API_BASE}${url}`;
-  return null;
-}
+import { resolveImage } from "@/lib/image";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
@@ -98,13 +90,13 @@ function CategoriesContent({ categories }: { categories: ServiceCategory[] }) {
               className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8"
             >
               {filtered.map((cat) => {
-                const imgSrc = resolveImage(cat.icon);
+                const imgSrc = resolveImage(cat.icon, 256);
                 return (
                   <motion.div key={cat.id} variants={item}>
                     <Link href={`/categories/${cat.id}`} className="group flex flex-col items-center gap-3 md:gap-5">
                       <div className="w-full aspect-square bg-white rounded-2xl md:rounded-[32px] overflow-hidden shadow-sm border border-slate-100 group-hover:border-blue-100 group-hover:shadow-2xl group-hover:shadow-blue-900/5 group-hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
                         {imgSrc ? (
-                          <img src={imgSrc} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                          <img src={imgSrc} alt={cat.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                         ) : (
                           <div className="flex flex-col items-center gap-2 text-slate-200 group-hover:text-blue-200 transition-colors">
                             <ImageOff size={40} className="md:w-14 md:h-14" />
