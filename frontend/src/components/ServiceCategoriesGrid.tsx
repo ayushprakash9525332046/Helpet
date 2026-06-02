@@ -27,7 +27,7 @@ export default function ServiceCategoriesGrid({ categories, loading }: Props) {
   return (
     <div className={gridClass}>
       {categories.slice(0, 9).map((cat, i) => {
-        const imgSrc = resolveImage(cat.icon, 128);
+        const imgSrc = resolveImage(cat.icon, 400);
         const Icon = getServiceIcon(cat.name);
         return (
           <motion.div
