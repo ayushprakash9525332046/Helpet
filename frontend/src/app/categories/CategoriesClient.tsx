@@ -90,7 +90,7 @@ function CategoriesContent({ categories }: { categories: ServiceCategory[] }) {
               className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8"
             >
               {filtered.map((cat) => {
-                const imgSrc = resolveImage(cat.icon, 500);
+                const imgSrc = resolveImage(cat.icon, 256);
                 return (
                   <motion.div key={cat.id} variants={item}>
                     <Link href={`/categories/${cat.id}`} className="group flex flex-col items-center gap-3 md:gap-5">
