@@ -49,7 +49,7 @@ def send_otp_email(email: str, otp: str, purpose: str = "login") -> bool:
         msg["To"] = email
         msg.attach(MIMEText(html, "html"))
 
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=10) as server:
             server.ehlo()
             server.starttls()
             server.login(smtp_user, smtp_pass)

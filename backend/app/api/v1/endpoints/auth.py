@@ -1,6 +1,6 @@
 # /auth/register, /auth/login, /auth/otp/*, /auth/password-reset/*
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone, timedelta
 
@@ -25,7 +25,7 @@ OTP_RESEND_COOLDOWN_SECONDS = 60
 
 # ── Register ─────────────────────────────────────────────────────
 @router.post("/register", response_model=UserResponse, status_code=201)
-def register(user_data: UserRegister, db: Session = Depends(get_db)):
+def register(user_data: UserRegister, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     if db.query(User).filter(User.phone == user_data.phone).first():
         raise HTTPException(status_code=400, detail="Phone number already registered")
     if db.query(User).filter(User.email == user_data.email).first():
@@ -47,7 +47,7 @@ def register(user_data: UserRegister, db: Session = Depends(get_db)):
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRE_MINUTES)
     db.add(OTP(email=user_data.email, code=code, purpose=OTPPurpose.VERIFY, expires_at=expires_at))
     db.commit()
-    send_otp_email(user_data.email, code, "verify")
+    background_tasks.add_task(send_otp_email, user_data.email, code, "verify")
 
     return new_user
 
@@ -73,7 +73,7 @@ def get_me(current_user: User = Depends(get_current_user)):
 
 # ── OTP: Send (email) ────────────────────────────────────────────
 @router.post("/otp/send")
-def send_otp(data: OTPSendRequest, db: Session = Depends(get_db)):
+def send_otp(data: OTPSendRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     if data.purpose in (OTPPurpose.LOGIN, OTPPurpose.RESET):
         if not db.query(User).filter(User.email == data.email).first():
             raise HTTPException(status_code=404, detail="No account found with this email")
@@ -92,7 +92,7 @@ def send_otp(data: OTPSendRequest, db: Session = Depends(get_db)):
     db.add(OTP(email=data.email, code=code, purpose=data.purpose, expires_at=expires_at))
     db.commit()
 
-    send_otp_email(data.email, code, data.purpose.value)
+    background_tasks.add_task(send_otp_email, data.email, code, data.purpose.value)
     return {"message": "OTP sent to your email"}
 
 
@@ -165,7 +165,7 @@ def verify_email_otp(data: OTPVerifyRequest, db: Session = Depends(get_db)):
 
 # ── Password Reset: Request ──────────────────────────────────────
 @router.post("/password-reset/request")
-def request_password_reset(data: OTPSendRequest, db: Session = Depends(get_db)):
+def request_password_reset(data: OTPSendRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     if not db.query(User).filter(User.email == data.email).first():
         raise HTTPException(status_code=404, detail="No account found with this email")
 
@@ -183,7 +183,7 @@ def request_password_reset(data: OTPSendRequest, db: Session = Depends(get_db)):
     db.add(OTP(email=data.email, code=code, purpose=OTPPurpose.RESET, expires_at=expires_at))
     db.commit()
 
-    send_otp_email(data.email, code, "reset")
+    background_tasks.add_task(send_otp_email, data.email, code, "reset")
     return {"message": "Password reset OTP sent to your email"}
 
 
