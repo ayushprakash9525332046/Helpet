@@ -17,9 +17,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 20160  # 14 days
     ALGORITHM: str = "HS256"
 
-    # Email SMTP — Gmail (optional — omit for dev mode, OTP printed to console)
-    SMTP_USER: Optional[str] = None
-    SMTP_PASSWORD: Optional[str] = None
+    # Email — Resend API (optional — omit for dev mode, OTP printed to console)
+    RESEND_API_KEY: Optional[str] = None
+    RESEND_FROM_EMAIL: str = "Helpet <onboarding@resend.dev>"
 
     # Cloudinary (image uploads)
     CLOUDINARY_CLOUD_NAME: Optional[str] = None

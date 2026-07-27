@@ -174,10 +174,10 @@ export default function Home() {
             </span>
             <span className="flex-1 min-w-0">
               <span className="block text-ink font-semibold text-sm md:text-lg">
-                20% off on weekend bookings
+                Get the Helpet app & save up to 80%
               </span>
               <span className="block text-ink-soft text-xs md:text-sm mt-0.5">
-                Book a Saturday or Sunday slot and save 20%
+                Exclusive app-only offers on top services
               </span>
             </span>
             <span className="hidden md:inline-flex items-center gap-1.5 bg-brand-600 group-hover:bg-brand-700 text-white text-sm font-semibold px-5 py-2.5 rounded-[10px] transition-colors shrink-0 relative">
