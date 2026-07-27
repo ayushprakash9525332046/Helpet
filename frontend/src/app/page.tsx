@@ -172,8 +172,12 @@ export default function LandingPage() {
       </nav>
 
       {/* ── Hero ──────────────────────────────────────── */}
-      <section className="bg-white border-b border-line">
-        <div className="container-fluid py-12 md:py-16 lg:py-20 grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-10 items-center">
+      <section className="bg-white border-b border-line relative overflow-hidden">
+        {/* Mobile/tablet only — desktop keeps the plain white bg + side panel below */}
+        <div className="lg:hidden">
+          <HeroMedia scrimClassName="bg-gradient-to-r from-white/70 via-white/40 to-white/10" />
+        </div>
+        <div className="container-fluid py-12 md:py-16 lg:py-20 grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-10 items-center relative">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -239,9 +243,9 @@ export default function LandingPage() {
             </div>
 
             {/* Trust line */}
-            <p className="flex items-center gap-1.5 text-sm text-ink-soft mt-6">
-              <CheckCircle2 size={15} className="text-rating" />
-              4.9 avg rating · 380+ jobs done · 40+ professionals in Dehradun
+            <p className="flex items-start gap-1.5 text-sm text-ink-soft mt-6">
+              <CheckCircle2 size={15} className="text-rating shrink-0 mt-0.5" />
+              4.9 avg rating · 380+ jobs done · 40+ professionals
             </p>
           </motion.div>
 

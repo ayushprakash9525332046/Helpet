@@ -92,7 +92,7 @@ export default function Home() {
 
       {/* ── Header ────────────────────────────────────── */}
       <div className="bg-[#FAF5FF] border-b border-line relative overflow-hidden">
-        <HeroMedia scrimClassName="bg-gradient-to-r from-white/90 via-white/65 to-white/20" />
+        <HeroMedia scrimClassName="bg-gradient-to-r from-white/70 via-white/40 to-white/10" />
         {/* Faint watermark */}
         <Sparkles
           size={180}
@@ -146,8 +146,8 @@ export default function Home() {
           </Link>
 
           {/* Trust line — mobile only */}
-          <p className="md:hidden flex items-center gap-1.5 text-xs text-ink-soft mt-3">
-            <Star size={12} className="text-rating fill-rating" />
+          <p className="md:hidden flex items-start gap-1.5 text-xs text-ink-soft mt-3">
+            <Star size={12} className="text-rating fill-rating shrink-0 mt-0.5" />
             4.9 rated · 380+ jobs done · verified pros in Dehradun
           </p>
         </div>
