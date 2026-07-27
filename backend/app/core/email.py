@@ -1,4 +1,5 @@
 import smtplib
+import socket
 import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -11,6 +12,24 @@ _SUBJECTS = {
     "reset":  "Your Helpet Password Reset OTP",
     "verify": "Verify your Helpet Account",
 }
+
+
+class _IPv4SMTP(smtplib.SMTP):
+    """smtplib.SMTP, but forced to connect over IPv4.
+
+    Some hosts (e.g. Render) resolve smtp.gmail.com to an IPv6 address with
+    no outbound IPv6 route, which fails fast with "[Errno 101] Network is
+    unreachable" instead of falling back to IPv4. Forcing AF_INET here
+    avoids that — TLS hostname verification is unaffected since `self._host`
+    (used for SNI/cert checks in starttls()) still holds the original
+    hostname, not the resolved IP.
+    """
+
+    def _get_socket(self, host, port, timeout):
+        if timeout is not None and not timeout:
+            raise ValueError("Non-blocking socket (timeout=0) is not supported")
+        addr_info = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
+        return socket.create_connection(addr_info[0][4], timeout, self.source_address)
 
 
 def send_otp_email(email: str, otp: str, purpose: str = "login") -> bool:
@@ -49,7 +68,7 @@ def send_otp_email(email: str, otp: str, purpose: str = "login") -> bool:
         msg["To"] = email
         msg.attach(MIMEText(html, "html"))
 
-        with smtplib.SMTP("smtp.gmail.com", 587, timeout=10) as server:
+        with _IPv4SMTP("smtp.gmail.com", 587, timeout=10) as server:
             server.ehlo()
             server.starttls()
             server.login(smtp_user, smtp_pass)
