@@ -11,7 +11,14 @@ const VIDEO_SRC =
  * Fills its (relative) parent with the hero image, then fades in the video
  * once fully buffered. If neither loads, the parent's own background shows.
  */
-export default function HeroMedia({ scrimClassName }: { scrimClassName?: string }) {
+export default function HeroMedia({
+  scrimClassName,
+  imageScrimClassName,
+}: {
+  scrimClassName?: string;
+  /** Extra overlay shown only while the still image is up front; fades out as the video takes over. */
+  imageScrimClassName?: string;
+}) {
   const [imgOk, setImgOk] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -58,6 +65,13 @@ export default function HeroMedia({ scrimClassName }: { scrimClassName?: string 
       )}
       {scrimClassName && (imgOk || videoReady) && (
         <div className={`absolute inset-0 pointer-events-none ${scrimClassName}`} />
+      )}
+      {imageScrimClassName && (
+        <div
+          className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ${
+            imgOk && !videoReady ? "opacity-100" : "opacity-0"
+          } ${imageScrimClassName}`}
+        />
       )}
     </>
   );

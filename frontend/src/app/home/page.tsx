@@ -92,7 +92,10 @@ export default function Home() {
 
       {/* ── Header ────────────────────────────────────── */}
       <div className="bg-[#FAF5FF] border-b border-line relative overflow-hidden">
-        <HeroMedia scrimClassName="bg-gradient-to-r from-white/70 via-white/40 to-white/10" />
+        <HeroMedia
+          scrimClassName="bg-gradient-to-r from-white/70 via-white/40 to-white/10"
+          imageScrimClassName="bg-white/40"
+        />
         {/* Faint watermark */}
         <Sparkles
           size={180}

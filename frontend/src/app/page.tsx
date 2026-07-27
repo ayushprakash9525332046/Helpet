@@ -175,7 +175,10 @@ export default function LandingPage() {
       <section className="bg-white border-b border-line relative overflow-hidden">
         {/* Mobile/tablet only — desktop keeps the plain white bg + side panel below */}
         <div className="lg:hidden">
-          <HeroMedia scrimClassName="bg-gradient-to-r from-white/70 via-white/40 to-white/10" />
+          <HeroMedia
+            scrimClassName="bg-gradient-to-r from-white/70 via-white/40 to-white/10"
+            imageScrimClassName="bg-white/40"
+          />
         </div>
         <div className="container-fluid py-12 md:py-16 lg:py-20 grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-10 items-center relative">
           <motion.div

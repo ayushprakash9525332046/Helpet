@@ -27,11 +27,11 @@ function PaymentContent() {
     try {
       await api.post("/payments/offline", { booking_id: bookingId, method: "cod" });
       toast.success("Booking confirmed!");
-      router.replace(`/bookings/confirmed?service=${encodeURIComponent(serviceName)}&amount=${amount}&paid=false`);
+      router.replace(`/bookings/confirmed?service=${encodeURIComponent(serviceName)}&amount=${total}&paid=false`);
     } catch (err: any) {
       // If payment already exists, just redirect to confirmation
       if (err.response?.status === 400 || err.response?.status === 409) {
-        router.replace(`/bookings/confirmed?service=${encodeURIComponent(serviceName)}&amount=${amount}&paid=false`);
+        router.replace(`/bookings/confirmed?service=${encodeURIComponent(serviceName)}&amount=${total}&paid=false`);
       } else {
         toast.error("Could not confirm booking. Try again.");
       }
