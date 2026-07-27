@@ -38,7 +38,7 @@ export default function Avatar({
 
   return (
     <div
-      className={`${size} ${radius} bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white font-extrabold select-none ${textSize} ${className}`}
+      className={`${size} ${radius} bg-brand-100 flex items-center justify-center text-brand-700 font-bold select-none ${textSize} ${className}`}
     >
       {initial}
     </div>

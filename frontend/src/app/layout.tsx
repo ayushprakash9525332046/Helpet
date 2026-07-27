@@ -1,14 +1,27 @@
 import type { Metadata, Viewport } from "next";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/context/AuthContext";
 import AppShell from "@/components/AppShell";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  display: "swap",
+});
+
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://helpet.in";
-const LOGO_URL = `${APP_URL}/assets/helpet-logo.png`;
+const LOGO_URL = `${APP_URL}/assets/helpet-logo-v2.png`;
 
 // ── Structured Data ────────────────────────────────────────────────
 const localBusinessSchema = {
@@ -102,9 +115,9 @@ const organizationSchema = {
     areaServed: "IN",
   },
   sameAs: [
-    "https://www.instagram.com/helpetindia",
-    "https://www.facebook.com/helpetindia",
-    "https://twitter.com/helpetindia",
+    "https://www.instagram.com/helpet.india/",
+    "https://www.facebook.com/profile.php?id=61588929685126",
+    "https://maps.app.goo.gl/5p59cymFbuSnV8Wu9",
   ],
 };
 
@@ -170,14 +183,14 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon-v2.ico", sizes: "any" },
+      { url: "/favicon-16x16-v2.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32-v2.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon-192-v2.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512-v2.png", sizes: "512x512", type: "image/png" },
     ],
-    shortcut: "/favicon-32x32.png",
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: "/favicon-32x32-v2.png",
+    apple: [{ url: "/apple-touch-icon-v2.png", sizes: "180x180", type: "image/png" }],
   },
   openGraph: {
     type: "website",
@@ -189,7 +202,7 @@ export const metadata: Metadata = {
     siteName: "Helpet",
     images: [
       {
-        url: "/assets/helpet-logo.png",
+        url: "/assets/helpet-logo-v2.png",
         width: 1200,
         height: 1200,
         alt: "Helpet — Home Services in Dehradun",
@@ -200,7 +213,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Helpet — Home Services in Dehradun",
     description: "Book verified professionals for 120+ home services in Dehradun. Same-day slots available.",
-    images: ["/assets/helpet-logo.png"],
+    images: ["/assets/helpet-logo-v2.png"],
     creator: "@helpetindia",
     site: "@helpetindia",
   },
@@ -229,12 +242,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en-IN" data-scroll-behavior="smooth">
+    <html lang="en-IN" data-scroll-behavior="smooth" className={`${inter.variable} ${jakarta.variable}`}>
       <head>
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/x-icon" href="/favicon-v2.ico" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16-v2.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32-v2.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-v2.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}

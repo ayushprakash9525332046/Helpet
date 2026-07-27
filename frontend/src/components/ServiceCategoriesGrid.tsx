@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import { ServiceCategory } from "@/lib/types";
 import { getServiceIcon } from "@/lib/icons";
 import { resolveImage } from "@/lib/image";
@@ -12,46 +13,65 @@ interface Props {
 }
 
 export default function ServiceCategoriesGrid({ categories, loading }: Props) {
-  const gridClass = "grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3 md:gap-4 lg:gap-6";
-
   if (loading) {
     return (
-      <div className={gridClass}>
-        {[...Array(9)].map((_, i) => (
-          <div key={i} className="skeleton rounded-2xl md:rounded-[24px] h-24 md:h-32 lg:h-36" />
+      <div className="flex gap-4 md:gap-6 overflow-x-auto pb-1">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="shrink-0">
+            <div className="skeleton rounded-xl w-20 h-20 md:w-24 md:h-24" />
+            <div className="skeleton rounded-md w-14 h-3 mt-2 mx-auto" />
+          </div>
         ))}
       </div>
     );
   }
 
   return (
-    <div className={gridClass}>
-      {categories.slice(0, 9).map((cat, i) => {
+    <div className="flex gap-4 md:gap-6 overflow-x-auto pb-1 snap-x">
+      {categories.map((cat, i) => {
         const imgSrc = resolveImage(cat.icon, 400);
         const Icon = getServiceIcon(cat.name);
         return (
           <motion.div
             key={cat.id}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.05 }}
-            whileTap={{ scale: 0.9 }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.04, duration: 0.25 }}
+            whileTap={{ scale: 0.97 }}
+            className="shrink-0 snap-start"
           >
-            <Link href={`/categories/${cat.id}`} className="flex flex-col items-center gap-2 group">
-              <div className="w-full aspect-square rounded-2xl md:rounded-[24px] overflow-hidden bg-white shadow-sm border border-slate-100 group-hover:border-blue-200 group-hover:shadow-xl group-hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+            <Link href={`/categories/${cat.id}`} className="flex flex-col items-center gap-2 group w-20 md:w-24">
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden bg-brand-50 border border-line group-hover:border-brand-300 group-hover:shadow-md transition-all duration-150 flex items-center justify-center">
                 {imgSrc ? (
-                  <img src={imgSrc} alt={cat.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <img
+                    src={imgSrc}
+                    alt={cat.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  <Icon size={24} className="text-slate-300 md:w-8 md:h-8" />
+                  <Icon size={26} className="text-brand-400" strokeWidth={1.5} />
                 )}
               </div>
-              <span className="text-xs md:text-sm font-bold text-slate-600 text-center leading-tight group-hover:text-blue-600 transition-colors">
+              <span className="text-xs md:text-sm font-medium text-ink text-center leading-tight">
                 {cat.name}
               </span>
             </Link>
           </motion.div>
         );
       })}
+
+      <div className="shrink-0 snap-start">
+        <Link href="/categories" className="flex flex-col items-center gap-2 group w-20 md:w-24">
+          <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl bg-white border border-line group-hover:border-brand-300 transition-all duration-150 flex items-center justify-center">
+            <ArrowRight size={22} className="text-brand-600" />
+          </div>
+          <span className="text-xs md:text-sm font-medium text-brand-600 text-center leading-tight">
+            See all
+          </span>
+        </Link>
+      </div>
     </div>
   );
 }

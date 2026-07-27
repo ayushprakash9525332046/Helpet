@@ -7,8 +7,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import {
   User, ChevronRight, LogOut, Settings, Shield,
-  CalendarCheck, FileText, HelpCircle, Star,
-  Package, MessageSquare, Camera,
+  CalendarCheck, FileText, HelpCircle, Camera,
 } from "lucide-react";
 import Avatar from "@/components/Avatar";
 import api from "@/lib/api";
@@ -74,32 +73,28 @@ export default function Profile() {
   const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ?? "http://localhost:8000";
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 pb-6 md:pb-16">
+    <div className="flex flex-col min-h-screen bg-white pb-6 md:pb-16">
       {/* Header */}
-      <div className="gradient-animated px-5 pt-10 pb-16 md:pt-12 md:pb-24 relative overflow-hidden md:rounded-b-[32px] lg:rounded-b-[40px]">
-        <div className="absolute -top-10 -right-10 w-48 h-48 md:w-80 md:h-80 bg-white/10 rounded-full" />
-        <div className="absolute top-8 right-16 w-16 h-16 md:w-24 md:h-24 bg-white/10 rounded-2xl rotate-12" />
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="container-fluid relative z-10 max-w-2xl"
-        >
-          <p className="text-blue-200 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mb-1 md:mb-1.5">
-            Your Account
-          </p>
-          <h1 className="text-white text-xl md:text-2xl lg:text-3xl font-black tracking-tight">
-            My Profile
-          </h1>
-        </motion.div>
+      <div className="bg-white border-b border-line">
+        <div className="container-fluid max-w-2xl pt-6 pb-5 md:pt-8 md:pb-6">
+          <motion.h1
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+            className="text-ink text-2xl md:text-3xl font-bold tracking-tight"
+          >
+            Your profile
+          </motion.h1>
+        </div>
       </div>
 
       <div className="container-fluid max-w-2xl">
-        {/* Avatar card — overlaps header */}
+        {/* Avatar card */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="-mt-10 md:-mt-12 bg-white rounded-[24px] md:rounded-[28px] p-5 md:p-6 shadow-2xl shadow-blue-900/10 border border-white flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-6 relative z-10"
+          transition={{ delay: 0.05, duration: 0.25 }}
+          className="mt-6 bg-white rounded-2xl p-5 md:p-6 border border-line flex flex-col md:flex-row items-center md:items-start gap-5 md:gap-6"
         >
           <div className="relative group">
             <Avatar
@@ -108,7 +103,7 @@ export default function Profile() {
               size="w-16 h-16 md:w-20 md:h-20"
               radius="rounded-[20px] md:rounded-[24px]"
               textSize="text-2xl md:text-3xl"
-              className="shadow-2xl shadow-blue-200 ring-4 ring-white"
+              className="ring-2 ring-line"
             />
             <motion.div
               whileTap={{ scale: 0.9 }}
@@ -130,7 +125,7 @@ export default function Profile() {
             />
           </div>
           <div className="flex-1 text-center md:text-left">
-            <h2 className="font-black text-slate-800 text-lg md:text-xl lg:text-2xl tracking-tight leading-tight mb-1.5 md:mb-1.5">
+            <h2 className="font-bold text-ink text-lg md:text-xl lg:text-2xl tracking-tight leading-tight mb-1.5 md:mb-1.5">
               {user?.full_name}
             </h2>
             <div className="flex flex-col md:flex-row items-center gap-1.5 md:gap-4">
@@ -146,60 +141,14 @@ export default function Profile() {
               )}
             </div>
             <div className="flex flex-wrap justify-center md:justify-start gap-1.5 mt-3 md:mt-3.5">
-              <span className="inline-block text-[8px] md:text-[9px] font-black bg-blue-100 text-blue-700 px-2.5 py-1 md:px-3 md:py-1 rounded-md uppercase tracking-widest shadow-sm">
+              <span className="inline-block text-[11px] font-medium bg-brand-50 text-brand-700 px-2.5 py-1 capitalize rounded-md">
                 {user?.role}
               </span>
-              <span className="inline-block text-[8px] md:text-[9px] font-black bg-green-100 text-green-700 px-2.5 py-1 md:px-3 md:py-1 rounded-md uppercase tracking-widest shadow-sm">
+              <span className="inline-block text-[11px] font-medium bg-green-50 text-green-700 px-2.5 py-1 rounded-md">
                 Verified User
               </span>
             </div>
           </div>
-        </motion.div>
-
-        {/* Stats row */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.18 }}
-          className="mt-4 md:mt-5 bg-white rounded-2xl md:rounded-[24px] shadow-xl shadow-slate-200/50 border border-slate-50 grid grid-cols-3 divide-x divide-slate-100 overflow-hidden"
-        >
-          {[
-            {
-              value: "12",
-              label: "Bookings",
-              icon: Package,
-              color: "bg-blue-50 text-blue-600",
-            },
-            {
-              value: "4.8",
-              label: "Avg Rating",
-              icon: Star,
-              color: "bg-amber-50 text-amber-600",
-            },
-            {
-              value: "3",
-              label: "Reviews",
-              icon: MessageSquare,
-              color: "bg-purple-50 text-purple-600",
-            },
-          ].map(({ value, label, icon: Icon, color }) => (
-            <div
-              key={label}
-              className="flex flex-col items-center py-4 md:py-5 gap-1 hover:bg-slate-50 transition-colors group"
-            >
-              <div
-                className={`w-8 h-8 md:w-10 md:h-10 ${color} rounded-lg md:rounded-xl flex items-center justify-center mb-0.5 group-hover:scale-110 transition-transform`}
-              >
-                <Icon size={14} className="md:w-4 md:h-4" />
-              </div>
-              <span className="text-base md:text-lg font-black text-slate-800 tracking-tight">
-                {value}
-              </span>
-              <span className="text-[8px] md:text-[9px] text-slate-400 font-black uppercase tracking-widest">
-                {label}
-              </span>
-            </div>
-          ))}
         </motion.div>
 
         {/* Menu groups */}
@@ -211,27 +160,25 @@ export default function Profile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.22 + gi * 0.1 }}
             >
-              <p className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 px-2">
+              <p className="text-xs font-semibold text-ink-soft mb-2.5 px-1">
                 {group.title}
               </p>
-              <div className="bg-white rounded-2xl md:rounded-[24px] shadow-sm border border-slate-100 overflow-hidden divide-y divide-slate-50">
-                {group.items.map(({ icon: Icon, label, href, color }, i) => (
+              <div className="bg-white rounded-xl border border-line overflow-hidden divide-y divide-line">
+                {group.items.map(({ icon: Icon, label, href }) => (
                   <Link
                     key={label}
                     href={href}
-                    className="flex items-center gap-3.5 md:gap-4 px-4 py-3.5 md:px-5 md:py-4 hover:bg-slate-50 group transition-all duration-300"
+                    className="flex items-center gap-3.5 px-4 py-3.5 hover:bg-[#FAFAFA] group transition-colors"
                   >
-                    <div
-                      className={`w-8 h-8 md:w-9 md:h-9 rounded-lg md:rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-all ${color}`}
-                    >
-                      <Icon size={14} className="md:w-4 md:h-4" />
+                    <div className="w-9 h-9 rounded-[10px] bg-brand-50 flex items-center justify-center">
+                      <Icon size={16} className="text-brand-600" strokeWidth={1.75} />
                     </div>
-                    <span className="flex-1 text-xs md:text-sm font-bold text-slate-700 group-hover:text-blue-600 transition-colors tracking-tight">
+                    <span className="flex-1 text-sm font-medium text-ink">
                       {label}
                     </span>
                     <ChevronRight
-                      size={12}
-                      className="text-slate-300 group-hover:translate-x-1 transition-all md:w-4 md:h-4"
+                      size={15}
+                      className="text-ink-soft group-hover:translate-x-0.5 transition-transform"
                     />
                   </Link>
                 ))}
@@ -249,14 +196,14 @@ export default function Profile() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleLogout}
-            className="flex items-center justify-center gap-2.5 w-full max-w-xs mx-auto bg-red-50 text-red-600 font-black py-3.5 md:py-4 rounded-xl md:rounded-2xl border-2 border-red-100 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-xl shadow-red-100/50 text-xs md:text-sm"
+            className="flex items-center justify-center gap-2 w-full max-w-xs mx-auto bg-white text-red-600 font-medium py-3.5 rounded-xl border border-line hover:bg-red-50 transition-colors text-sm"
           >
-            <LogOut size={16} className="md:w-4 md:h-4" />
-            Sign Out Account
+            <LogOut size={15} />
+            Log out
           </motion.button>
 
-          <p className="text-center text-slate-400 text-[9px] md:text-[11px] font-bold mt-6 md:mt-8 opacity-60">
-            Helpet v1.0.0 · Professional Home Services
+          <p className="text-center text-ink-soft text-xs mt-6">
+            Helpet v1.0.0
           </p>
         </div>
       </div>

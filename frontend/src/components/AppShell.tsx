@@ -9,6 +9,7 @@ import { Bell, Search, User } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import Avatar from "@/components/Avatar";
+import { RotatingHint } from "@/components/SearchHint";
 
 function AppShellHeader() {
   const pathname = usePathname();
@@ -42,17 +43,21 @@ function AppShellHeader() {
   const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ?? "http://localhost:8000";
 
   return (
-    <header className="hidden md:flex sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 h-16 items-center justify-between">
+    <header className="hidden md:flex sticky top-0 z-40 bg-white border-b border-line h-16 items-center justify-between">
       <div className="container-fluid flex items-center justify-between">
         <div className="flex items-center gap-4 flex-1 max-w-lg">
           <div className="relative flex-1 group/search">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/search:text-blue-600 transition-colors" size={16} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-soft group-focus-within/search:text-brand-600 transition-colors" size={16} />
+            {!searchValue && (
+              <span className="pointer-events-none absolute left-10 inset-y-0 flex items-center gap-1 text-sm text-[#9A9AA0]">
+                Search for <RotatingHint />
+              </span>
+            )}
             <input
               type="text"
-              placeholder="Search for services (cleaning, plumbing, AC...)"
               value={searchValue}
               onChange={handleSearchChange}
-              className="w-full bg-slate-50/50 border border-slate-100 rounded-xl py-2 pl-10 pr-4 text-xs font-medium focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-200 transition-all outline-none"
+              className="w-full bg-white border border-line rounded-[10px] py-2.5 pl-10 pr-4 text-sm focus:border-brand-600 focus:shadow-[0_0_0_3px_rgba(128,0,255,0.08)] transition-all outline-none"
             />
           </div>
         </div>
@@ -61,11 +66,11 @@ function AppShellHeader() {
           {mounted && user ? (
             /* Authenticated — show bell + profile */
             <>
-              <Link href="/notifications" className="p-2 rounded-lg bg-slate-50 text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all relative">
+              <Link href="/notifications" className="p-2 rounded-[10px] border border-line text-ink-soft hover:text-brand-600 hover:border-brand-300 transition-colors relative">
                 <Bell size={18} />
-                <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full border-2 border-white" />
+                <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-deal rounded-full border-2 border-white" />
               </Link>
-              <Link href="/profile" className="flex items-center gap-2.5 pl-2 border-l border-slate-200">
+              <Link href="/profile" className="flex items-center gap-2.5 pl-3 border-l border-line">
                 <Avatar
                   src={user.profile_picture?.startsWith("http") ? user.profile_picture : user.profile_picture ? `${API_BASE}${user.profile_picture}` : null}
                   name={user.full_name}
@@ -74,19 +79,19 @@ function AppShellHeader() {
                   textSize="text-xs"
                 />
                 <div className="hidden lg:block">
-                  <p className="text-xs font-bold text-slate-800 leading-none">{user.full_name?.split(" ")[0] || "User"}</p>
-                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Verified User</p>
+                  <p className="text-xs font-semibold text-ink leading-none">{user.full_name?.split(" ")[0] || "User"}</p>
+                  <p className="text-[11px] text-ink-soft mt-0.5">Verified</p>
                 </div>
               </Link>
             </>
           ) : (
             /* Guest — show Login / Sign Up */
             <>
-              <Link href="/login" className="text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors px-3 py-1.5">
+              <Link href="/login" className="text-sm font-medium text-ink hover:text-brand-600 transition-colors px-3 py-1.5">
                 Login
               </Link>
-              <Link href="/register" className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-5 py-2 rounded-xl transition-all shadow-md shadow-blue-200 active:scale-95">
-                Sign Up Free
+              <Link href="/register" className="bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2 rounded-[10px] transition-colors active:scale-[0.98]">
+                Sign up
               </Link>
             </>
           )}

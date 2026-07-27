@@ -16,13 +16,13 @@ export default function manifest(): MetadataRoute.Manifest {
     dir: "ltr",
     icons: [
       {
-        src: "/assets/helpet-logo.png",
+        src: "/assets/helpet-logo-v2.png",
         sizes: "192x192",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/assets/helpet-logo.png",
+        src: "/assets/helpet-logo-v2.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable",

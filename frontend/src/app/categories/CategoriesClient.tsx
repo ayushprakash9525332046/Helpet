@@ -5,11 +5,12 @@ import { useState, Suspense } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ServiceCategory } from "@/lib/types";
-import { Search, ImageOff, ChevronRight, Grid2X2, Sparkles } from "lucide-react";
+import { Search, ImageOff } from "lucide-react";
 import { resolveImage } from "@/lib/image";
+import { RotatingHint } from "@/components/SearchHint";
 
-const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
-const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
+const container = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } };
+const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
 
 function CategoriesContent({ categories }: { categories: ServiceCategory[] }) {
   const searchParams = useSearchParams();
@@ -29,88 +30,88 @@ function CategoriesContent({ categories }: { categories: ServiceCategory[] }) {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 pb-6 md:pb-12">
+    <div className="flex flex-col min-h-screen bg-white pb-6 md:pb-12">
       {/* Header */}
-      <div className="gradient-animated px-5 md:px-12 pt-12 pb-14 md:py-12 lg:py-14 relative overflow-hidden md:rounded-b-[24px] lg:rounded-b-[32px]">
-        <div className="absolute -top-10 -right-10 w-40 h-40 md:w-80 md:h-80 bg-white/10 rounded-full" />
-        <div className="absolute top-4 right-16 w-12 h-12 md:w-24 md:h-24 bg-white/10 rounded-2xl rotate-12" />
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="container-fluid relative z-10"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-6 h-6 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/10">
-              <Grid2X2 size={12} className="text-white" />
+      <div className="bg-white border-b border-line">
+        <div className="container-fluid pt-6 pb-5 md:pt-8 md:pb-6">
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+            <h1 className="text-ink text-2xl md:text-3xl font-bold tracking-tight">All services</h1>
+            <p className="text-ink-soft text-sm md:text-base mt-1">
+              Find the right professional for any job around your home.
+            </p>
+          </motion.div>
+
+          {/* Search */}
+          <div className="mt-4 flex items-center gap-3 border border-[#DBDBDB] rounded-2xl px-4 py-3 max-w-xl focus-within:border-brand-600 focus-within:shadow-[0_0_0_3px_rgba(128,0,255,0.08)] transition-all">
+            <Search size={17} className="text-ink-soft shrink-0" />
+            <div className="relative flex-1">
+              {!search && (
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center gap-1 text-sm text-[#9A9AA0]">
+                  Search for <RotatingHint />
+                </span>
+              )}
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="w-full text-sm text-ink outline-none bg-transparent"
+              />
             </div>
-            <p className="text-blue-200 text-xs font-black uppercase tracking-[0.2em]">Explore</p>
+            {search && (
+              <button
+                onClick={() => handleSearchChange("")}
+                aria-label="Clear search"
+                className="text-ink-soft text-xl leading-none hover:text-ink transition-colors"
+              >
+                ×
+              </button>
+            )}
           </div>
-          <h1 className="text-white text-xl md:text-3xl lg:text-4xl font-black tracking-tight">All Services</h1>
-          <p className="text-blue-100 text-sm md:text-base mt-2 md:mt-3 max-w-2xl leading-relaxed opacity-90">Find the perfect professional for any task around your home.</p>
-        </motion.div>
+        </div>
       </div>
 
       <div className="container-fluid">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="-mt-8 md:mt-10 relative z-20"
-        >
-          <div className="bg-white rounded-xl md:rounded-[24px] shadow-2xl shadow-blue-900/10 flex items-center gap-3 md:gap-5 px-5 py-4 md:px-6 md:py-5 border border-white group/search focus-within:ring-2 focus-within:ring-blue-100 transition-all">
-            <Search size={20} className="text-blue-400 shrink-0 group-focus-within/search:scale-110 transition-transform" />
-            <input
-              type="text"
-              placeholder="Search services (cleaning, plumbing, repairs...)"
-              value={search}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="flex-1 text-sm md:text-lg text-slate-700 placeholder-slate-400 outline-none bg-transparent font-medium"
-            />
-            {search ? (
-              <button onClick={() => handleSearchChange("")} className="text-slate-300 text-2xl leading-none hover:text-slate-500 transition-colors">×</button>
-            ) : (
-              <div className="hidden md:flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
-                <Sparkles size={14} className="text-blue-600" />
-                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">200+ Services</span>
-              </div>
-            )}
-          </div>
-        </motion.div>
-
-        <div className="pt-10 md:pt-16 pb-16">
+        <div className="pt-6 md:pt-10 pb-16">
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
-                <Search size={32} className="text-slate-300" />
+              <div className="w-16 h-16 bg-[#FAFAFA] border border-line rounded-2xl flex items-center justify-center mb-5">
+                <Search size={26} className="text-ink-soft" />
               </div>
-              <p className="text-slate-800 font-black text-lg">No results for &quot;{search}&quot;</p>
-              <p className="text-slate-400 text-xs mt-2">Try a different keyword or browse categories</p>
+              <p className="text-ink font-semibold text-base">No results for &quot;{search}&quot;</p>
+              <p className="text-ink-soft text-sm mt-1.5">Try a different keyword or browse all categories.</p>
+              <button
+                onClick={() => handleSearchChange("")}
+                className="mt-5 text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors"
+              >
+                Clear search
+              </button>
             </div>
           ) : (
             <motion.div
               variants={container} initial="hidden" animate="show"
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8"
+              className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-6 md:gap-x-6 md:gap-y-8"
             >
               {filtered.map((cat) => {
                 const imgSrc = resolveImage(cat.icon, 256);
                 return (
                   <motion.div key={cat.id} variants={item}>
-                    <Link href={`/categories/${cat.id}`} className="group flex flex-col items-center gap-3 md:gap-5">
-                      <div className="w-full aspect-square bg-white rounded-2xl md:rounded-[32px] overflow-hidden shadow-sm border border-slate-100 group-hover:border-blue-100 group-hover:shadow-2xl group-hover:shadow-blue-900/5 group-hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                    <Link href={`/categories/${cat.id}`} className="group flex flex-col items-center gap-2.5">
+                      <div className="w-full aspect-square bg-brand-50 rounded-xl overflow-hidden border border-line group-hover:border-brand-300 group-hover:shadow-md transition-all duration-150 flex items-center justify-center">
                         {imgSrc ? (
-                          <img src={imgSrc} alt={cat.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                          <img
+                            src={imgSrc}
+                            alt={cat.name}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
-                          <div className="flex flex-col items-center gap-2 text-slate-200 group-hover:text-blue-200 transition-colors">
-                            <ImageOff size={40} className="md:w-14 md:h-14" />
-                            <span className="text-[8px] font-bold uppercase tracking-widest">No Icon</span>
-                          </div>
+                          <ImageOff size={28} className="text-brand-300" strokeWidth={1.5} />
                         )}
                       </div>
-                      <div className="flex flex-col items-center text-center">
-                        <span className="text-xs md:text-lg font-black text-slate-800 group-hover:text-blue-600 transition-colors tracking-tight">{cat.name}</span>
-                        <div className="flex items-center gap-1.5 mt-1 md:mt-2 text-[8px] md:text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                          <span>Explore</span>
-                          <ChevronRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
-                        </div>
-                      </div>
+                      <span className="text-xs md:text-sm font-medium text-ink text-center leading-tight">
+                        {cat.name}
+                      </span>
                     </Link>
                   </motion.div>
                 );

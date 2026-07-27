@@ -2,20 +2,17 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Globe,
-  Share2,
-  Link as LinkIcon,
-  Mail,
-  Phone,
-  MapPin,
-  MapPinned,
-  Sparkles,
-  ShieldCheck,
-  Star,
-  Users,
-} from "lucide-react";
+import { Share2, Mail, Phone, MapPin, MapPinned } from "lucide-react";
 import { FaFacebook, FaInstagram } from "react-icons/fa";
+
+const COMPANY_LINKS = [
+  { label: "Home", href: "/" },
+  { label: "All services", href: "/categories" },
+  { label: "Privacy policy", href: "/privacy" },
+  { label: "Terms and conditions", href: "/terms" },
+];
+
+const SERVICE_LINKS = ["Cleaning", "Plumbing", "Electrical repairs", "Carpentry"];
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -23,16 +20,15 @@ export default function Footer() {
   const handleShare = async () => {
     const shareData = {
       title: "Helpet",
-      text: "Check out Helpet.com!",
-      url: "https://helpet.com",
+      text: "Book trusted home services in Dehradun with Helpet",
+      url: "https://helpet.in",
     };
 
     try {
       if (navigator.share && navigator.canShare(shareData)) {
         await navigator.share(shareData);
       } else {
-        // Fallback to clipboard
-        await navigator.clipboard.writeText("https://helpet.com");
+        await navigator.clipboard.writeText("https://helpet.in");
         alert("Link copied to clipboard!");
       }
     } catch (err) {
@@ -40,128 +36,84 @@ export default function Footer() {
     }
   };
 
+  const socialBtn =
+    "w-10 h-10 rounded-[10px] border border-line flex items-center justify-center text-ink-soft hover:text-brand-600 hover:border-brand-300 transition-colors";
+
   return (
-    <footer className="bg-white border-t border-slate-100 pt-16 pb-8">
+    <footer className="bg-white border-t border-line pt-10 md:pt-14 pb-6">
       <div className="container-fluid">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
-          {/* Brand section */}
-          <div className="col-span-2 md:col-span-1 space-y-6 flex flex-col items-center md:items-start text-center md:text-left mb-4 md:mb-0">
-            <Link href="/home" className="flex items-center gap-2.5">
-              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 overflow-hidden">
-                <Image
-                  src="/assets/helpet-logo.png"
-                  alt="Helpet Logo"
-                  width={40}
-                  height={40}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="text-left">
-                <h1 className="font-black text-2xl text-slate-800 tracking-tight leading-none">
-                  Helpet India
-                </h1>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
-                  Professional Home Services
-                </p>
-              </div>
-            </Link>
-            <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
-              Connecting you with trusted local professionals for all your home
-              needs. Quality service, guaranteed.
-            </p>
-            <div className="flex items-center justify-center md:justify-start gap-4">
-              <a
-                href="https://instagram.com/helpet.comdia"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all"
-              >
-                <FaInstagram size={18} />
-              </a>
-              <a
-                href="https://facebook.com/helpet.comdia"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all"
-              >
-                <FaFacebook size={18} />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all"
-              >
-                <MapPinned size={18} />
-              </a>
-              <button
-                onClick={handleShare}
-                className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer"
-              >
-                <Share2 size={18} />
-              </button>
+        {/* Brand */}
+        <div className="flex flex-col gap-4 mb-8 md:mb-10">
+          <Link href="/home" className="flex items-center gap-2.5 w-fit">
+            <div className="w-9 h-9 rounded-lg overflow-hidden">
+              <Image
+                src="/assets/helpet-logo-v2.png"
+                alt="Helpet Logo"
+                width={36}
+                height={36}
+                className="w-full h-full object-cover"
+              />
             </div>
+            <span className="font-bold text-xl text-ink tracking-tight">helpet</span>
+          </Link>
+          <p className="text-ink-soft text-sm leading-relaxed max-w-xs">
+            Verified professionals for every job around your home. Trusted across Dehradun.
+          </p>
+          <div className="flex items-center gap-2.5">
+            <a
+              href="https://www.instagram.com/helpet.india/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className={socialBtn}
+            >
+              <FaInstagram size={17} />
+            </a>
+            <a
+              href="https://www.facebook.com/profile.php?id=61588929685126"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              className={socialBtn}
+            >
+              <FaFacebook size={17} />
+            </a>
+            <a
+              href="https://maps.app.goo.gl/5p59cymFbuSnV8Wu9"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Google Maps"
+              className={socialBtn}
+            >
+              <MapPinned size={17} />
+            </a>
+            <button onClick={handleShare} aria-label="Share Helpet" className={`${socialBtn} cursor-pointer`}>
+              <Share2 size={17} />
+            </button>
+          </div>
+        </div>
+
+        {/* Links — 2 columns on mobile, 3 on desktop */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 pb-8 mb-8 border-b border-line">
+          <div>
+            <h3 className="text-ink font-semibold text-sm mb-4">Company</h3>
+            <ul className="space-y-3">
+              {COMPANY_LINKS.map(({ label, href }) => (
+                <li key={label}>
+                  <Link href={href} className="text-ink-soft hover:text-brand-600 text-sm transition-colors">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Quick Links */}
-          <div className="flex flex-col items-center md:items-start">
-            <div className="w-fit md:w-full">
-              <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6 text-left">
-                Quick Links
-              </h3>
-              <ul className="space-y-4 text-left">
-                <li>
-                  <Link
-                    href="/"
-                    className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors"
-                  >
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/categories"
-                    className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors"
-                  >
-                    All Services
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/privacy"
-                    className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors"
-                  >
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/terms"
-                    className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors"
-                  >
-                    Terms & Conditions
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Categories - Hidden on mobile */}
-          <div className="hidden lg:flex flex-col items-start text-left">
-            <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6">
-              Popular Categories
-            </h3>
-            <ul className="space-y-4">
-              {[
-                "Cleaning Services",
-                "Plumbing",
-                "Electrical Repairs",
-                "Carpentry Services",
-                // "AC Services",
-              ].map((cat) => (
+          <div>
+            <h3 className="text-ink font-semibold text-sm mb-4">Services</h3>
+            <ul className="space-y-3">
+              {SERVICE_LINKS.map((cat) => (
                 <li key={cat}>
-                  <Link
-                    href="/categories"
-                    className="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors"
-                  >
+                  <Link href="/categories" className="text-ink-soft hover:text-brand-600 text-sm transition-colors">
                     {cat}
                   </Link>
                 </li>
@@ -169,102 +121,40 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
-          <div className="flex flex-col items-center md:items-start">
-            <div className="w-fit md:w-full">
-              <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest mb-6 text-left">
-                Contact Info
-              </h3>
-              <ul className="space-y-4 text-left">
-                <li className="flex flex-row items-start gap-2 md:gap-3">
-                  <MapPin
-                    size={18}
-                    className="hidden md:block text-blue-600 shrink-0 mt-0.5"
-                  />
-                  <span className="text-slate-500 text-sm">
-                    Keserwala, Raipur, Dehradun, 248008
-                  </span>
-                </li>
-                <li className="flex flex-row items-start gap-2 md:gap-3">
-                  <Phone
-                    size={18}
-                    className="hidden md:block text-blue-600 shrink-0"
-                  />
-                  <span className="text-slate-500 text-sm">
-                    +91 6203 260 694
-                  </span>
-                </li>
-                <li className="flex flex-row items-start gap-2 md:gap-3">
-                  <Mail
-                    size={18}
-                    className="hidden md:block text-blue-600 shrink-0"
-                  />
-                  <span className="text-slate-500 text-sm">
-                    support@helpet.com
-                  </span>
-                </li>
-              </ul>
-            </div>
+          <div className="col-span-2 md:col-span-1">
+            <h3 className="text-ink font-semibold text-sm mb-4">Contact</h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2.5">
+                <MapPin size={16} className="text-brand-600 shrink-0 mt-0.5" />
+                <span className="text-ink-soft text-sm">Keserwala, Raipur, Dehradun, 248008</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Phone size={16} className="text-brand-600 shrink-0" />
+                <a href="tel:+916203260694" className="text-ink-soft hover:text-brand-600 text-sm transition-colors">
+                  +91 6203 260 694
+                </a>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Mail size={16} className="text-brand-600 shrink-0" />
+                <a href="mailto:support@helpet.com" className="text-ink-soft hover:text-brand-600 text-sm transition-colors">
+                  support@helpet.com
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
-        {/* Features row */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-t border-slate-50">
-          <div className="flex items-center justify-center gap-4 group">
-            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
-              <ShieldCheck size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-black text-slate-800 uppercase tracking-tight">100% Secure</p>
-              <p className="text-xs text-slate-400 font-medium">Safe payments & verified pros</p>
-            </div>
-          </div>
-          <div className="flex items-center justify-center gap-4 group">
-            <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform">
-              <Star size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-black text-slate-800 uppercase tracking-tight">4.9/5 Rating</p>
-              <p className="text-xs text-slate-400 font-medium">Trusted by 50k+ customers</p>
-            </div>
-          </div>
-          <div className="flex items-center justify-center gap-4 group">
-            <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 group-hover:scale-110 transition-transform">
-              <Users size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-black text-slate-800 uppercase tracking-tight">Expert Pros</p>
-              <p className="text-xs text-slate-400 font-medium">Vetted professionals only</p>
-            </div>
-          </div>
-        </div> */}
-
         {/* Bottom bar */}
-        <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-slate-400 text-xs font-bold">
-            © {currentYear} helpet. All rights reserved.
-          </p>
-          <div className="flex items-center gap-8">
-            {/* <Link
-              href="#"
-              className="text-slate-400 hover:text-slate-600 text-xs font-bold transition-colors"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="#"
-              className="text-slate-400 hover:text-slate-600 text-xs font-bold transition-colors"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              href="#"
-              className="text-slate-400 hover:text-slate-600 text-xs font-bold transition-colors"
-            >
-              Sitemap
-            </Link> */}
-            <p className="text-slate-400 text-xs font-bold">hello@helpet.com</p>
-          </div>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-center">
+          <p className="text-ink-soft text-xs">© {currentYear} Helpet India. All rights reserved.</p>
+          <a
+            href="https://github.com/surajkr97"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-ink-soft text-xs hover:text-brand-600 transition-colors"
+          >
+            Built by surajkr97
+          </a>
         </div>
       </div>
     </footer>

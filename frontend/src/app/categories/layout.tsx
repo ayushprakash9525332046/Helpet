@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: "Helpet",
     images: [
       {
-        url: "/assets/helpet-logo.png",
+        url: "/assets/helpet-logo-v2.png",
         width: 1200,
         height: 1200,
         alt: "Helpet — Home Services in Dehradun",

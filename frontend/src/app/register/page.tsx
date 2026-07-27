@@ -108,41 +108,38 @@ export default function Register() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
-      <div className="relative h-44 gradient-animated flex flex-col items-center justify-center overflow-hidden">
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full" />
-        <div className="absolute -bottom-12 -left-8 w-36 h-36 bg-white/10 rounded-full" />
+      <div className="pt-12 pb-2 flex flex-col items-center">
         <motion.div
-          initial={{ scale: 0 }} animate={{ scale: 1 }}
-          transition={{ type: "spring", duration: 0.5 }}
-          className="z-10"
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className="flex items-center gap-2.5"
         >
-          <Image src="/assets/helpet-logo.png" alt="Helpet" width={64} height={64} className="object-contain drop-shadow-2xl rounded-2xl" />
+          <Image src="/assets/helpet-logo-v2.png" alt="Helpet" width={40} height={40} className="object-contain rounded-xl" />
+          <span className="font-bold text-2xl text-ink tracking-tight">helpet</span>
         </motion.div>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-          className="text-white font-bold mt-2 z-10">Create Your Account</motion.p>
 
         {/* Step indicator */}
-        <div className="flex gap-2 mt-3 z-10">
+        <div className="flex gap-2 mt-4">
           {[1, 2, 3].map((s) => (
-            <div key={s} className={`h-1.5 rounded-full transition-all duration-300 ${
-              s === step ? "w-8 bg-white" : s < step ? "w-4 bg-white/80" : "w-4 bg-white/30"
+            <div key={s} className={`h-1 rounded-full transition-all duration-300 ${
+              s === step ? "w-8 bg-brand-600" : s < step ? "w-4 bg-brand-300" : "w-4 bg-line"
             }`} />
           ))}
         </div>
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex-1 bg-white rounded-t-3xl -mt-6 px-6 pt-8 pb-10 z-10 relative"
+        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.05 }}
+        className="flex-1 bg-white px-6 pt-8 pb-10 w-full max-w-md mx-auto"
       >
-        {/* ── Step 1: Personal Details ── */}
+        {/* ── Step 1: Your details ── */}
         {step === 1 && (
           <form onSubmit={handleNext} className="flex flex-col gap-5">
             <div>
-              <h2 className="text-xl font-extrabold text-slate-800">Personal Details</h2>
+              <h2 className="text-xl font-bold text-ink">Your details</h2>
               <p className="text-slate-400 text-sm mt-1">Tell us a bit about yourself</p>
             </div>
 
@@ -155,7 +152,7 @@ export default function Register() {
                 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.08 }}
               >
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{label}</label>
+                <label className="text-[13px] font-medium text-ink mb-2 block">{label}</label>
                 <div className="relative">
                   <Icon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input type={type} placeholder={placeholder}
@@ -168,11 +165,11 @@ export default function Register() {
 
             {/* Role */}
             <div>
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 block">I want to</label>
+              <label className="text-[13px] font-medium text-ink mb-3 block">I want to</label>
               <div className="grid grid-cols-2 gap-3">
                 <motion.button type="button" whileTap={{ scale: 0.96 }}
                   onClick={() => update("role", "customer")}
-                  className="p-4 rounded-2xl border-2 text-left transition-all border-blue-500 bg-blue-50 shadow-md shadow-blue-100">
+                  className="p-4 rounded-xl border text-left transition-colors border-brand-600 bg-brand-50">
                   <div className="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center mb-2">
                     <HomeIcon size={18} className="text-blue-600" />
                   </div>
@@ -180,7 +177,7 @@ export default function Register() {
                   <p className="text-xs text-slate-400 mt-0.5">Find &amp; hire professionals</p>
                 </motion.button>
 
-                <div className="p-4 rounded-2xl border-2 text-left border-slate-200 bg-slate-50 opacity-50 cursor-not-allowed relative">
+                <div className="p-4 rounded-xl border text-left border-line bg-[#FAFAFA] opacity-50 cursor-not-allowed relative">
                   <div className="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center mb-2">
                     <Wrench size={18} className="text-slate-400" />
                   </div>
@@ -199,7 +196,7 @@ export default function Register() {
           </form>
         )}
 
-        {/* ── Step 2: Set Password ── */}
+        {/* ── Step 2: Set a password ── */}
         {step === 2 && (
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <div className="flex items-center gap-3 mb-1">
@@ -208,7 +205,7 @@ export default function Register() {
                 ←
               </button>
               <div>
-                <h2 className="text-xl font-extrabold text-slate-800">Set Password</h2>
+                <h2 className="text-xl font-bold text-ink">Set a password</h2>
                 <p className="text-slate-400 text-sm">Keep it strong and secure</p>
               </div>
             </div>
@@ -235,7 +232,7 @@ export default function Register() {
                 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.1 }}
               >
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{label}</label>
+                <label className="text-[13px] font-medium text-ink mb-2 block">{label}</label>
                 <div className="relative">
                   <KeyRound size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input type={show ? "text" : "password"} placeholder={placeholder}
@@ -273,7 +270,7 @@ export default function Register() {
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Creating Account...
                 </span>
-              ) : "Create Account"}
+              ) : "Create account"}
             </motion.button>
           </form>
         )}
@@ -284,7 +281,7 @@ export default function Register() {
             <div className="flex items-center gap-3 mb-1 mt-8">
               <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center"><Mail size={22} className="text-green-600" /></div>
               <div>
-                <h2 className="text-xl font-extrabold text-slate-800">Verify Your Email</h2>
+                <h2 className="text-xl font-bold text-ink">Verify your email</h2>
                 <p className="text-slate-400 text-sm">OTP sent to <span className="font-semibold text-slate-600">{form.email}</span></p>
               </div>
             </div>
@@ -294,13 +291,13 @@ export default function Register() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">6-Digit OTP</label>
+              <label className="text-[13px] font-medium text-ink mb-2 block">6-digit code</label>
               <input
                 type="text" inputMode="numeric" maxLength={6}
                 placeholder="- - - - - -"
                 value={otpCode} onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
                 autoFocus
-                className="w-full px-4 py-4 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 text-center text-2xl font-bold tracking-[0.5em] placeholder-slate-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition shadow-sm"
+                className="w-full px-4 py-4 rounded-2xl border border-[#DBDBDB] bg-white text-ink text-center text-2xl font-bold tracking-[0.5em] placeholder:text-[#DBDBDB] focus:outline-none focus:border-brand-600 focus:shadow-[0_0_0_3px_rgba(128,0,255,0.08)] transition"
               />
             </div>
 

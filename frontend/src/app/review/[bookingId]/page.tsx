@@ -47,7 +47,7 @@ export default function WriteReview() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white pb-10">
-      <BackHeader title="Write a Review" />
+      <BackHeader title="Rate your service" />
 
       {/* Hero */}
       <motion.div
@@ -57,11 +57,11 @@ export default function WriteReview() {
         <motion.div
           animate={{ rotate: [0, 10, -10, 5, 0], scale: [1, 1.1, 1] }}
           transition={{ duration: 1.2, delay: 0.3 }}
-          className="w-24 h-24 bg-linear-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mb-5 shadow-xl shadow-amber-200"
+          className="w-24 h-24 bg-amber-50 rounded-full flex items-center justify-center mb-5"
         >
-          <Star size={44} className="text-white fill-white" />
+          <Star size={40} className="text-amber-500 fill-amber-500" />
         </motion.div>
-        <h2 className="text-2xl font-extrabold text-slate-800 text-center">How was your experience?</h2>
+        <h2 className="text-2xl font-bold text-ink text-center">How was your experience?</h2>
         <p className="text-slate-500 text-sm mt-2 text-center max-w-xs leading-relaxed">
           Your honest feedback helps others find trusted professionals
         </p>
@@ -71,7 +71,7 @@ export default function WriteReview() {
         {/* Stars */}
         <motion.div
           initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="flex flex-col items-center gap-3 bg-slate-50 rounded-3xl py-6"
+          className="flex flex-col items-center gap-3 border border-line rounded-2xl py-6"
         >
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((i) => (
@@ -106,7 +106,7 @@ export default function WriteReview() {
 
         {/* Quick tags */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <p className="text-sm font-extrabold text-slate-800 mb-3">What stood out?</p>
+          <p className="text-sm font-semibold text-ink mb-3">What stood out?</p>
           <div className="flex flex-wrap gap-2">
             {QUICK_TAGS.map((tag, i) => (
               <motion.button
@@ -116,10 +116,10 @@ export default function WriteReview() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 + i * 0.04 }}
-                className={`px-4 py-2 rounded-full text-sm font-semibold border-2 transition-all ${
+                className={`px-4 py-2 rounded-full text-sm font-semibold border transition-colors ${
                   tags.includes(tag)
-                    ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200"
-                    : "bg-slate-50 text-slate-600 border-slate-200"
+                    ? "bg-brand-50 text-brand-700 border-brand-600"
+                    : "bg-white text-ink-soft border-line"
                 }`}
               >
                 {tags.includes(tag) ? "✓ " : ""}{tag}
@@ -130,7 +130,7 @@ export default function WriteReview() {
 
         {/* Comment */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-          <p className="text-sm font-extrabold text-slate-800 mb-2.5">
+          <p className="text-sm font-semibold text-ink mb-2.5">
             Add a comment
             <span className="text-slate-400 font-normal ml-2 text-xs">(Optional)</span>
           </p>
@@ -139,7 +139,7 @@ export default function WriteReview() {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={4}
-            className="w-full px-4 py-3.5 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100 resize-none transition"
+            className="w-full px-4 py-3.5 rounded-2xl border border-[#DBDBDB] bg-white text-ink text-sm placeholder:text-[#9A9AA0] focus:outline-none focus:border-brand-600 focus:shadow-[0_0_0_3px_rgba(128,0,255,0.08)] resize-none transition"
           />
           <p className="text-xs text-slate-400 mt-1 text-right">{comment.length}/300</p>
         </motion.div>
@@ -158,7 +158,7 @@ export default function WriteReview() {
             </span>
           ) : (
             <>
-              <Send size={16} /> Submit Review
+              <Send size={16} /> Submit review
             </>
           )}
         </motion.button>

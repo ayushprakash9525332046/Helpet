@@ -175,32 +175,24 @@ function LoginInner() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
-      <div className="relative h-56 gradient-animated flex flex-col items-center justify-center overflow-hidden">
-        <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full" />
-        <div className="absolute -bottom-16 -left-10 w-40 h-40 bg-white/10 rounded-full" />
-        <div className="absolute top-8 left-8 w-16 h-16 bg-white/10 rounded-2xl rotate-12" />
+      <div className="pt-12 pb-2 flex flex-col items-center">
         <motion.div
-          initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", duration: 0.6 }}
-          className="mb-3 z-10"
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className="flex items-center gap-2.5"
         >
-          <Image src="/assets/helpet-logo.png" alt="Helpet" width={80} height={80} className="object-contain drop-shadow-2xl rounded-2xl" />
+          <Image src="/assets/helpet-logo-v2.png" alt="Helpet" width={40} height={40} className="object-contain rounded-xl" />
+          <span className="font-bold text-2xl text-ink tracking-tight">helpet</span>
         </motion.div>
-        <motion.p
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="text-white font-bold text-base z-10"
-        >
-          Helpet
-        </motion.p>
       </div>
 
       {/* Card */}
       <motion.div
-        initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="flex-1 bg-white rounded-t-3xl -mt-6 px-6 pt-8 pb-10 z-10 relative"
+        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.05 }}
+        className="flex-1 bg-white px-6 pt-8 pb-10 w-full max-w-md mx-auto"
       >
         <AnimatePresence mode="wait">
 
@@ -212,18 +204,18 @@ function LoginInner() {
             >
               <button onClick={resetToLogin}
                 className="flex items-center gap-2 text-slate-500 text-sm font-semibold mb-6 -ml-1">
-                <ArrowLeft size={16} /> Back to Sign In
+                <ArrowLeft size={16} /> Back to sign in
               </button>
 
               {/* Step 1: Enter email */}
               {forgotStep === 1 && (
                 <div className="flex flex-col gap-5">
                   <div>
-                    <h1 className="text-2xl font-extrabold text-slate-800 mb-1">Forgot Password?</h1>
+                    <h1 className="text-2xl font-bold text-ink mb-1">Forgot password?</h1>
                     <p className="text-slate-400 text-sm">Enter your registered email address</p>
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Email Address</label>
+                    <label className="text-[13px] font-medium text-ink mb-2 block">Email address</label>
                     <div className="relative">
                       <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input type="email" placeholder="Enter your email address"
@@ -238,7 +230,7 @@ function LoginInner() {
                         <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         Sending OTP...
                       </span>
-                    ) : "Send OTP →"}
+                    ) : "Send code"}
                   </motion.button>
                 </div>
               )}
@@ -247,23 +239,23 @@ function LoginInner() {
               {forgotStep === 2 && (
                 <div className="flex flex-col gap-5">
                   <div>
-                    <h1 className="text-2xl font-extrabold text-slate-800 mb-1">Enter OTP</h1>
+                    <h1 className="text-2xl font-bold text-ink mb-1">Enter OTP</h1>
                     <p className="text-slate-400 text-sm">Sent to <span className="font-semibold text-slate-600">{forgotEmail}</span></p>
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">6-Digit OTP</label>
+                    <label className="text-[13px] font-medium text-ink mb-2 block">6-digit code</label>
                     <input type="text" inputMode="numeric" maxLength={6} placeholder="- - - - - -"
                       value={forgotCode} onChange={(e) => setForgotCode(e.target.value.replace(/\D/g, ""))}
-                      className="w-full px-4 py-4 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 text-center text-2xl font-bold tracking-[0.5em] placeholder-slate-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition shadow-sm" />
+                      className="w-full px-4 py-4 rounded-2xl border border-[#DBDBDB] bg-white text-ink text-center text-2xl font-bold tracking-[0.5em] placeholder:text-[#DBDBDB] focus:outline-none focus:border-brand-600 focus:shadow-[0_0_0_3px_rgba(128,0,255,0.08)] transition" />
                   </div>
                   <motion.button whileTap={{ scale: 0.97 }} onClick={handleForgotVerifyOtp}
                     disabled={forgotCode.length < 6} className="btn-primary disabled:opacity-60">
-                    Verify OTP →
+                    Verify code
                   </motion.button>
                   <button type="button" onClick={handleForgotSendOtp}
                     disabled={forgotCooldown > 0 || loading}
                     className="text-sm text-blue-600 font-semibold text-center disabled:text-slate-400">
-                    {forgotCooldown > 0 ? `Resend OTP in ${forgotCooldown}s` : "Resend OTP"}
+                    {forgotCooldown > 0 ? `Resend in ${forgotCooldown}s` : "Resend OTP"}
                   </button>
                 </div>
               )}
@@ -272,7 +264,7 @@ function LoginInner() {
               {forgotStep === 3 && (
                 <form onSubmit={handleForgotReset} className="flex flex-col gap-5">
                   <div>
-                    <h1 className="text-2xl font-extrabold text-slate-800 mb-1">New Password</h1>
+                    <h1 className="text-2xl font-bold text-ink mb-1">New password</h1>
                     <p className="text-slate-400 text-sm">Set a strong password for your account</p>
                   </div>
                   {[
@@ -280,7 +272,7 @@ function LoginInner() {
                     { label: "Confirm Password", val: confirmPassword, set: setConfirmPassword, show: showConfirm, toggle: () => setShowConfirm(!showConfirm) },
                   ].map(({ label, val, set, show, toggle }) => (
                     <div key={label}>
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{label}</label>
+                      <label className="text-[13px] font-medium text-ink mb-2 block">{label}</label>
                       <div className="relative">
                         <KeyRound size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                         <input type={show ? "text" : "password"} placeholder="••••••••"
@@ -311,16 +303,16 @@ function LoginInner() {
               initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }}
               transition={{ duration: 0.25 }}
             >
-              <h1 className="text-2xl font-extrabold text-slate-800 mb-1">Welcome Back</h1>
+              <h1 className="text-2xl font-bold text-ink mb-1">Welcome back</h1>
               <p className="text-slate-400 text-sm mb-6">Sign in to book your next service</p>
 
               {/* Tab switcher */}
-              <div className="flex bg-slate-100 rounded-2xl p-1 mb-6">
+              <div className="flex border border-line rounded-xl p-1 mb-6">
                 {(["password", "otp"] as Mode[]).map((m) => (
                   <button key={m} type="button"
                     onClick={() => { setMode(m); setOtpSent(false); setOtpCode(""); }}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
-                      mode === m ? "bg-white text-blue-600 shadow-sm" : "text-slate-500"
+                    className={`flex-1 py-2.5 rounded-[10px] text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                      mode === m ? "bg-brand-50 text-brand-700" : "text-slate-500"
                     }`}>
                     {m === "password" ? <><Lock size={14} /> Password</> : <><Mail size={14} /> OTP</>}
                   </button>
@@ -331,7 +323,7 @@ function LoginInner() {
               {mode === "password" && (
                 <form onSubmit={handlePasswordLogin} className="flex flex-col gap-5">
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Phone Number</label>
+                    <label className="text-[13px] font-medium text-ink mb-2 block">Phone number</label>
                     <div className="relative">
                       <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input type="tel" placeholder="Enter your phone number"
@@ -340,7 +332,7 @@ function LoginInner() {
                   </motion.div>
 
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Password</label>
+                    <label className="text-[13px] font-medium text-ink mb-2 block">Password</label>
                     <div className="relative">
                       <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input type={showPassword ? "text" : "password"} placeholder="Enter your password"
@@ -355,7 +347,7 @@ function LoginInner() {
                   <div className="flex justify-end -mt-2">
                     <button type="button" onClick={() => setMode("forgot")}
                       className="text-sm text-blue-600 font-semibold">
-                      Forgot Password?
+                      Forgot password?
                     </button>
                   </div>
 
@@ -367,7 +359,7 @@ function LoginInner() {
                         <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         Signing in...
                       </span>
-                    ) : "Sign In →"}
+                    ) : "Sign in"}
                   </motion.button>
                 </form>
               )}
@@ -377,7 +369,7 @@ function LoginInner() {
                 <form onSubmit={otpSent ? handleVerifyOtp : (e) => { e.preventDefault(); handleSendOtp(); }}
                   className="flex flex-col gap-5">
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Email Address</label>
+                    <label className="text-[13px] font-medium text-ink mb-2 block">Email address</label>
                     <div className="flex gap-2">
                       <div className="relative flex-1">
                         <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -388,7 +380,7 @@ function LoginInner() {
                       </div>
                       {otpSent && (
                         <button type="button" onClick={() => { setOtpSent(false); setOtpCode(""); }}
-                          className="px-4 py-3 rounded-2xl border-2 border-slate-200 text-slate-500 text-sm font-semibold whitespace-nowrap">
+                          className="px-4 py-3 rounded-xl border border-line text-ink-soft text-sm font-medium whitespace-nowrap">
                           Change
                         </button>
                       )}
@@ -403,7 +395,7 @@ function LoginInner() {
                           <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                           Sending OTP...
                         </span>
-                      ) : "Send OTP →"}
+                      ) : "Send code"}
                     </motion.button>
                   ) : (
                     <AnimatePresence>
@@ -412,8 +404,8 @@ function LoginInner() {
                         className="flex flex-col gap-5"
                       >
                         <div>
-                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">
-                            6-Digit OTP
+                          <label className="text-[13px] font-medium text-ink mb-2 block">
+                            6-digit code
                           </label>
                           <p className="text-xs text-slate-400 mb-3">
                             Sent to <span className="font-semibold text-slate-600">{otpEmail}</span>
@@ -422,7 +414,7 @@ function LoginInner() {
                             placeholder="- - - - - -"
                             value={otpCode} onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
                             autoFocus
-                            className="w-full px-4 py-4 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 text-center text-2xl font-bold tracking-[0.5em] placeholder-slate-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition shadow-sm" />
+                            className="w-full px-4 py-4 rounded-2xl border border-[#DBDBDB] bg-white text-ink text-center text-2xl font-bold tracking-[0.5em] placeholder:text-[#DBDBDB] focus:outline-none focus:border-brand-600 focus:shadow-[0_0_0_3px_rgba(128,0,255,0.08)] transition" />
                         </div>
 
                         <motion.button type="submit" whileTap={{ scale: 0.97 }}
@@ -432,13 +424,13 @@ function LoginInner() {
                               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                               Verifying...
                             </span>
-                          ) : "Verify & Sign In"}
+                          ) : "Verify and sign in"}
                         </motion.button>
 
                         <button type="button" onClick={handleSendOtp}
                           disabled={otpCooldown > 0 || loading}
                           className="text-sm text-blue-600 font-semibold text-center disabled:text-slate-400">
-                          {otpCooldown > 0 ? `Resend OTP in ${otpCooldown}s` : "Resend OTP"}
+                          {otpCooldown > 0 ? `Resend in ${otpCooldown}s` : "Resend OTP"}
                         </button>
                       </motion.div>
                     </AnimatePresence>
@@ -454,8 +446,8 @@ function LoginInner() {
               </div>
               <Link href="/register">
                 <motion.div whileTap={{ scale: 0.97 }}
-                  className="w-full py-4 rounded-2xl border-2 border-blue-100 text-blue-600 font-bold text-center text-sm hover:bg-blue-50 transition-colors">
-                  Create New Account
+                  className="w-full py-4 rounded-2xl border border-line text-ink font-medium text-center text-sm hover:border-brand-300 hover:text-brand-700 transition-colors">
+                  Create a free account
                 </motion.div>
               </Link>
             </motion.div>

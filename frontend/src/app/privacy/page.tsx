@@ -84,35 +84,18 @@ const SECTIONS = [
 
 export default function PrivacyPolicy() {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 pb-10">
+    <div className="flex flex-col min-h-screen bg-white pb-10">
       {/* Header */}
-      <div className="gradient-animated px-5 pt-12 pb-10 relative overflow-hidden">
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full" />
-        <div className="absolute top-10 right-8 w-14 h-14 bg-white/10 rounded-2xl rotate-12" />
-
+      <div className="bg-white border-b border-line px-5 pt-6 pb-5">
         <Link
           href="/profile"
-          className="flex items-center gap-2 text-white/80 text-sm font-semibold mb-5 w-fit"
+          className="flex items-center gap-2 text-ink-soft text-sm font-medium mb-4 w-fit"
         >
           <ArrowLeft size={16} /> Back
         </Link>
-
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-3 border border-white/30">
-            <Shield size={22} className="text-white" />
-          </div>
-          <p className="text-blue-200 text-xs font-semibold uppercase tracking-widest mb-1">
-            Helpet
-          </p>
-          <h1 className="text-white text-2xl font-extrabold leading-tight">
-            Privacy Policy
-          </h1>
-          <p className="text-blue-200 text-xs mt-2">
-            Last updated: 1 April 2026
-          </p>
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+          <h1 className="text-ink text-2xl font-bold leading-tight">Privacy policy</h1>
+          <p className="text-ink-soft text-sm mt-1">Last updated: 1 April 2026</p>
         </motion.div>
       </div>
 

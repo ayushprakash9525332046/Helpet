@@ -48,7 +48,7 @@ function ConfirmedContent() {
       <motion.div
         initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }}
         transition={{ type: "spring", bounce: 0.5, duration: 0.8 }}
-        className="relative z-10 w-28 h-28 bg-linear-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mb-8 shadow-2xl shadow-green-200"
+        className="relative z-10 w-28 h-28 bg-green-500 rounded-full flex items-center justify-center mb-8"
       >
         <CheckCircle2 size={56} className="text-white" strokeWidth={2.5} />
       </motion.div>
@@ -147,14 +147,14 @@ function ConfirmedContent() {
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => router.replace("/bookings")}
-          className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-blue-200"
+          className="w-full bg-blue-600 text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2"
         >
           View My Bookings <ArrowRight size={16} />
         </motion.button>
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => router.replace("/home")}
-          className="w-full bg-slate-100 text-slate-700 font-semibold py-4 rounded-2xl flex items-center justify-center gap-2"
+          className="w-full bg-white border border-line text-ink font-medium py-4 rounded-xl flex items-center justify-center gap-2"
         >
           <Home size={16} /> Back to Home
         </motion.button>

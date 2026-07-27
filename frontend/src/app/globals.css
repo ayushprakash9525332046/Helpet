@@ -7,12 +7,51 @@
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
+
+  /* ── Brand: Helpet purple ─────────────────────────────
+     The legacy blue-* ramp is remapped to the brand purple
+     ramp so every existing `blue-*` class renders on-brand.
+     New code should prefer the brand-* aliases below. */
+  --color-blue-50:  #F6EEFF;
+  --color-blue-100: #EDDCFF;
+  --color-blue-200: #DBC0FF;
+  --color-blue-300: #C39BFF;
+  --color-blue-400: #A566FF;
+  --color-blue-500: #8F33FF;
+  --color-blue-600: #8000FF;
+  --color-blue-700: #6A00D4;
+  --color-blue-800: #5500AA;
+  --color-blue-900: #3D007A;
+  --color-blue-950: #2A0055;
+
+  --color-brand-50:  #F6EEFF;
+  --color-brand-100: #EDDCFF;
+  --color-brand-200: #DBC0FF;
+  --color-brand-300: #C39BFF;
+  --color-brand-400: #A566FF;
+  --color-brand-500: #8F33FF;
+  --color-brand-600: #8000FF;
+  --color-brand-700: #6A00D4;
+  --color-brand-800: #5500AA;
+  --color-brand-900: #3D007A;
+
+  /* Neutrals */
+  --color-ink: #1A1A1A;
+  --color-ink-soft: #6E6E73;
+  --color-line: #EBEBEB;
+
+  /* Semantic */
+  --color-rating: #1E7B3C;
+  --color-deal: #D93025;
 }
 
 :root {
-  --primary: #2563EB;
-  --primary-dark: #1D4ED8;
-  
+  --primary: #8000FF;
+  --primary-dark: #6A00D4;
+
+  --font-display: var(--font-jakarta), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
   /* Responsive Spacing Scale */
   --space-xs: clamp(0.2rem, 0.3vw, 0.4rem);
   --space-sm: clamp(0.4rem, 0.6vw, 0.6rem);
@@ -40,11 +79,16 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
-  background: #F8FAFC;
-  color: #0F172A;
+  font-family: var(--font-body);
+  background: #FAFAFA;
+  color: #1A1A1A;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 /* Responsive Container */
@@ -53,13 +97,13 @@ body {
   max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
+  padding-left: clamp(1rem, 4vw, 1.5rem);
+  padding-right: clamp(1rem, 4vw, 1.5rem);
 }
 
 /* ── Custom Animations ─────────────────────────────────────── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes fadeIn {
@@ -71,7 +115,7 @@ body {
   to   { opacity: 1; transform: translateX(0); }
 }
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.9); }
+  from { opacity: 0; transform: scale(0.98); }
   to   { opacity: 1; transform: scale(1); }
 }
 @keyframes shimmer {
@@ -83,99 +127,92 @@ body {
   50%       { transform: translateY(-10px); }
 }
 @keyframes pulse-ring {
-  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
-  70%  { transform: scale(1);    box-shadow: 0 0 0 12px rgba(37,99,235,0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37,99,235,0); }
-}
-@keyframes gradientShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(128,0,255,0.35); }
+  70%  { transform: scale(1);    box-shadow: 0 0 0 12px rgba(128,0,255,0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(128,0,255,0); }
 }
 @keyframes spinSlow {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
 
-.animate-fade-up     { animation: fadeUp 0.5s ease both; }
-.animate-fade-in     { animation: fadeIn 0.4s ease both; }
-.animate-scale-in    { animation: scaleIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
-.animate-slide-right { animation: slideInRight 0.4s ease both; }
-.animate-float       { animation: floatY 3s ease-in-out infinite; }
+.animate-fade-up     { animation: fadeUp 0.25s ease both; }
+.animate-fade-in     { animation: fadeIn 0.2s ease both; }
+.animate-scale-in    { animation: scaleIn 0.2s ease both; }
+.animate-slide-right { animation: slideInRight 0.25s ease both; }
+.animate-float       { animation: none; }
 .animate-pulse-ring  { animation: pulse-ring 2s cubic-bezier(0.455,0.03,0.515,0.955) infinite; }
 .animate-spin-slow   { animation: spinSlow 8s linear infinite; }
 
-.delay-100 { animation-delay: 0.1s; }
-.delay-150 { animation-delay: 0.15s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-400 { animation-delay: 0.4s; }
-.delay-500 { animation-delay: 0.5s; }
+.delay-100 { animation-delay: 0.05s; }
+.delay-150 { animation-delay: 0.08s; }
+.delay-200 { animation-delay: 0.1s; }
+.delay-300 { animation-delay: 0.15s; }
+.delay-400 { animation-delay: 0.2s; }
+.delay-500 { animation-delay: 0.25s; }
 
 /* Skeleton shimmer */
 .skeleton {
-  background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+  background: linear-gradient(90deg, #F3F3F3 25%, #EAEAEA 50%, #F3F3F3 75%);
   background-size: 800px 100%;
   animation: shimmer 1.4s infinite;
 }
 
-/* Glass card */
+/* Legacy glass card — now a plain bordered surface */
 .glass {
-  background: rgba(255,255,255,0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.92);
+  border: 1px solid #EBEBEB;
 }
 
-/* Gradient text */
+/* Legacy gradient text — now solid brand color */
 .gradient-text {
-  background: linear-gradient(135deg, #2563EB, #7C3AED);
+  background: #8000FF;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Animated gradient background */
+/* Legacy animated gradient background — now a flat brand surface.
+   White text placed on it stays readable. */
 .gradient-animated {
-  background: linear-gradient(-45deg, #1e40af, #2563eb, #4f46e5, #7c3aed);
-  background-size: 400% 400%;
-  animation: gradientShift 6s ease infinite;
+  background: #6A00D4;
+  animation: none;
 }
 
 /* Premium input */
 .input-premium {
   width: 100%;
   padding: 14px 16px 14px 44px;
-  border-radius: 14px;
-  border: 1.5px solid #E2E8F0;
-  background: #F8FAFC;
+  border-radius: 10px;
+  border: 1px solid #DBDBDB;
+  background: #FFFFFF;
   font-size: 14px;
-  color: #0F172A;
-  transition: all 0.2s;
+  color: #1A1A1A;
+  transition: border-color 0.15s, box-shadow 0.15s;
   outline: none;
 }
 .input-premium:focus {
-  border-color: #2563EB;
+  border-color: #8000FF;
   background: #fff;
-  box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+  box-shadow: 0 0 0 3px rgba(128,0,255,0.10);
 }
-.input-premium::placeholder { color: #94A3B8; }
+.input-premium::placeholder { color: #9A9AA0; }
 
-/* Premium button */
+/* Primary button — flat, Stripe-like */
 .btn-primary {
   width: 100%;
-  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  background: #8000FF;
   color: white;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 15px;
-  padding: 16px;
-  border-radius: 16px;
+  padding: 14px 16px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 8px 24px rgba(37,99,235,0.3);
-  letter-spacing: 0.01em;
+  transition: background 0.15s, transform 0.15s;
+  box-shadow: none;
+  letter-spacing: 0;
 }
-.btn-primary:hover  { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(37,99,235,0.4); }
+.btn-primary:hover  { background: #6A00D4; transform: none; box-shadow: none; }
 .btn-primary:active { transform: scale(0.98); }
 .btn-primary:disabled { opacity: 0.6; transform: none; }

@@ -92,7 +92,7 @@ export default function EditProfile() {
             size="w-24 h-24"
             radius="rounded-2xl"
             textSize="text-3xl"
-            className="shadow-xl shadow-blue-200"
+            className="ring-2 ring-line"
           />
           <motion.div
             whileTap={{ scale: 0.9 }}
@@ -120,7 +120,7 @@ export default function EditProfile() {
       <div className="px-5 flex flex-col gap-4">
         {/* Phone — read only */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">
+          <label className="text-[13px] font-medium text-ink mb-2 block">
             Phone Number
           </label>
           <div className="relative">
@@ -143,7 +143,7 @@ export default function EditProfile() {
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 + i * 0.05 }}
           >
-            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">
+            <label className="text-[13px] font-medium text-ink mb-2 block">
               {label}
             </label>
             <div className="relative">

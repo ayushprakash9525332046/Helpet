@@ -51,7 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Brand */}
       <div className="px-6 py-5 border-b border-slate-700/50">
         <div className="flex items-center gap-2.5">
-          <Image src="/assets/helpet-logo.png" alt="Helpet" width={32} height={32} className="object-contain shrink-0 rounded-lg" />
+          <Image src="/assets/helpet-logo-v2.png" alt="Helpet" width={32} height={32} className="object-contain shrink-0 rounded-lg" />
           <div>
             <p className="text-white font-bold text-sm">Helpet</p>
             <p className="text-slate-400 text-[10px] font-medium">Admin Panel</p>
@@ -138,7 +138,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Menu size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Image src="/assets/helpet-logo.png" alt="Helpet" width={24} height={24} className="object-contain rounded-md" />
+            <Image src="/assets/helpet-logo-v2.png" alt="Helpet" width={24} height={24} className="object-contain rounded-md" />
             <span className="font-bold text-slate-800 text-sm">Admin Panel</span>
           </div>
         </header>

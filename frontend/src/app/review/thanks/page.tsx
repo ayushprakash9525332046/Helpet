@@ -35,16 +35,16 @@ export default function ReviewThanks() {
         initial={{ scale: 0, rotate: -20 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: "spring", bounce: 0.5, duration: 0.8 }}
-        className="w-32 h-32 bg-linear-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mb-8 shadow-2xl shadow-amber-200 relative z-10"
+        className="w-32 h-32 bg-amber-50 rounded-full flex items-center justify-center mb-8 relative z-10"
       >
-        <Heart size={52} className="text-white fill-white" strokeWidth={1.5} />
+        <Heart size={48} className="text-amber-500 fill-amber-500" strokeWidth={1.5} />
       </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
         className="relative z-10"
       >
-        <h1 className="text-3xl font-extrabold text-slate-800 mb-3">Thank You!</h1>
+        <h1 className="text-3xl font-bold text-ink mb-3">Thank you!</h1>
         <p className="text-slate-500 text-sm leading-relaxed max-w-xs mx-auto">
           Your review helps us maintain quality and allows others to find the best professionals in their area.
         </p>
@@ -75,16 +75,16 @@ export default function ReviewThanks() {
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => router.replace("/home")}
-          className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-blue-200"
+          className="w-full bg-blue-600 text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2"
         >
-          <Home size={16} /> Back to Home
+          <Home size={16} /> Back to home
         </motion.button>
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => router.replace("/bookings")}
-          className="w-full bg-slate-100 text-slate-700 font-semibold py-4 rounded-2xl flex items-center justify-center gap-2"
+          className="w-full bg-white border border-line text-ink font-medium py-3.5 rounded-xl flex items-center justify-center gap-2"
         >
-          <CalendarCheck size={16} /> View My Bookings
+          <CalendarCheck size={16} /> View my bookings
         </motion.button>
       </motion.div>
     </div>

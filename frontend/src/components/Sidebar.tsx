@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { Home, Grid3X3, CalendarCheck, Bell, User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
@@ -35,70 +34,54 @@ export default function Sidebar() {
   const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ?? "http://localhost:8000";
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-slate-100">
+    <div className="flex flex-col h-full bg-white border-r border-line">
       {/* Brand / Logo */}
       <div className="px-5 py-6">
-        <Link href="/home" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-200 overflow-hidden">
-            <Image 
-              src="/assets/helpet-logo.png" 
-              alt="Helpet Logo" 
-              width={32} 
-              height={32} 
+        <Link href="/home" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg overflow-hidden">
+            <Image
+              src="/assets/helpet-logo-v2.png"
+              alt="Helpet Logo"
+              width={32}
+              height={32}
               className="w-full h-full object-cover"
             />
           </div>
-          <div>
-            <h1 className="font-black text-lg text-slate-800 tracking-tight leading-none">
-              Helpet
-            </h1>
-            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
-              Home Services
-            </p>
-          </div>
+          <span className="font-bold text-lg text-ink tracking-tight">helpet</span>
         </Link>
       </div>
 
       {/* Nav Links */}
-      <nav className="flex-1 px-3 space-y-0.5">
+      <nav className="flex-1 px-3 space-y-1">
         {tabs.map(({ href, icon: Icon, label }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+              aria-current={active ? "page" : undefined}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] transition-colors duration-150 ${
                 active
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                  ? "bg-brand-50 text-brand-700"
+                  : "text-ink-soft hover:bg-[#FAFAFA] hover:text-ink"
               }`}
             >
               <Icon
                 size={18}
-                className={
-                  active
-                    ? "text-white"
-                    : "text-slate-400 group-hover:text-blue-600"
-                }
-                strokeWidth={active ? 2.5 : 2}
+                className={active ? "text-brand-600" : "text-ink-soft"}
+                strokeWidth={active ? 2.2 : 1.8}
               />
-              <span className="font-bold text-sm tracking-wide">
+              <span className={`text-sm ${active ? "font-semibold" : "font-medium"}`}>
                 {label}
               </span>
-              {active && (
-                <motion.div
-                  layoutId="sidebarActive"
-                  className="ml-auto w-1 h-1 bg-white rounded-full"
-                />
-              )}
             </Link>
           );
         })}
       </nav>
 
       {/* User Section */}
-      <div className="p-3 mt-auto border-t border-slate-50">
-        <div className="bg-slate-50 rounded-xl p-3">
+      <div className="p-3 mt-auto border-t border-line">
+        <div className="rounded-xl border border-line p-3">
           <div className="flex items-center gap-2.5 mb-3">
             {mounted && (
               <Avatar
@@ -107,14 +90,13 @@ export default function Sidebar() {
                 size="w-8 h-8"
                 radius="rounded-full"
                 textSize="text-xs"
-                className="border-2 border-white shadow-sm"
               />
             )}
             <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-800 truncate">
+              <p className="text-xs font-semibold text-ink truncate">
                 {mounted ? (user?.full_name || "User") : "User"}
               </p>
-              <p className="text-[9px] text-slate-400 font-semibold truncate">
+              <p className="text-[11px] text-ink-soft truncate">
                 {mounted ? user?.email : ""}
               </p>
             </div>
@@ -122,15 +104,15 @@ export default function Sidebar() {
           <div className="grid grid-cols-2 gap-1.5">
             <Link
               href="/profile/edit"
-              className="flex items-center justify-center gap-1.5 py-1.5 bg-white rounded-lg text-[10px] font-bold text-slate-600 hover:text-blue-600 transition-colors shadow-sm"
+              className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-ink-soft border border-line hover:border-brand-300 hover:text-brand-700 transition-colors"
             >
-              <Settings size={12} /> Settings
+              <Settings size={13} /> Settings
             </Link>
             <button
               onClick={handleLogout}
-              className="flex items-center justify-center gap-1.5 py-1.5 bg-white rounded-lg text-[10px] font-bold text-red-500 hover:bg-red-50 transition-colors shadow-sm"
+              className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-deal border border-line hover:bg-red-50 transition-colors"
             >
-              <LogOut size={12} /> Logout
+              <LogOut size={13} /> Logout
             </button>
           </div>
         </div>

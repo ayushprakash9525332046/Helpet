@@ -10,12 +10,12 @@ import toast from "react-hot-toast";
 import { MapPin, Calendar, Clock, XCircle, Star, CheckCircle2, AlertCircle, Zap, Receipt, FileText } from "lucide-react";
 import { getServiceIcon } from "@/lib/icons";
 
-const STATUS_CONFIG: Record<string, { label: string; sublabel: string; icon: React.ReactNode; gradient: string; text: string }> = {
-  pending:   { label: "Pending Confirmation", sublabel: "Waiting for a professional to accept", icon: <AlertCircle size={20} />, gradient: "from-amber-400 to-orange-400", text: "text-amber-700" },
-  confirmed: { label: "Confirmed",            sublabel: "Professional will arrive at scheduled time", icon: <CheckCircle2 size={20} />, gradient: "from-blue-500 to-indigo-500", text: "text-blue-700" },
-  ongoing:   { label: "In Progress",          sublabel: "Service is currently being provided", icon: <Zap size={20} />, gradient: "from-violet-500 to-purple-500", text: "text-violet-700" },
-  completed: { label: "Completed",            sublabel: "Service was completed successfully", icon: <CheckCircle2 size={20} />, gradient: "from-green-500 to-emerald-500", text: "text-green-700" },
-  cancelled: { label: "Cancelled",            sublabel: "This booking was cancelled", icon: <XCircle size={20} />, gradient: "from-red-400 to-rose-500", text: "text-red-600" },
+const STATUS_CONFIG: Record<string, { label: string; sublabel: string; icon: React.ReactNode; bg: string; text: string }> = {
+  pending:   { label: "Pending confirmation", sublabel: "Waiting for a professional to accept", icon: <AlertCircle size={20} />, bg: "bg-amber-50", text: "text-amber-700" },
+  confirmed: { label: "Confirmed",            sublabel: "Your professional will arrive at the scheduled time", icon: <CheckCircle2 size={20} />, bg: "bg-brand-50", text: "text-brand-700" },
+  ongoing:   { label: "In progress",          sublabel: "Service is currently being provided", icon: <Zap size={20} />, bg: "bg-brand-50", text: "text-brand-700" },
+  completed: { label: "Completed",            sublabel: "Service was completed successfully", icon: <CheckCircle2 size={20} />, bg: "bg-green-50", text: "text-green-700" },
+  cancelled: { label: "Cancelled",            sublabel: "This booking was cancelled", icon: <XCircle size={20} />, bg: "bg-red-50", text: "text-red-600" },
 };
 
 export default function BookingDetail() {
@@ -44,7 +44,7 @@ export default function BookingDetail() {
   };
 
   if (loading) return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-white">
       <BackHeader title="Booking Details" />
       <div className="px-5 pt-5 space-y-4">
         <div className="skeleton rounded-3xl h-28" />
@@ -66,34 +66,29 @@ export default function BookingDetail() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 pb-8">
+    <div className="flex flex-col min-h-screen bg-white pb-8">
       <BackHeader title="Booking Details" />
 
       <div className="px-5 pt-4 flex flex-col gap-4">
         {/* Status hero */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className={`rounded-3xl bg-linear-to-br ${status.gradient} p-5 text-white relative overflow-hidden shadow-xl`}
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
+          className={`rounded-2xl ${status.bg} p-5 flex items-start gap-4`}
         >
-          <div className="absolute -top-8 -right-8 w-36 h-36 bg-white/10 rounded-full" />
-          <div className="absolute -bottom-6 -left-4 w-28 h-28 bg-white/10 rounded-full" />
-          <div className="relative z-10 flex items-start gap-4">
-            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shrink-0">
-              {status.icon}
-            </div>
-            <div>
-              <p className="text-white/70 text-xs font-semibold uppercase tracking-wide mb-0.5">Current Status</p>
-              <p className="font-extrabold text-lg leading-snug">{status.label}</p>
-              <p className="text-white/70 text-xs mt-1">{status.sublabel}</p>
-            </div>
+          <div className={`w-11 h-11 bg-white rounded-xl flex items-center justify-center shrink-0 ${status.text}`}>
+            {status.icon}
+          </div>
+          <div>
+            <p className={`font-bold text-base leading-snug ${status.text}`}>{status.label}</p>
+            <p className="text-ink-soft text-sm mt-0.5">{status.sublabel}</p>
           </div>
         </motion.div>
 
         {/* Service card */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"
+          className="bg-white rounded-2xl p-4 border border-line"
         >
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Service Details</p>
+          <p className="text-xs font-semibold text-ink mb-3">Service Details</p>
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center shadow-sm">
               {(() => { const Icon = getServiceIcon(booking.service.name); return <Icon size={24} className="text-blue-400" />; })()}
@@ -108,9 +103,9 @@ export default function BookingDetail() {
 
         {/* Booking info */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"
+          className="bg-white rounded-2xl p-4 border border-line"
         >
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Booking Info</p>
+          <p className="text-xs font-semibold text-ink mb-3">Booking Info</p>
           <div className="flex flex-col gap-3.5">
             {[
               { icon: <Calendar size={15} className="text-blue-500" />, label: "Date", value: date.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) },
@@ -120,7 +115,7 @@ export default function BookingDetail() {
               <div key={label} className="flex items-start gap-3">
                 <div className="w-8 h-8 bg-blue-50 rounded-xl flex items-center justify-center shrink-0 mt-0.5">{icon}</div>
                 <div>
-                  <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">{label}</p>
+                  <p className="text-xs text-ink-soft">{label}</p>
                   <p className="text-sm font-semibold text-slate-700 mt-0.5">{value}</p>
                 </div>
               </div>
@@ -131,11 +126,11 @@ export default function BookingDetail() {
         {/* Notes */}
         {booking.notes && (
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
-            className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"
+            className="bg-white rounded-2xl p-4 border border-line"
           >
             <div className="flex items-center gap-2 mb-2">
               <FileText size={14} className="text-slate-400" />
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Special Instructions</p>
+              <p className="text-xs font-semibold text-ink">Special Instructions</p>
             </div>
             <p className="text-sm text-slate-600 leading-relaxed">{booking.notes}</p>
           </motion.div>
@@ -143,11 +138,11 @@ export default function BookingDetail() {
 
         {/* Payment summary */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"
+          className="bg-white rounded-2xl p-4 border border-line"
         >
           <div className="flex items-center gap-2 mb-3">
             <Receipt size={14} className="text-slate-400" />
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Payment Summary</p>
+            <p className="text-xs font-semibold text-ink">Payment Summary</p>
           </div>
           <div className="flex flex-col gap-2.5">
             {summary.map(({ label, value, bold, green }) => (
@@ -165,7 +160,7 @@ export default function BookingDetail() {
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => router.push(`/review/${booking.id}`)}
-            className="flex items-center justify-center gap-2.5 w-full bg-linear-to-r from-amber-400 to-orange-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-amber-200"
+            className="flex items-center justify-center gap-2.5 w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-4 rounded-xl"
           >
             <Star size={18} className="fill-white" />
             Rate This Service
@@ -177,7 +172,7 @@ export default function BookingDetail() {
             whileTap={{ scale: 0.97 }}
             onClick={cancelBooking}
             disabled={cancelling}
-            className="flex items-center justify-center gap-2 w-full bg-red-50 text-red-600 font-bold py-4 rounded-2xl border-2 border-red-100 disabled:opacity-60"
+            className="flex items-center justify-center gap-2 w-full bg-red-50 text-red-600 font-bold py-4 rounded-2xl border border-red-100 disabled:opacity-60"
           >
             <XCircle size={18} />
             {cancelling ? "Cancelling..." : "Cancel Booking"}

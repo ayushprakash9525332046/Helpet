@@ -2,36 +2,38 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 import { Service, ServiceCategory } from "@/lib/types";
 import ServiceCard from "@/components/ServiceCard";
 import ServiceCategoriesGrid from "@/components/ServiceCategoriesGrid";
-import { Bell, Search, ChevronRight, Sparkles, Shield, Clock, LocateFixed, Users, CheckCircle2, Star, Gift } from "lucide-react";
-
+import HeroMedia from "@/components/HeroMedia";
+import { RotatingHint } from "@/components/SearchHint";
+import {
+  Bell, Search, ChevronRight, Shield, Clock, Sparkles,
+  LocateFixed, Gift, MapPin, Star,
+} from "lucide-react";
 
 const STATS = [
-  { icon: Users, value: "40+", label: "Professionals", color: "text-blue-600", bg: "bg-blue-50" },
-  { icon: CheckCircle2, value: "380+",   label: "Jobs Done", color: "text-emerald-600", bg: "bg-emerald-50" },
-  { icon: Star, value: "4.9",    label: "Avg Rating", color: "text-amber-500", bg: "bg-amber-50" },
+  { value: "40+", label: "Professionals" },
+  { value: "380+", label: "Jobs done" },
+  { value: "4.9", label: "Avg rating" },
 ];
 
-const PROMO_CARDS = [
-  { gradient: "from-rose-500 to-orange-500",  icon: Gift,     label: "SPECIAL OFFER",   title: "Flat 20% off on first cleaning", cta: "Claim Now" },
-  { gradient: "from-emerald-500 to-teal-600", icon: Sparkles, label: "TOP RATED",        title: "Trusted by 200+ households",     cta: "Explore" },
-  { gradient: "from-blue-500 to-cyan-500",    icon: Shield,   label: "SECURE BOOKING",   title: "100% Satisfaction Guaranteed",   cta: "Book Safe" },
+const TRUST_ITEMS = [
+  { icon: Shield, title: "Verified pros", desc: "Every professional is background-checked before their first job." },
+  { icon: Clock, title: "On time, always", desc: "Running late? You get a discount on your service." },
+  { icon: Sparkles, title: "Quality work", desc: "Not happy? Free redo or full refund within 24 hours." },
 ];
 
 export default function Home() {
   const { user, updateUser } = useAuth();
-  const [categories, setCategories]   = useState<ServiceCategory[]>([]);
-  const [services, setServices]       = useState<Service[]>([]);
-  const [loading, setLoading]         = useState(true);
-  const [promoIdx, setPromoIdx]       = useState(0);
-  const [location, setLocation]       = useState(user?.city || "Tap to detect location");
-  const [locLoading, setLocLoading]   = useState(false);
-
+  const [categories, setCategories] = useState<ServiceCategory[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [location, setLocation] = useState(user?.city || "Detect my location");
+  const [locLoading, setLocLoading] = useState(false);
   const fetchLocation = () => {
     if (!navigator.geolocation) return;
     setLocLoading(true);
@@ -43,8 +45,8 @@ export default function Home() {
             { headers: { "Accept-Language": "en" } }
           );
           const data = await res.json();
-          const a     = data.address ?? {};
-          const city  = a.city || a.town || a.village || a.county || "";
+          const a = data.address ?? {};
+          const city = a.city || a.town || a.village || a.county || "";
           const state = a.state || "";
           const label = city && state ? `${city}, ${state}` : city || state || "Location found";
           setLocation(label);
@@ -58,7 +60,7 @@ export default function Home() {
         }
       },
       () => {
-        setLocation(user?.city || "Tap to detect location");
+        setLocation(user?.city || "Detect my location");
         setLocLoading(false);
       },
       { timeout: 10000 }
@@ -77,253 +79,177 @@ export default function Home() {
     // Re-fetch when tab becomes visible (handles back-navigation router cache)
     const onVisible = () => { if (!document.hidden) fetchServices(); };
     document.addEventListener("visibilitychange", onVisible);
-
-    const t = setInterval(() => setPromoIdx((p) => (p + 1) % PROMO_CARDS.length), 6000);
-    return () => {
-      clearInterval(t);
-      document.removeEventListener("visibilitychange", onVisible);
-    };
+    return () => document.removeEventListener("visibilitychange", onVisible);
   }, []);
 
   const greeting = () => {
     const h = new Date().getHours();
-    return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening";
+    return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 pb-6 md:pb-12">
+    <div className="flex flex-col min-h-screen bg-white pb-6 md:pb-12">
 
-      {/* ── Hero Header ──────────────────────────────── */}
-      <div className="gradient-animated px-5 md:px-6 pt-10 pb-6 md:py-8 lg:py-10 relative overflow-hidden md:rounded-b-[24px] lg:rounded-b-[32px]">
-        {/* Decorative circles */}
-        <div className="absolute -top-10 -right-10 w-40 h-40 md:w-60 md:h-60 bg-white/10 rounded-full" />
-        <div className="absolute top-12 right-6 w-16 h-16 md:w-24 md:h-24 bg-white/10 rounded-2xl rotate-12" />
-        <div className="absolute -bottom-6 left-4 w-24 h-24 md:w-40 md:h-40 bg-white/5 rounded-full" />
-
-        <div className="container-fluid relative z-10">
-          <div className="flex items-start justify-between mb-4 md:mb-6">
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-              <p className="text-blue-200 text-xs font-semibold mb-0.5">{greeting()},</p>
-              <h1 className="text-white text-xl md:text-2xl lg:text-3xl font-extrabold leading-tight">
+      {/* ── Header ────────────────────────────────────── */}
+      <div className="bg-[#FAF5FF] border-b border-line relative overflow-hidden">
+        <HeroMedia scrimClassName="bg-gradient-to-r from-white/90 via-white/65 to-white/20" />
+        {/* Faint watermark */}
+        <Sparkles
+          size={180}
+          strokeWidth={1}
+          className="absolute -top-8 -right-8 text-brand-600 opacity-[0.05] rotate-12 pointer-events-none"
+          aria-hidden="true"
+        />
+        <div className="container-fluid pt-6 pb-5 md:pt-8 md:pb-6 relative">
+          <div className="flex items-start justify-between mb-4">
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+              <p className="text-ink-soft text-sm">{greeting()},</p>
+              <h1 className="text-ink text-2xl md:text-3xl font-bold leading-tight">
                 {user?.full_name?.split(" ")[0] ?? "there"}
               </h1>
               <button
                 onClick={fetchLocation}
                 disabled={locLoading}
-                className="flex items-center gap-1.5 mt-1.5 md:mt-2 bg-white/15 hover:bg-white/25 rounded-full px-3 py-1 md:px-3.5 md:py-1 transition-all"
+                className="flex items-center gap-1.5 mt-2 text-sm text-ink-soft hover:text-brand-600 transition-colors"
               >
                 {locLoading ? (
-                  <span className="w-2 h-2 border border-blue-200/50 border-t-blue-100 rounded-full animate-spin" />
+                  <span className="w-3 h-3 border border-brand-300 border-t-brand-600 rounded-full animate-spin" />
                 ) : (
-                  <LocateFixed size={10} className="hidden md:block text-blue-200" />
+                  <MapPin size={14} className="text-brand-600" />
                 )}
-                <span className="text-blue-100 text-xs font-medium">{location}</span>
+                <span>{location}</span>
+                {!locLoading && <LocateFixed size={12} className="text-ink-soft" />}
               </button>
             </motion.div>
 
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }} 
-              animate={{ opacity: 1, scale: 1 }} 
-              transition={{ delay: 0.1 }}
-              className="md:hidden"
+            {/* Bell — mobile only, desktop has it in the top bar */}
+            <Link
+              href="/notifications"
+              className="md:hidden relative w-10 h-10 rounded-[10px] bg-white border border-line flex items-center justify-center text-ink-soft"
+              aria-label="Notifications"
             >
-              <Link href="/notifications"
-                className="relative w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 shadow-lg">
-                <Bell size={20} className="text-white" />
-                <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-red-400 rounded-full border-2 border-white" />
-              </Link>
-            </motion.div>
-          </div>
-
-          {/* Search (Mobile Only - Desktop has it in TopNav) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.15 }}
-            className="md:hidden"
-          >
-            <Link href="/categories"
-              className="flex items-center gap-3 bg-white rounded-2xl px-5 py-4 shadow-xl shadow-blue-900/20 relative z-10">
-              <Search size={18} className="text-blue-400" />
-              <span className="text-slate-400 text-sm flex-1">Search for service...</span>
-              <span className="text-[10px] bg-blue-50 text-blue-600 font-black px-3 py-1 rounded-full uppercase tracking-wider">120+ Services</span>
+              <Bell size={19} />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-deal rounded-full border-2 border-white" />
             </Link>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* ── Stats & Promo Section ─────────────────────── */}
-      <div className="container-fluid -mt-4 md:-mt-6 relative z-20">
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-          
-          {/* Promo Carousel */}
-          <div className="lg:flex-[1.8] order-2 lg:order-1 relative group">
-            <div className="relative h-28 md:h-32 lg:h-full min-h-[140px] lg:min-h-[160px] rounded-xl md:rounded-2xl overflow-hidden shadow-2xl">
-              <AnimatePresence initial={false}>
-                {PROMO_CARDS.map((card, i) =>
-                  promoIdx === i ? (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: 100 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -100 }}
-                      transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-                      className={`absolute inset-0 bg-linear-to-r ${card.gradient} p-5 md:p-6 lg:p-10 flex items-center justify-between overflow-hidden`}
-                    >
-                      {/* Decorative background elements */}
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
-                      <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-xl" />
-                      
-                      <div className="relative z-10 max-w-[70%]">
-                        <motion.div 
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.2 }}
-                          className="flex items-center gap-2 mb-2"
-                        >
-                          <span className="text-[8px] lg:text-[10px] font-black text-white/90 uppercase tracking-[0.2em] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/10">
-                            {card.label}
-                          </span>
-                          <div className="h-px w-8 bg-white/30" />
-                        </motion.div>
-                        
-                        <motion.p 
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.3 }}
-                          className="text-white font-black text-lg md:text-xl lg:text-2xl leading-tight drop-shadow-sm mb-4 lg:mb-6"
-                        >
-                          {card.title}
-                        </motion.p>
-                        
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.4 }}
-                        >
-                          <Link href="/categories"
-                            className="bg-white text-blue-600 text-[10px] md:text-xs font-black px-5 py-2 lg:px-8 lg:py-3 rounded-xl inline-flex items-center gap-2 shadow-xl hover:bg-blue-50 hover:scale-105 active:scale-95 transition-all duration-300">
-                            {card.cta} <ChevronRight size={14} />
-                          </Link>
-                        </motion.div>
-                      </div>
-
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
-                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                        transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-                        className="relative z-10 flex items-center justify-center"
-                      >
-                        <div className="absolute inset-0 bg-white/20 blur-3xl rounded-full scale-150" />
-                        <motion.div
-                          animate={{ y: [0, -10, 0] }}
-                          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                          className="w-16 h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center border border-white/30 shadow-2xl"
-                        >
-                          <card.icon size={32} className="text-white md:w-12 md:h-12 lg:w-16 lg:h-16" strokeWidth={1.5} />
-                        </motion.div>
-                      </motion.div>
-                    </motion.div>
-                  ) : null
-                )}
-              </AnimatePresence>
-
-              {/* Progress Indicators (Dots) */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-1.5 p-1.5 bg-black/10 backdrop-blur-md rounded-full border border-white/5">
-                {PROMO_CARDS.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setPromoIdx(i)}
-                    className={`h-1.5 rounded-full transition-all duration-500 ${
-                      promoIdx === i ? "w-6 bg-white" : "w-1.5 bg-white/40 hover:bg-white/60"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
           </div>
 
-          {/* Stats Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="lg:flex-1 order-1 lg:order-2 bg-white rounded-xl md:rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 grid grid-cols-3 divide-x divide-slate-100 h-fit lg:h-full"
+          {/* Search — mobile only */}
+          <Link
+            href="/categories"
+            className="md:hidden flex items-center gap-3 bg-white border border-[#DBDBDB] rounded-2xl px-4 py-3.5 active:scale-[0.99] transition-transform"
           >
-            {STATS.map(({ icon: Icon, value, label, color, bg }) => (
-              <div key={label} className="flex flex-col items-center justify-center py-4 md:py-6 lg:py-8 gap-2 group/stat cursor-default transition-colors hover:bg-slate-50/50 first:rounded-l-xl last:rounded-r-xl">
-                <div className={`w-9 h-9 md:w-12 md:h-12 ${bg} rounded-full flex items-center justify-center ${color} mb-1 group-hover/stat:scale-110 transition-transform duration-300 shadow-inner`}>
-                  <Icon size={18} className="md:w-6 md:h-6" fill={label.includes("Rating") ? "currentColor" : "none"} />
-                </div>
-                <div className="text-center">
-                  <span className="text-sm md:text-xl lg:text-2xl font-black text-slate-800 block leading-none">{value}</span>
-                  <span className="text-[7px] md:text-[9px] lg:text-[10px] text-slate-400 font-bold uppercase tracking-[0.1em] mt-1.5 block">{label}</span>
-                </div>
-              </div>
-            ))}
-          </motion.div>
+            <Search size={17} className="text-ink-soft" />
+            <span className="text-[#9A9AA0] text-sm flex-1 flex gap-1 overflow-hidden">
+              Search for
+              <RotatingHint className="text-ink-soft" />
+            </span>
+          </Link>
 
+          {/* Trust line — mobile only */}
+          <p className="md:hidden flex items-center gap-1.5 text-xs text-ink-soft mt-3">
+            <Star size={12} className="text-rating fill-rating" />
+            4.9 rated · 380+ jobs done · verified pros in Dehradun
+          </p>
         </div>
       </div>
 
       <div className="container-fluid">
+        {/* ── Offer banner ───────────────────────────────── */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, delay: 0.05 }}>
+          <Link
+            href="/categories"
+            className="mt-5 md:mt-6 flex items-center gap-4 bg-brand-50 border border-brand-100 rounded-2xl p-4 md:px-6 md:py-5 group relative overflow-hidden"
+          >
+            <Gift
+              size={110}
+              strokeWidth={1}
+              className="hidden md:block absolute -right-4 -bottom-8 text-brand-600 opacity-[0.07] -rotate-12 pointer-events-none"
+              aria-hidden="true"
+            />
+            <span className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white flex items-center justify-center shrink-0">
+              <Gift size={20} className="text-brand-600" />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="block text-ink font-semibold text-sm md:text-lg">
+                20% off on weekend bookings
+              </span>
+              <span className="block text-ink-soft text-xs md:text-sm mt-0.5">
+                Book a Saturday or Sunday slot and save 20%
+              </span>
+            </span>
+            <span className="hidden md:inline-flex items-center gap-1.5 bg-brand-600 group-hover:bg-brand-700 text-white text-sm font-semibold px-5 py-2.5 rounded-[10px] transition-colors shrink-0 relative">
+              Book now <ChevronRight size={15} />
+            </span>
+            <ChevronRight size={18} className="md:hidden text-brand-600 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        </motion.div>
+
         {/* ── Categories ─────────────────────────────────── */}
-        <div className="mt-10 md:mt-12">
-          <div className="flex items-end justify-between mb-4 md:mb-6">
-            <div>
-              <h2 className="text-slate-800 font-black text-xl md:text-2xl lg:text-3xl tracking-tight">Our Services</h2>
-              <p className="text-slate-400 text-sm md:text-base mt-0.5 md:mt-1">Professional help for every task</p>
-            </div>
-            <Link href="/categories" className="flex items-center gap-1.5 text-blue-600 text-xs md:text-sm font-bold bg-blue-50 hover:bg-blue-100 px-4 py-1.5 md:px-5 md:py-2 rounded-xl transition-all">
-              See All <ChevronRight size={14} />
+        <section className="mt-8 md:mt-10">
+          <div className="flex items-end justify-between mb-4 md:mb-5">
+            <h2 className="text-ink font-bold text-lg md:text-2xl">What do you need help with?</h2>
+            <Link
+              href="/categories"
+              className="flex items-center gap-1 text-brand-600 text-sm font-medium hover:text-brand-700 transition-colors shrink-0"
+            >
+              See all <ChevronRight size={15} />
             </Link>
           </div>
-
           <ServiceCategoriesGrid categories={categories} loading={loading} />
-        </div>
+        </section>
 
-        {/* ── Trust badges ───────────────────────────────── */}
-        <div className="mt-12 md:mt-20">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-            {[
-              { icon: <Shield size={24} className="text-green-600 md:w-8 md:h-8" />, bg: "bg-green-50", label: "Verified Pros", desc: "Every professional is background checked and verified for your safety." },
-              { icon: <Clock size={24} className="text-blue-600 md:w-8 md:h-8" />,   bg: "bg-blue-50",  label: "On-Time Always", desc: "We value your time. If we're late, you get a discount on your service." },
-              { icon: <Sparkles size={24} className="text-amber-500 md:w-8 md:h-8" />, bg: "bg-amber-50", label: "Top Quality", desc: "Our professionals are experts in their fields, ensuring best-in-class results." },
-            ].map(({ icon, bg, label, desc }) => (
-              <div key={label} className="bg-white rounded-2xl md:rounded-[32px] p-6 md:p-10 flex flex-row md:flex-col items-center md:items-start text-left gap-5 md:gap-8 border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
-                <div className={`w-14 h-14 md:w-20 md:h-20 ${bg} rounded-2xl md:rounded-3xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>{icon}</div>
-                <div>
-                  <span className="text-sm md:text-lg font-black text-slate-800 block uppercase tracking-wider md:tracking-normal md:capitalize">{label}</span>
-                  <p className="text-xs md:text-sm text-slate-400 font-medium mt-1 md:mt-3 leading-relaxed">{desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Best Services ──────────────────────────────── */}
-        <div className="mt-16 md:mt-24 mb-6 md:mb-12">
-          <div className="flex items-end justify-between mb-8 md:mb-12">
-            <div>
-              <h2 className="text-slate-800 font-black text-xl md:text-2xl lg:text-3xl tracking-tight">Popular Services</h2>
-              <p className="text-slate-400 text-sm md:text-base mt-1 md:mt-2">High-rated services by customers</p>
-            </div>
-            <Link href="/categories" className="flex items-center gap-2 text-blue-600 text-xs md:text-sm font-bold bg-blue-50 hover:bg-blue-100 px-5 py-2.5 md:px-6 md:py-3 rounded-2xl transition-all">
-              See All <ChevronRight size={16} />
+        {/* ── Popular services ───────────────────────────── */}
+        <section className="mt-10 md:mt-14">
+          <div className="flex items-end justify-between mb-4 md:mb-5">
+            <h2 className="text-ink font-bold text-lg md:text-2xl">Popular in Dehradun</h2>
+            <Link
+              href="/categories"
+              className="flex items-center gap-1 text-brand-600 text-sm font-medium hover:text-brand-700 transition-colors shrink-0"
+            >
+              See all <ChevronRight size={15} />
             </Link>
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-              {[...Array(4)].map((_, i) => <div key={i} className="skeleton rounded-2xl md:rounded-[32px] h-64 md:h-80" />)}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {[...Array(4)].map((_, i) => <div key={i} className="skeleton rounded-xl h-56 md:h-64" />)}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {services.map((svc, i) => <ServiceCard key={svc.id} service={svc} index={i} />)}
             </div>
           )}
-        </div>
-      </div>
+        </section>
 
-      {/* BottomNav removed as it's now handled by AppShell */}
+        {/* ── Stats ──────────────────────────────────────── */}
+        <section className="mt-10 md:mt-14">
+          <div className="border border-line rounded-2xl grid grid-cols-3 divide-x divide-line">
+            {STATS.map(({ value, label }) => (
+              <div key={label} className="py-5 md:py-6 text-center">
+                <span className="text-ink font-bold text-lg md:text-2xl block leading-none">{value}</span>
+                <span className="text-ink-soft text-xs md:text-sm mt-1.5 block">{label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Trust ──────────────────────────────────────── */}
+        <section className="mt-10 md:mt-14 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            {TRUST_ITEMS.map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="flex md:flex-col items-start gap-4 border border-line rounded-xl p-4 md:p-6">
+                <span className="w-10 h-10 rounded-[10px] bg-brand-50 flex items-center justify-center shrink-0">
+                  <Icon size={18} className="text-brand-600" strokeWidth={1.75} />
+                </span>
+                <span>
+                  <span className="block text-ink font-semibold text-sm md:text-base">{title}</span>
+                  <span className="block text-ink-soft text-xs md:text-sm mt-1 leading-relaxed">{desc}</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
