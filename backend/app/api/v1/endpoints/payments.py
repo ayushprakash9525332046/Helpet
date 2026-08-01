@@ -37,7 +37,7 @@ def confirm_offline_payment(
         booking_id=booking.id,
         user_id=current_user.id,
         amount=booking.total_amount,
-        status=PaymentStatus.PENDING if data.method == "cod" else PaymentStatus.SUCCESS,
+        status=PaymentStatus.PENDING,
     )
     db.add(payment)
     booking.status = BookingStatus.CONFIRMED

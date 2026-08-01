@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Literal, Optional
 from uuid import UUID
 from datetime import datetime
 from app.models.payment import PaymentStatus
@@ -15,7 +15,7 @@ class PaymentConfirm(BaseModel):
 
 class OfflinePaymentCreate(BaseModel):
     booking_id: UUID
-    method: str  # "cod" | "upi"
+    method: Literal["cod"]
 
 
 class PaymentResponse(BaseModel):
