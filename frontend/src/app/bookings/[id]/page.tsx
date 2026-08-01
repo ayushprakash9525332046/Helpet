@@ -58,11 +58,8 @@ export default function BookingDetail() {
   const status = STATUS_CONFIG[booking.status];
   const date = new Date(booking.scheduled_at);
 
-  const summary = [
-    { label: "Base Amount",  value: `₹${booking.total_amount}` },
-    { label: "Discount",     value: "₹0", green: true },
-    { label: "Platform Fee", value: "₹29" },
-    { label: "Grand Total",  value: `₹${Number(booking.total_amount) + 29}`, bold: true },
+  const summary: { label: string; value: string; bold?: boolean; green?: boolean }[] = [
+    { label: "Total Amount", value: `₹${booking.total_amount}`, bold: true },
   ];
 
   return (

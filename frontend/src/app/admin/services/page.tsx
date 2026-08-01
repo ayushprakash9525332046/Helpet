@@ -38,7 +38,7 @@ interface FormState {
   category_id: string;
 }
 const EMPTY_FORM: FormState = {
-  name: "", description: "", price: "", discount_percentage: "15", platform_fee_percentage: "10", duration_minutes: "60", image: "", category_id: "",
+  name: "", description: "", price: "", discount_percentage: "15", platform_fee_percentage: "15", duration_minutes: "60", image: "", category_id: "",
 };
 
 // ── Sub-service inline form ───────────────────────────────────────
@@ -331,7 +331,7 @@ export default function ServicesPage() {
   const [form, setForm]             = useState<FormState>(EMPTY_FORM);
   const [saving, setSaving]         = useState(false);
   const [defaultDiscount, setDefaultDiscount]       = useState("15");
-  const [defaultPlatformFee, setDefaultPlatformFee] = useState("10");
+  const [defaultPlatformFee, setDefaultPlatformFee] = useState("15");
   const [settingsOpen, setSettingsOpen]             = useState(false);
 
   const sensors = useSensors(
@@ -400,7 +400,7 @@ export default function ServicesPage() {
       description: svc.description ?? "",
       price: String(svc.price),
       discount_percentage: String(svc.discount_percentage ?? 0),
-      platform_fee_percentage: String(svc.platform_fee_percentage ?? 10),
+      platform_fee_percentage: String(svc.platform_fee_percentage ?? 15),
       duration_minutes: String(svc.duration_minutes),
       image: svc.image ?? "",
       category_id: svc.category.id,
@@ -747,7 +747,7 @@ export default function ServicesPage() {
                         type="number"
                         value={form.platform_fee_percentage}
                         onChange={(e) => setForm({ ...form, platform_fee_percentage: e.target.value })}
-                        placeholder="10"
+                        placeholder="15"
                         min="0"
                         max="50"
                         className="w-full px-4 py-2.5 pr-8 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400"
@@ -770,7 +770,7 @@ export default function ServicesPage() {
                       </div>
                     ) : null}
                     <div className="flex justify-between text-xs font-semibold">
-                      <span className="text-slate-700">Customer pays</span>
+                      <span className="text-slate-700">Service price</span>
                       <span className="text-blue-600">₹{Number(form.price).toLocaleString("en-IN")}</span>
                     </div>
                     {Number(form.discount_percentage) > 0 && (
@@ -783,16 +783,16 @@ export default function ServicesPage() {
                     )}
                     {Number(form.platform_fee_percentage) > 0 && (
                       <div className="flex justify-between text-xs">
-                        <span className="text-violet-600">Platform fee ({form.platform_fee_percentage}%)</span>
+                        <span className="text-violet-600">Platform fee ({form.platform_fee_percentage}%, added at checkout)</span>
                         <span className="text-violet-600">
-                          ₹{Math.round(Number(form.price) * Number(form.platform_fee_percentage) / 100).toLocaleString("en-IN")}
+                          +₹{Math.round(Number(form.price) * Number(form.platform_fee_percentage) / 100).toLocaleString("en-IN")}
                         </span>
                       </div>
                     )}
                     <div className="border-t border-slate-200 pt-2 flex justify-between text-xs font-bold">
-                      <span className="text-slate-700">Provider receives</span>
+                      <span className="text-slate-700">Customer pays (total)</span>
                       <span className="text-slate-800">
-                        ₹{Math.round(Number(form.price) * (1 - Number(form.platform_fee_percentage) / 100)).toLocaleString("en-IN")}
+                        ₹{(Number(form.price) + Math.round(Number(form.price) * Number(form.platform_fee_percentage) / 100)).toLocaleString("en-IN")}
                       </span>
                     </div>
                   </div>

@@ -46,6 +46,10 @@ export default function BookService() {
   const subServiceId = searchParams.get("sub_id") ?? undefined;
   const subServiceName = searchParams.get("sub_name") ?? undefined;
   const subServicePrice = searchParams.get("sub_price") ? Number(searchParams.get("sub_price")) : undefined;
+  const basePrice = subServicePrice ?? service?.price ?? 0;
+  const platformFeePct = service?.platform_fee_percentage ?? 15;
+  const platformFeeAmount = Math.round(basePrice * platformFeePct / 100);
+  const totalPrice = basePrice + platformFeeAmount;
   const days = getNext7Days();
   const now = new Date();
   const nowMins = now.getHours() * 60 + now.getMinutes();
@@ -137,9 +141,13 @@ export default function BookService() {
         : service!.name;
       const params = new URLSearchParams({
         service: displayName,
-        amount: String(res.data.total_amount),
+        // Pass the pre-fee base price — the payment page derives and
+        // displays its own fee breakdown from this + platform_fee_pct.
+        // (res.data.total_amount is now fee-inclusive; using it here
+        // would double-count the platform fee.)
+        amount: String(basePrice),
         date: date.toISOString(),
-        platform_fee_pct: String(service!.platform_fee_percentage ?? 10),
+        platform_fee_pct: String(platformFeePct),
       });
       router.push(`/payment/${res.data.id}?${params.toString()}`);
     } catch (err: any) {
@@ -191,7 +199,7 @@ export default function BookService() {
                   </p>
                 )}
                 <div className="flex items-center gap-3 mt-1.5 text-sm">
-                  <span className="font-semibold text-ink">₹{subServicePrice ?? service.price}</span>
+                  <span className="font-semibold text-ink">₹{totalPrice}</span>
                   <span className="flex items-center gap-1 text-ink-soft text-xs">
                     <Clock size={12} />{service.duration_minutes} min
                   </span>
@@ -320,7 +328,7 @@ export default function BookService() {
           <div className="flex flex-col shrink-0">
             <p className="text-xs text-ink-soft">Total</p>
             <span className="text-lg md:text-2xl font-bold text-ink leading-none">
-              ₹{subServicePrice ?? service.price}
+              ₹{totalPrice}
             </span>
           </div>
           <button

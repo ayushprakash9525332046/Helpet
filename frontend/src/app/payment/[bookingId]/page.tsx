@@ -14,7 +14,7 @@ function PaymentContent() {
   const searchParams  = useSearchParams();
   const serviceName      = searchParams.get("service")          ?? "Home Service";
   const amount           = searchParams.get("amount")           ?? "0";
-  const platformFeePct   = Number(searchParams.get("platform_fee_pct") ?? 10);
+  const platformFeePct   = Number(searchParams.get("platform_fee_pct") ?? 15);
   const router           = useRouter();
 
   const [codLoading, setCodLoading] = useState(false);

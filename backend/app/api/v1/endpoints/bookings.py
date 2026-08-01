@@ -32,13 +32,16 @@ def create_booking(
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
 
-    total_amount = service.price
+    base_amount = service.price
     sub_service_name = None
     if data.sub_service_id:
         sub = db.query(SubService).filter(SubService.id == data.sub_service_id).first()
         if sub:
-            total_amount = sub.price
+            base_amount = sub.price
             sub_service_name = sub.name
+
+    platform_fee = round(base_amount * service.platform_fee_percentage / 100)
+    total_amount = base_amount + platform_fee
 
     booking = Booking(
         customer_id=current_user.id,
