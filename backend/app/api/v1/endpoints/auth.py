@@ -21,6 +21,38 @@ router = APIRouter()
 
 OTP_EXPIRE_MINUTES = 10
 OTP_RESEND_COOLDOWN_SECONDS = 60
+OTP_MAX_ATTEMPTS = 5
+
+
+def _invalidate_active_otps(db: Session, email: str, purpose: OTPPurpose) -> None:
+    """Mark any existing unused OTP for this email+purpose as used, so only the latest one sent is ever valid."""
+    db.query(OTP).filter(OTP.email == email, OTP.purpose == purpose, OTP.is_used == False).update(
+        {"is_used": True}
+    )
+
+
+def _consume_otp(db: Session, email: str, code: str, purpose: OTPPurpose) -> OTP:
+    """Look up the active OTP for this email+purpose and validate `code` against it, rate-limiting wrong guesses."""
+    otp = (
+        db.query(OTP)
+        .filter(
+            OTP.email == email,
+            OTP.purpose == purpose,
+            OTP.is_used == False,
+            OTP.expires_at > datetime.now(timezone.utc),
+        )
+        .order_by(OTP.created_at.desc())
+        .first()
+    )
+    if not otp:
+        raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+    if otp.attempts >= OTP_MAX_ATTEMPTS:
+        raise HTTPException(status_code=400, detail="Too many incorrect attempts. Please request a new OTP.")
+    if otp.code != code:
+        otp.attempts += 1
+        db.commit()
+        raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+    return otp
 
 
 # ── Register ─────────────────────────────────────────────────────
@@ -45,6 +77,7 @@ def register(user_data: UserRegister, background_tasks: BackgroundTasks, db: Ses
     # Send email verification OTP
     code = generate_otp()
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRE_MINUTES)
+    _invalidate_active_otps(db, user_data.email, OTPPurpose.VERIFY)
     db.add(OTP(email=user_data.email, code=code, purpose=OTPPurpose.VERIFY, expires_at=expires_at))
     db.commit()
     background_tasks.add_task(send_otp_email, user_data.email, code, "verify")
@@ -89,6 +122,7 @@ def send_otp(data: OTPSendRequest, background_tasks: BackgroundTasks, db: Sessio
 
     code = generate_otp()
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRE_MINUTES)
+    _invalidate_active_otps(db, data.email, data.purpose)
     db.add(OTP(email=data.email, code=code, purpose=data.purpose, expires_at=expires_at))
     db.commit()
 
@@ -99,20 +133,7 @@ def send_otp(data: OTPSendRequest, background_tasks: BackgroundTasks, db: Sessio
 # ── OTP: Verify Login ────────────────────────────────────────────
 @router.post("/otp/verify-login", response_model=TokenResponse)
 def verify_otp_login(data: OTPVerifyRequest, db: Session = Depends(get_db)):
-    otp = (
-        db.query(OTP)
-        .filter(
-            OTP.email == data.email,
-            OTP.code == data.code,
-            OTP.purpose == OTPPurpose.LOGIN,
-            OTP.is_used == False,
-            OTP.expires_at > datetime.now(timezone.utc),
-        )
-        .order_by(OTP.created_at.desc())
-        .first()
-    )
-    if not otp:
-        raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+    otp = _consume_otp(db, data.email, data.code, OTPPurpose.LOGIN)
 
     user = db.query(User).filter(User.email == data.email).first()
     if not user:
@@ -132,20 +153,7 @@ def verify_otp_login(data: OTPVerifyRequest, db: Session = Depends(get_db)):
 # ── OTP: Verify Email (after registration) ───────────────────────
 @router.post("/otp/verify-email")
 def verify_email_otp(data: OTPVerifyRequest, db: Session = Depends(get_db)):
-    otp = (
-        db.query(OTP)
-        .filter(
-            OTP.email == data.email,
-            OTP.code == data.code,
-            OTP.purpose == OTPPurpose.VERIFY,
-            OTP.is_used == False,
-            OTP.expires_at > datetime.now(timezone.utc),
-        )
-        .order_by(OTP.created_at.desc())
-        .first()
-    )
-    if not otp:
-        raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+    otp = _consume_otp(db, data.email, data.code, OTPPurpose.VERIFY)
 
     otp.is_used = True
     user = db.query(User).filter(User.email == data.email).first()
@@ -180,6 +188,7 @@ def request_password_reset(data: OTPSendRequest, background_tasks: BackgroundTas
 
     code = generate_otp()
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRE_MINUTES)
+    _invalidate_active_otps(db, data.email, OTPPurpose.RESET)
     db.add(OTP(email=data.email, code=code, purpose=OTPPurpose.RESET, expires_at=expires_at))
     db.commit()
 
@@ -193,20 +202,7 @@ def confirm_password_reset(data: PasswordResetConfirm, db: Session = Depends(get
     if len(data.new_password) < 6:
         raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
 
-    otp = (
-        db.query(OTP)
-        .filter(
-            OTP.email == data.email,
-            OTP.code == data.code,
-            OTP.purpose == OTPPurpose.RESET,
-            OTP.is_used == False,
-            OTP.expires_at > datetime.now(timezone.utc),
-        )
-        .order_by(OTP.created_at.desc())
-        .first()
-    )
-    if not otp:
-        raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+    otp = _consume_otp(db, data.email, data.code, OTPPurpose.RESET)
 
     user = db.query(User).filter(User.email == data.email).first()
     if not user:

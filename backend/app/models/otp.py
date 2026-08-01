@@ -1,7 +1,7 @@
 import uuid
 import enum
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Boolean, DateTime, Enum as SAEnum
+from sqlalchemy import Column, String, Boolean, DateTime, Integer, Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from app.db.base import Base
 
@@ -21,6 +21,7 @@ class OTP(Base):
     code = Column(String(6), nullable=False)
     purpose = Column(SAEnum(OTPPurpose), nullable=False)
     is_used = Column(Boolean, default=False)
+    attempts = Column(Integer, default=0, nullable=False, server_default="0")
     expires_at = Column(DateTime(timezone=True), nullable=False)
     created_at = Column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
