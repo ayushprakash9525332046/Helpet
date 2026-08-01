@@ -57,17 +57,3 @@ async def health_check():
     return {"status": "ok"}
 
 
-@app.get("/debug")
-def debug():
-    import os
-
-    return {
-        "DATABASE_URL_exists": bool(os.getenv("DATABASE_URL")),
-        "DATABASE_URL_preview": (
-            str(os.getenv("DATABASE_URL", ""))[:80]
-            if os.getenv("DATABASE_URL")
-            else None
-        ),
-        "SUPABASE_URL_exists": bool(os.getenv("SUPABASE_URL")),
-        "SUPABASE_KEY_exists": bool(os.getenv("SUPABASE_KEY")),
-    }
