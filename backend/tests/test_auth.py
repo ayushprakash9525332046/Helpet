@@ -1,4 +1,4 @@
-from tests.conftest import auth, _unique_phone
+from tests.conftest import auth, _unique_phone, _unique_email
 
 
 def test_register_success(client):
@@ -6,6 +6,7 @@ def test_register_success(client):
     r = client.post("/api/v1/auth/register", json={
         "full_name": "Ramesh Kumar",
         "phone": phone,
+        "email": _unique_email(),
         "password": "password123",
         "role": "customer",
     })
@@ -18,7 +19,10 @@ def test_register_success(client):
 
 def test_register_duplicate_phone(client):
     phone = _unique_phone()
-    payload = {"full_name": "A", "phone": phone, "password": "pass123", "role": "customer"}
+    payload = {
+        "full_name": "A", "phone": phone, "email": _unique_email(),
+        "password": "pass123", "role": "customer",
+    }
     client.post("/api/v1/auth/register", json=payload)
     r = client.post("/api/v1/auth/register", json=payload)
     assert r.status_code == 400
@@ -30,6 +34,7 @@ def test_login_success(client):
     client.post("/api/v1/auth/register", json={
         "full_name": "Login User",
         "phone": phone,
+        "email": _unique_email(),
         "password": "mypassword",
         "role": "customer",
     })
@@ -44,7 +49,8 @@ def test_login_success(client):
 def test_login_wrong_password(client):
     phone = _unique_phone()
     client.post("/api/v1/auth/register", json={
-        "full_name": "User", "phone": phone, "password": "correct", "role": "customer"
+        "full_name": "User", "phone": phone, "email": _unique_email(),
+        "password": "correct", "role": "customer",
     })
     r = client.post("/api/v1/auth/login", data={"username": phone, "password": "wrong"})
     assert r.status_code == 401

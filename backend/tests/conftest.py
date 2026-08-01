@@ -93,6 +93,10 @@ def _unique_phone():
     return "9" + str(_uuid.uuid4().int)[:9]
 
 
+def _unique_email():
+    return f"test_{_uuid.uuid4().hex[:12]}@example.com"
+
+
 @pytest.fixture
 def customer_phone():
     return _unique_phone()
@@ -115,6 +119,7 @@ def customer(client, customer_phone):
     r = client.post("/api/v1/auth/register", json={
         "full_name": "Test Customer",
         "phone": customer_phone,
+        "email": _unique_email(),
         "password": "testpass123",
         "role": "customer",
     })
@@ -127,6 +132,7 @@ def provider(client, provider_phone):
     r = client.post("/api/v1/auth/register", json={
         "full_name": "Test Provider",
         "phone": provider_phone,
+        "email": _unique_email(),
         "password": "testpass123",
         "role": "provider",
     })
@@ -140,6 +146,7 @@ def admin_user(db, admin_phone):
     u = User(
         full_name="Test Admin",
         phone=admin_phone,
+        email=_unique_email(),
         hashed_password=hash_password("adminpass123"),
         role=UserRole.ADMIN,
     )

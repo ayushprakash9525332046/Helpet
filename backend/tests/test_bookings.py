@@ -10,7 +10,8 @@ def test_create_booking(client, customer_token, service_item):
     assert r.status_code == 201
     data = r.json()
     assert data["status"] == "pending"
-    assert data["total_amount"] == service_item["price"]
+    platform_fee = round(service_item["price"] * service_item["platform_fee_percentage"] / 100)
+    assert data["total_amount"] == service_item["price"] + platform_fee
 
 
 def test_create_booking_invalid_service(client, customer_token):

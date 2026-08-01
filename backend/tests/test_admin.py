@@ -19,7 +19,7 @@ def test_admin_stats_non_admin(client, customer_token):
 def test_admin_list_users(client, admin_token, customer, provider):
     r = client.get("/api/v1/admin/users", headers=auth(admin_token))
     assert r.status_code == 200
-    ids = [u["id"] for u in r.json()]
+    ids = [u["id"] for u in r.json()["items"]]
     assert customer["id"] in ids
     assert provider["id"] in ids
 
@@ -37,11 +37,11 @@ def test_admin_update_user_status(client, admin_token, customer):
 def test_admin_list_bookings(client, admin_token, booking_item):
     r = client.get("/api/v1/admin/bookings", headers=auth(admin_token))
     assert r.status_code == 200
-    ids = [b["id"] for b in r.json()]
+    ids = [b["id"] for b in r.json()["items"]]
     assert booking_item["id"] in ids
 
 
 def test_admin_list_payments(client, admin_token):
     r = client.get("/api/v1/admin/payments", headers=auth(admin_token))
     assert r.status_code == 200
-    assert isinstance(r.json(), list)
+    assert isinstance(r.json()["items"], list)
