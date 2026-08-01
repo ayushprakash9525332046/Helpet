@@ -10,19 +10,19 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     orientation: "portrait",
     background_color: "#ffffff",
-    theme_color: "#2563eb",
+    theme_color: "#8000FF",
     categories: ["utilities", "lifestyle", "shopping"],
     lang: "en-IN",
     dir: "ltr",
     icons: [
       {
-        src: "/assets/helpet-logo-v2.png",
+        src: "/icon-192-v2.png",
         sizes: "192x192",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/assets/helpet-logo-v2.png",
+        src: "/icon-512-v2.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable",

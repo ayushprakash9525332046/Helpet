@@ -1,31 +1,11 @@
 import type { Metadata } from "next";
+import { getService } from "@/lib/seo-data";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://helpet.in";
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://api.helpet.in/api/v1";
-
-interface ServiceData {
-  id: number;
-  name: string;
-  description?: string;
-  price?: number;
-  category?: { name: string };
-}
 
 interface Props {
   params: Promise<{ id: string }>;
   children: React.ReactNode;
-}
-
-async function getService(id: string): Promise<ServiceData | null> {
-  try {
-    const res = await fetch(`${API_URL}/services/${id}`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -51,14 +31,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `${APP_URL}/services/${id}`,
       type: "website",
       siteName: "Helpet",
-      images: [
-        {
-          url: "/assets/helpet-logo-v2.png",
-          width: 1200,
-          height: 1200,
-          alt: "Helpet — Home Services in Dehradun",
-        },
-      ],
     },
   };
 }
@@ -106,6 +78,7 @@ export default async function ServiceDetailLayout({ params, children }: Props) {
         "@type": "Service",
         name: `${svc.name} in Dehradun`,
         description: svc.description,
+        ...(svc.image ? { image: svc.image } : {}),
         provider: {
           "@type": "LocalBusiness",
           name: "Helpet",

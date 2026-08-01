@@ -4,14 +4,15 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://helpet.in";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://api.helpet.in/api/v1";
 
 interface Category {
-  id: number;
+  id: string;
   name: string;
   updated_at?: string;
 }
 
 interface Service {
-  id: number;
+  id: string;
   name: string;
+  image?: string;
   updated_at?: string;
 }
 
@@ -107,6 +108,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: svc.updated_at ? new Date(svc.updated_at) : now,
     changeFrequency: "weekly" as const,
     priority: 0.75,
+    ...(svc.image && /^https?:\/\//.test(svc.image) ? { images: [svc.image] } : {}),
   }));
 
   return [...staticPages, ...categoryPages, ...servicePages];

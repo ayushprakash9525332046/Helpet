@@ -1,24 +1,11 @@
 import type { Metadata } from "next";
+import { getCategoryName } from "@/lib/seo-data";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://helpet.in";
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://api.helpet.in/api/v1";
 
 interface Props {
   params: Promise<{ id: string }>;
   children: React.ReactNode;
-}
-
-async function getCategoryName(id: string): Promise<string | null> {
-  try {
-    const res = await fetch(`${API_URL}/services/categories`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return null;
-    const cats: Array<{ id: number; name: string }> = await res.json();
-    return cats.find((c) => c.id === Number(id))?.name ?? null;
-  } catch {
-    return null;
-  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -43,14 +30,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `${APP_URL}/categories/${id}`,
       type: "website",
       siteName: "Helpet",
-      images: [
-        {
-          url: "/assets/helpet-logo-v2.png",
-          width: 1200,
-          height: 1200,
-          alt: "Helpet — Home Services in Dehradun",
-        },
-      ],
     },
   };
 }

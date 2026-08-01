@@ -22,6 +22,7 @@ const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://helpet.in";
 const LOGO_URL = `${APP_URL}/assets/helpet-logo-v2.png`;
+const LOGO_512_URL = `${APP_URL}/icon-512-v2.png`;
 
 // ── Structured Data ────────────────────────────────────────────────
 const localBusinessSchema = {
@@ -81,13 +82,6 @@ const localBusinessSchema = {
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Sofa & Carpet Cleaning Dehradun", areaServed: "Dehradun" } },
     ],
   },
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.9",
-    bestRating: "5",
-    worstRating: "1",
-    ratingCount: "380",
-  },
   foundingDate: "2024",
   foundingLocation: { "@type": "Place", name: "Dehradun, Uttarakhand, India" },
 };
@@ -100,7 +94,7 @@ const organizationSchema = {
   url: APP_URL,
   logo: {
     "@type": "ImageObject",
-    url: LOGO_URL,
+    url: LOGO_512_URL,
     width: 512,
     height: 512,
   },
@@ -200,20 +194,11 @@ export const metadata: Metadata = {
     description:
       "Dehradun's trusted home services app. Book verified professionals for 120+ services. Same-day booking, no hidden charges.",
     siteName: "Helpet",
-    images: [
-      {
-        url: "/assets/helpet-logo-v2.png",
-        width: 1200,
-        height: 1200,
-        alt: "Helpet — Home Services in Dehradun",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Helpet — Home Services in Dehradun",
     description: "Book verified professionals for 120+ home services in Dehradun. Same-day slots available.",
-    images: ["/assets/helpet-logo-v2.png"],
     creator: "@helpetindia",
     site: "@helpetindia",
   },
@@ -244,10 +229,6 @@ export default function RootLayout({
   return (
     <html lang="en-IN" data-scroll-behavior="smooth" className={`${inter.variable} ${jakarta.variable}`}>
       <head>
-        <link rel="icon" type="image/x-icon" href="/favicon-v2.ico" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16-v2.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32-v2.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-v2.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}

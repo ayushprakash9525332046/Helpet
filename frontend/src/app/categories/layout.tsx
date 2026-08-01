@@ -28,14 +28,6 @@ export const metadata: Metadata = {
     url: `${APP_URL}/categories`,
     type: "website",
     siteName: "Helpet",
-    images: [
-      {
-        url: "/assets/helpet-logo-v2.png",
-        width: 1200,
-        height: 1200,
-        alt: "Helpet — Home Services in Dehradun",
-      },
-    ],
   },
 };
 
