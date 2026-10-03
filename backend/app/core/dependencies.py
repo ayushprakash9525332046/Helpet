@@ -11,6 +11,8 @@ from app.models.user import User, UserRole
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
+import uuid
+
 def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ) -> User:
@@ -25,8 +27,13 @@ def get_current_user(
     if payload is None:
         raise credentials_exception
 
-    user_id: str = payload.get("sub")
-    if user_id is None:
+    user_id_raw = payload.get("sub")
+    if user_id_raw is None:
+        raise credentials_exception
+
+    try:
+        user_id = uuid.UUID(str(user_id_raw))
+    except ValueError:
         raise credentials_exception
 
     user = db.query(User).filter(User.id == user_id).first()

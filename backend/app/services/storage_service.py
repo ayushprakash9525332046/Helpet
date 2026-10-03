@@ -7,6 +7,8 @@ import cloudinary.uploader
 
 from app.core.config import settings
 
+from typing import Optional
+
 logger = logging.getLogger(__name__)
 
 cloudinary.config(
@@ -16,7 +18,7 @@ cloudinary.config(
 )
 
 
-def upload_image(data: bytes, folder: str = "helpet", public_id: str | None = None) -> str:
+def upload_image(data: bytes, folder: str = "helpet", public_id: Optional[str] = None) -> str:
     """
     Upload raw image bytes to Cloudinary.
     Returns the secure HTTPS URL of the uploaded image.
